@@ -62,34 +62,34 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Added component foundation:
   - `Charming::Component`
   - component rendering from views
+- Added first stateful component foundation:
+  - `Charming::Components::TextInput`
+  - mutable value and cursor state
+  - key handling for insertion, cursor movement, backspace, and delete
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone
 
-Design the first stateful component.
+Build toward the command palette flagship component.
 
-The goal is to let reusable components handle both rendering and terminal input without leaking runtime internals into application code.
+The goal is to compose lower-level stateful components into a Rails-like command palette without leaking runtime internals into application code.
 
 Target direction:
 
 ```ruby
-class TextInputComponent < Charming::Component
-  key "left", :move_left
-  key "right", :move_right
-  key "backspace", :delete_before_cursor
-
+class CommandPaletteComponent < Charming::Component
   def render
-    # ...
+    box(column(input.render, command_list.render), style: palette_style)
   end
 end
 ```
 
 ## Next
 
-- Decide how stateful components receive key events.
+- Add `Charming::Components::List` for selectable, scrollable command results.
 - Decide how parent controllers/views route events to focused components.
-- Add the first stateful component: `TextInputComponent`.
-- Add specs for component state, input handling, and rendering.
+- Compose `TextInput` and `List` into `CommandPaletteComponent`.
+- Add specs for command palette filtering, selection, and command activation.
 
 ## Later
 
