@@ -15,6 +15,18 @@ RSpec.describe "counter example" do
     expect(backend.frames.first).to include("Charming counter")
   end
 
+  it "uses backend dimensions when rendering the counter app" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :q)],
+      width: 60,
+      height: 12
+    )
+
+    Charming::Runtime.new(CounterApp.new, backend: backend).run
+
+    expect(backend.frames.first.lines.count).to eq(12)
+  end
+
   it "renders the command palette modal" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [

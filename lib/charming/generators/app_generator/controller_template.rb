@@ -46,7 +46,7 @@ end
         def render_helpers
           %(
     def render_home
-      render HomeView.new(home: home, palette: command_palette)
+      render HomeView.new(home: home, palette: command_palette, screen: screen)
     end
 
     def home

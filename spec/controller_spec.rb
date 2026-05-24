@@ -126,6 +126,12 @@ RSpec.describe Charming::Controller do
     expect(first).not_to equal(second)
   end
 
+  it "provides default screen dimensions for direct controller use" do
+    controller = described_class.new(application: application)
+
+    expect(controller.screen).to eq(Charming::Screen.new(width: 80, height: 24))
+  end
+
   it "opens a command palette from registered commands" do
     controller = Class.new(described_class) do
       command "Quit", :quit

@@ -53,7 +53,7 @@ class CounterController < Charming::Controller
   private
 
   def render_counter
-    render CounterView.new(counter: counter, palette: command_palette)
+    render CounterView.new(counter: counter, palette: command_palette, screen: screen)
   end
 
   def counter
@@ -62,14 +62,11 @@ class CounterController < Charming::Controller
 end
 
 class CounterView < Charming::View
-  WIDTH = 80
-  HEIGHT = 24
-
   def render
-    screen = Charming::UI.center(counter_card, width: WIDTH, height: HEIGHT)
-    return screen unless palette
+    body = Charming::UI.center(counter_card, width: screen.width, height: screen.height)
+    return body unless palette
 
-    Charming::UI.overlay(screen, palette_modal)
+    Charming::UI.overlay(body, palette_modal)
   end
 
   private

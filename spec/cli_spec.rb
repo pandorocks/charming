@@ -33,10 +33,13 @@ RSpec.describe Charming::CLI do
           Charming::KeyEvent.new(key: :p, char: "p"),
           Charming::KeyEvent.new(key: :escape),
           Charming::KeyEvent.new(key: :q, char: "q")
-        ]
+        ],
+        width: 60,
+        height: 12
       )
       Charming::Runtime.new(WeatherTui::Application.new, backend: backend).run
       expect(backend.frames.join("\n")).to include("Command palette")
+      expect(backend.frames.first.lines.count).to eq(12)
     end
   end
 

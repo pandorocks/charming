@@ -63,14 +63,11 @@ end
 
 module #{name.class_name}
   class HomeView < Charming::View
-    WIDTH = 80
-    HEIGHT = 24
-
     def render
-      screen = Charming::UI.center(app_frame, width: WIDTH, height: HEIGHT)
-      return screen unless palette
+      body = Charming::UI.center(app_frame, width: screen.width, height: screen.height)
+      return body unless palette
 
-      Charming::UI.overlay(screen, command_palette_modal)
+      Charming::UI.overlay(body, command_palette_modal)
     end
 #{view_helpers}
   end

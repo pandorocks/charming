@@ -33,11 +33,16 @@ module Charming
     private
 
     def dispatch(action, event: nil)
-      @route.controller_class.new(application: @application, event: event).dispatch(action)
+      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch(action)
     end
 
     def dispatch_key(event)
-      @route.controller_class.new(application: @application, event: event).dispatch_key
+      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_key
+    end
+
+    def screen
+      width, height = @backend.size
+      Screen.new(width: width, height: height)
     end
 
     def render(response)

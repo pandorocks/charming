@@ -44,6 +44,31 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["Count: 0", "Count: 1"])
   end
 
+  it "passes backend screen dimensions to controllers" do
+    screen_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "#{screen.width}x#{screen.height}"
+      end
+    end
+    stub_const("ScreenRuntimeSpecController", screen_controller)
+    screen_app = Class.new(Charming::Application) do
+      routes do
+        root "screen_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :q)],
+      width: 100,
+      height: 40
+    )
+
+    described_class.new(screen_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(["100x40"])
+  end
+
   it "restores terminal state when a controller raises" do
     failing_controller = Class.new(Charming::Controller) do
       def show

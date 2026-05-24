@@ -1,6 +1,6 @@
 # Charming
 
-Charming is a Rails-inspired terminal user interface framework for Ruby.
+Charming is a Rails-inspired terminal user interface framework for Ruby 4+.
 
 The project is currently in early foundation work. The intended architecture is a Rails-like public API over an internal terminal runtime, with explicit TTY-backed and in-memory backends.
 
@@ -14,22 +14,36 @@ end
 class CounterController < Charming::Controller
   key "up", :increment
   key "down", :decrement
+  key "p", :open_command_palette
   key "q", :quit
 
+  command "Increment counter", :increment
+  command "Decrement counter", :decrement
+  command "Quit app", :quit
+
   def show
-    session[:count] ||= 0
-    render "Count: #{session[:count]}"
+    render "Count: #{counter.count}"
   end
 
   def increment
-    session[:count] += 1
-    render "Count: #{session[:count]}"
+    counter.count += 1
+    show
   end
 
   def decrement
-    session[:count] -= 1
-    render "Count: #{session[:count]}"
+    counter.count -= 1
+    show
   end
+
+  private
+
+  def counter
+    model(:counter, CounterModel)
+  end
+end
+
+class CounterModel < Charming::ApplicationModel
+  attribute :count, :integer, default: 0
 end
 ```
 
@@ -62,6 +76,7 @@ Generated apps are namespaced and use Rails-like folders:
 
 ```text
 app/controllers/weather_tui
+app/models/weather_tui
 app/views/weather_tui
 app/components/weather_tui
 config/routes.rb

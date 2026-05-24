@@ -20,12 +20,13 @@ module Charming
       end
     end
 
-    attr_reader :application, :event, :params
+    attr_reader :application, :event, :params, :screen
 
-    def initialize(application:, event: nil, params: {})
+    def initialize(application:, event: nil, params: {}, screen: nil)
       @application = application
       @event = event
       @params = params
+      @screen = screen || Screen.new(width: 80, height: 24)
       @response = nil
     end
 

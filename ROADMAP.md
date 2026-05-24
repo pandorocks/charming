@@ -12,7 +12,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Keep terminal input/output behind internal backend interfaces.
 - Keep the in-memory backend as a first-class test backend.
 - Keep styling and layout usable independently of the runtime.
-- Keep dependencies explicit and minimal.
+- Keep dependencies explicit and ergonomic.
 - Make examples and tests part of the deliverable, not afterthoughts.
 
 ## Completed
@@ -20,7 +20,11 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Generated a conventional Bundler gem structure.
 - Switched testing to RSpec.
 - Added RuboCop and a default `rake` task.
-- Set Ruby floor to `>= 3.2.0`.
+- Set Ruby floor to `>= 4.0.0`.
+- Added ActiveModel-backed application models:
+  - `Charming::ApplicationModel`
+  - typed attributes and validations via `activemodel`
+  - session-backed controller model lookup
 - Replaced broad `tty` dependency with explicit runtime dependencies:
   - `tty-reader`
   - `tty-cursor`
@@ -54,6 +58,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - Unicode-aware display width
   - ANSI-aware width measurement
   - horizontal and vertical joins
+  - centering and overlay helpers
 - Added Rails-like view foundation:
   - `Charming::View`
   - keyword assigns exposed as reader methods
@@ -71,43 +76,49 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - selection movement and enter activation
   - custom item labels
   - fixed-height viewport rendering
+- Added modal and command palette foundations:
+  - `Charming::Components::Modal`
+  - `Charming::Components::CommandPalette`
+  - command filtering and selection
+  - command palette controller helpers
+  - command palette included in generated apps by default
 - Added namespaced route resolution for generated apps.
 - Added Rails-like generators:
   - `charming new <name>`
   - `charming generate controller <name> [actions]`
   - `charming generate view <name>`
   - `charming generate component <name>`
+- Generated apps now include:
+  - namespaced application and home models
+  - a centered home screen
+  - a default command palette opened with `p`
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone
 
-Build toward the command palette flagship component.
+Build toward robust larger-screen layout primitives.
 
-The goal is to compose lower-level stateful components into a Rails-like command palette without leaking runtime internals into application code.
+The command palette is now in place. The next milestone is a reusable viewport and screen-aware layout foundation for larger TUIs: logs, lists, sidebars, long forms, help panes, and command output.
 
 Target direction:
 
 ```ruby
-class CommandPaletteComponent < Charming::Component
-  def render
-    box(column(input.render, command_list.render), style: palette_style)
-  end
-end
+viewport = Charming::Components::Viewport.new(content: body, height: 12, offset: scroll_offset)
+render_component viewport
 ```
 
 ## Next
 
-- Decide how parent controllers/views route events to focused components.
-- Compose `TextInput` and `List` into `CommandPaletteComponent`.
-- Add specs for command palette filtering, selection, and command activation.
+- Add `Charming::Components::Viewport`.
+- Add clipping support for content taller or wider than a region.
+- Add specs for vertical scrolling, horizontal clipping, and ANSI-aware sizing.
+- Stop hardcoding `80x24` in examples and generated apps once screen dimensions are exposed cleanly.
 
 ## Later
 
 - Add first reusable components:
-  - text input
   - viewport
   - spinner
-  - selectable list
 - Add command/timer system.
 - Add resize event handling.
 - Harden runtime teardown for signals.
