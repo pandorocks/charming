@@ -38,4 +38,11 @@ RSpec.describe Charming::UI::Style do
 
     expect(output).to eq("\e[31m+----+\n| Hi |\n+----+\e[0m")
   end
+
+  it "keeps outer styling after nested ANSI resets" do
+    nested = "\e[1mHi\e[0m"
+    output = described_class.new.foreground(:red).border(:normal).render(nested)
+
+    expect(output).to eq("\e[31m+--+\n|\e[1mHi\e[0m\e[31m|\n+--+\e[0m")
+  end
 end

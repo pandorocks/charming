@@ -146,7 +146,8 @@ module Charming
         codes = ansi_codes
         return value if codes.empty?
 
-        "\e[#{codes.join(";")}m#{value}\e[0m"
+        start = "\e[#{codes.join(";")}m"
+        "#{start}#{value.gsub("\e[0m", "\e[0m#{start}")}\e[0m"
       end
 
       def ansi_codes
