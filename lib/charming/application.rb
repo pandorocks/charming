@@ -4,9 +4,13 @@ module Charming
   class Application
     class << self
       def routes(&block)
-        @routes ||= Router.new
+        @routes ||= Router.new(namespace: namespace)
         @routes.draw(&block) if block
         @routes
+      end
+
+      def namespace
+        name&.split("::")&.then { |parts| parts[0...-1].join("::") }
       end
     end
 

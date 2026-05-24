@@ -79,6 +79,9 @@ charming generate component forecast_card
 
 The `generate` command can also be shortened to `g`.
 
+New apps include a command palette by default. Press `p` to open it, type to
+filter commands, press `enter` to select, and press `escape` to close it.
+
 ## Development
 
 After checking out the repo, run:
