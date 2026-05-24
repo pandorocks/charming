@@ -13,6 +13,9 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Max: 15
 
+Metrics/ClassLength:
+  Max: 180
+
 Style/OneClassPerFile:
   Exclude:
     - "examples/**/*"
