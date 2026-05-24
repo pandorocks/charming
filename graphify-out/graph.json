@@ -1,0 +1,3441 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "request_dispatch_flow",
+        "label": "Request dispatch flow: Runtime resolves Route, instantiates Controller, returns Response",
+        "nodes": [
+          "charming_runtime_runtime",
+          "charming_router_router",
+          "charming_controller_controller",
+          "charming_response_response"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "lib/charming/runtime.rb"
+      },
+      {
+        "id": "render_pipeline",
+        "label": "Render pipeline: Controller produces Response body, Runtime hands to FullRepaint which writes via Backend",
+        "nodes": [
+          "charming_controller_controller",
+          "charming_response_response",
+          "renderer_full_repaint_fullrepaint",
+          "terminal_tty_backend_ttybackend"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "lib/charming/runtime.rb"
+      },
+      {
+        "id": "backend_abstraction",
+        "label": "Backend abstraction with TTY and Memory implementations consumed by Renderer",
+        "nodes": [
+          "concept_terminal_backend_interface",
+          "terminal_tty_backend_ttybackend",
+          "terminal_memory_backend_memorybackend",
+          "renderer_full_repaint_fullrepaint"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "lib/charming/internal/terminal/tty_backend.rb"
+      },
+      {
+        "id": "runtime_end_to_end_flow",
+        "label": "Runtime End-to-End Counter Flow",
+        "nodes": [
+          "spec_runtime_spec_runtime_spec_controller",
+          "spec_runtime_spec_runtime_spec_app",
+          "terminal_memory_backend_memory_backend",
+          "lib_charming_runtime"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "spec/runtime_spec.rb"
+      },
+      {
+        "source": null,
+        "id": "tty_backend_key_normalization",
+        "label": "TTY Key Event Normalization Pattern",
+        "nodes": [
+          "terminal_tty_backend_spec_reader_stub",
+          "terminal_tty_backend_tty_backend",
+          "lib_charming_key_event"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "spec/internal/terminal/tty_backend_spec.rb"
+      },
+      {
+        "id": "ci_quality_pipeline",
+        "label": "CI Quality and Style Pipeline",
+        "nodes": [
+          "workflows_main_ci_workflow",
+          "rubocop_yml_rubocop_config",
+          "bin_setup_setup"
+        ],
+        "relation": "form",
+        "confidence": "INFERRED",
+        "confidence_score": 0.75,
+        "source_file": ".github/workflows/main.yml"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "spec_helper.rb",
+      "file_type": "code",
+      "source_file": "spec/spec_helper.rb",
+      "source_location": "L1",
+      "id": "spec_spec_helper_rb",
+      "community": 15,
+      "norm_label": "spec_helper.rb"
+    },
+    {
+      "label": "runtime_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": "L1",
+      "id": "spec_runtime_spec_rb",
+      "community": 13,
+      "norm_label": "runtime_spec.rb"
+    },
+    {
+      "label": "show()",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": "L14",
+      "id": "spec_runtime_spec_show",
+      "community": 13,
+      "norm_label": "show()"
+    },
+    {
+      "label": "increment()",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": "L19",
+      "id": "spec_runtime_spec_increment",
+      "community": 13,
+      "norm_label": "increment()"
+    },
+    {
+      "label": "charming_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/charming_spec.rb",
+      "source_location": "L1",
+      "id": "spec_charming_spec_rb",
+      "community": 16,
+      "norm_label": "charming_spec.rb"
+    },
+    {
+      "label": "router_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/router_spec.rb",
+      "source_location": "L1",
+      "id": "spec_router_spec_rb",
+      "community": 17,
+      "norm_label": "router_spec.rb"
+    },
+    {
+      "label": "controller_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": "L1",
+      "id": "spec_controller_spec_rb",
+      "community": 12,
+      "norm_label": "controller_spec.rb"
+    },
+    {
+      "label": "show()",
+      "file_type": "code",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": "L15",
+      "id": "spec_controller_spec_show",
+      "community": 12,
+      "norm_label": "show()"
+    },
+    {
+      "label": "increment()",
+      "file_type": "code",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": "L20",
+      "id": "spec_controller_spec_increment",
+      "community": 12,
+      "norm_label": "increment()"
+    },
+    {
+      "label": "full_repaint_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/internal/renderer/full_repaint_spec.rb",
+      "source_location": "L1",
+      "id": "spec_internal_renderer_full_repaint_spec_rb",
+      "community": 18,
+      "norm_label": "full_repaint_spec.rb"
+    },
+    {
+      "label": "tty_backend_spec.rb",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L1",
+      "id": "spec_internal_terminal_tty_backend_spec_rb",
+      "community": 0,
+      "norm_label": "tty_backend_spec.rb"
+    },
+    {
+      "label": "initialize()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L12",
+      "id": "terminal_tty_backend_spec_initialize",
+      "community": 0,
+      "norm_label": "initialize()"
+    },
+    {
+      "label": "read_keypress()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L17",
+      "id": "terminal_tty_backend_spec_read_keypress",
+      "community": 0,
+      "norm_label": "read_keypress()"
+    },
+    {
+      "label": "show()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L26",
+      "id": "terminal_tty_backend_spec_show",
+      "community": 0,
+      "norm_label": "show()"
+    },
+    {
+      "label": "hide()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L30",
+      "id": "terminal_tty_backend_spec_hide",
+      "community": 0,
+      "norm_label": "hide()"
+    },
+    {
+      "label": "clear_screen()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L34",
+      "id": "terminal_tty_backend_spec_clear_screen",
+      "community": 0,
+      "norm_label": "clear_screen()"
+    },
+    {
+      "label": "move_to()",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L38",
+      "id": "terminal_tty_backend_spec_move_to",
+      "community": 0,
+      "norm_label": "move_to()"
+    },
+    {
+      "label": "counter.rb",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L1",
+      "id": "examples_counter_rb",
+      "community": 2,
+      "norm_label": "counter.rb"
+    },
+    {
+      "label": "CounterController",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L6",
+      "id": "examples_counter_countercontroller",
+      "community": 2,
+      "norm_label": "countercontroller"
+    },
+    {
+      "label": ".show()",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L11",
+      "id": "examples_counter_countercontroller_show",
+      "community": 2,
+      "norm_label": ".show()"
+    },
+    {
+      "label": ".increment()",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L16",
+      "id": "examples_counter_countercontroller_increment",
+      "community": 2,
+      "norm_label": ".increment()"
+    },
+    {
+      "label": ".decrement()",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L21",
+      "id": "examples_counter_countercontroller_decrement",
+      "community": 2,
+      "norm_label": ".decrement()"
+    },
+    {
+      "label": ".render_count()",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L28",
+      "id": "examples_counter_countercontroller_render_count",
+      "community": 2,
+      "norm_label": ".render_count()"
+    },
+    {
+      "label": "CounterApp",
+      "file_type": "code",
+      "source_file": "examples/counter.rb",
+      "source_location": "L40",
+      "id": "examples_counter_counterapp",
+      "community": 2,
+      "norm_label": "counterapp"
+    },
+    {
+      "label": "counter_memory.rb",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L1",
+      "id": "examples_counter_memory_rb",
+      "community": 8,
+      "norm_label": "counter_memory.rb"
+    },
+    {
+      "label": "CounterController",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L6",
+      "id": "examples_counter_memory_countercontroller",
+      "community": 8,
+      "norm_label": "countercontroller"
+    },
+    {
+      "label": ".show()",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L11",
+      "id": "examples_counter_memory_countercontroller_show",
+      "community": 8,
+      "norm_label": ".show()"
+    },
+    {
+      "label": ".increment()",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L16",
+      "id": "examples_counter_memory_countercontroller_increment",
+      "community": 8,
+      "norm_label": ".increment()"
+    },
+    {
+      "label": ".decrement()",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L21",
+      "id": "examples_counter_memory_countercontroller_decrement",
+      "community": 8,
+      "norm_label": ".decrement()"
+    },
+    {
+      "label": ".render_count()",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L28",
+      "id": "examples_counter_memory_countercontroller_render_count",
+      "community": 8,
+      "norm_label": ".render_count()"
+    },
+    {
+      "label": "CounterApp",
+      "file_type": "code",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L33",
+      "id": "examples_counter_memory_counterapp",
+      "community": 8,
+      "norm_label": "counterapp"
+    },
+    {
+      "label": "charming.rb",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": "L1",
+      "id": "lib_charming_rb",
+      "community": 11,
+      "norm_label": "charming.rb"
+    },
+    {
+      "label": "Error",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": "L12",
+      "id": "lib_charming_error",
+      "community": 11,
+      "norm_label": "error"
+    },
+    {
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": "L14",
+      "id": "lib_charming_run",
+      "community": 11,
+      "norm_label": "run()"
+    },
+    {
+      "label": "router.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L1",
+      "id": "lib_charming_router_rb",
+      "community": 6,
+      "norm_label": "router.rb"
+    },
+    {
+      "label": "Router",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L4",
+      "id": "charming_router_router",
+      "community": 6,
+      "norm_label": "router"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L7",
+      "id": "charming_router_router_initialize",
+      "community": 6,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".draw()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L11",
+      "id": "charming_router_router_draw",
+      "community": 2,
+      "norm_label": ".draw()"
+    },
+    {
+      "label": ".root()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L15",
+      "id": "charming_router_router_root",
+      "community": 6,
+      "norm_label": ".root()"
+    },
+    {
+      "label": ".screen()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L19",
+      "id": "charming_router_router_screen",
+      "community": 6,
+      "norm_label": ".screen()"
+    },
+    {
+      "label": ".resolve()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L28",
+      "id": "charming_router_router_resolve",
+      "community": 6,
+      "norm_label": ".resolve()"
+    },
+    {
+      "label": ".camelize()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L34",
+      "id": "charming_router_router_camelize",
+      "community": 6,
+      "norm_label": ".camelize()"
+    },
+    {
+      "label": ".constantize()",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L38",
+      "id": "charming_router_router_constantize",
+      "community": 6,
+      "norm_label": ".constantize()"
+    },
+    {
+      "label": "application.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L1",
+      "id": "lib_charming_application_rb",
+      "community": 2,
+      "norm_label": "application.rb"
+    },
+    {
+      "label": "Application",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L4",
+      "id": "charming_application_application",
+      "community": 2,
+      "norm_label": "application"
+    },
+    {
+      "label": "routes()",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L6",
+      "id": "charming_application_routes",
+      "community": 2,
+      "norm_label": "routes()"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L15",
+      "id": "charming_application_application_initialize",
+      "community": 2,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".routes()",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L19",
+      "id": "charming_application_application_routes",
+      "community": 2,
+      "norm_label": ".routes()"
+    },
+    {
+      "label": "response.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/response.rb",
+      "source_location": "L1",
+      "id": "lib_charming_response_rb",
+      "community": 10,
+      "norm_label": "response.rb"
+    },
+    {
+      "label": "render()",
+      "file_type": "code",
+      "source_file": "lib/charming/response.rb",
+      "source_location": "L5",
+      "id": "charming_response_render",
+      "community": 10,
+      "norm_label": "render()"
+    },
+    {
+      "label": "quit()",
+      "file_type": "code",
+      "source_file": "lib/charming/response.rb",
+      "source_location": "L9",
+      "id": "charming_response_quit",
+      "community": 10,
+      "norm_label": "quit()"
+    },
+    {
+      "label": "runtime.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L1",
+      "id": "lib_charming_runtime_rb",
+      "community": 7,
+      "norm_label": "runtime.rb"
+    },
+    {
+      "label": "Runtime",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L8",
+      "id": "charming_runtime_runtime",
+      "community": 7,
+      "norm_label": "runtime"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L9",
+      "id": "charming_runtime_runtime_initialize",
+      "community": 6,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L16",
+      "id": "charming_runtime_runtime_run",
+      "community": 7,
+      "norm_label": ".run()"
+    },
+    {
+      "label": ".dispatch()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L35",
+      "id": "charming_runtime_runtime_dispatch",
+      "community": 7,
+      "norm_label": ".dispatch()"
+    },
+    {
+      "label": ".dispatch_key()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L39",
+      "id": "charming_runtime_runtime_dispatch_key",
+      "community": 7,
+      "norm_label": ".dispatch_key()"
+    },
+    {
+      "label": ".render()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L43",
+      "id": "charming_runtime_runtime_render",
+      "community": 7,
+      "norm_label": ".render()"
+    },
+    {
+      "label": ".setup_terminal()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L47",
+      "id": "charming_runtime_runtime_setup_terminal",
+      "community": 7,
+      "norm_label": ".setup_terminal()"
+    },
+    {
+      "label": ".restore_terminal()",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L52",
+      "id": "charming_runtime_runtime_restore_terminal",
+      "community": 7,
+      "norm_label": ".restore_terminal()"
+    },
+    {
+      "label": "events.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/events.rb",
+      "source_location": "L1",
+      "id": "lib_charming_events_rb",
+      "community": 14,
+      "norm_label": "events.rb"
+    },
+    {
+      "label": "initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/events.rb",
+      "source_location": "L5",
+      "id": "charming_events_initialize",
+      "community": 14,
+      "norm_label": "initialize()"
+    },
+    {
+      "label": "version.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/version.rb",
+      "source_location": "L1",
+      "id": "lib_charming_version_rb",
+      "community": 19,
+      "norm_label": "version.rb"
+    },
+    {
+      "label": "controller.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L1",
+      "id": "lib_charming_controller_rb",
+      "community": 3,
+      "norm_label": "controller.rb"
+    },
+    {
+      "label": "Controller",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L4",
+      "id": "charming_controller_controller",
+      "community": 3,
+      "norm_label": "controller"
+    },
+    {
+      "label": "key()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L6",
+      "id": "charming_controller_key",
+      "community": 3,
+      "norm_label": "key()"
+    },
+    {
+      "label": "key_bindings()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L10",
+      "id": "charming_controller_key_bindings",
+      "community": 3,
+      "norm_label": "key_bindings()"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L17",
+      "id": "charming_controller_controller_initialize",
+      "community": 3,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".dispatch()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L24",
+      "id": "charming_controller_controller_dispatch",
+      "community": 3,
+      "norm_label": ".dispatch()"
+    },
+    {
+      "label": ".dispatch_key()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L29",
+      "id": "charming_controller_controller_dispatch_key",
+      "community": 3,
+      "norm_label": ".dispatch_key()"
+    },
+    {
+      "label": ".render()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L34",
+      "id": "charming_controller_controller_render",
+      "community": 3,
+      "norm_label": ".render()"
+    },
+    {
+      "label": ".quit()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L38",
+      "id": "charming_controller_controller_quit",
+      "community": 3,
+      "norm_label": ".quit()"
+    },
+    {
+      "label": ".session()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L42",
+      "id": "charming_controller_controller_session",
+      "community": 3,
+      "norm_label": ".session()"
+    },
+    {
+      "label": ".key_name()",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L50",
+      "id": "charming_controller_controller_key_name",
+      "community": 3,
+      "norm_label": ".key_name()"
+    },
+    {
+      "label": "full_repaint.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L1",
+      "id": "lib_charming_internal_renderer_full_repaint_rb",
+      "community": 1,
+      "norm_label": "full_repaint.rb"
+    },
+    {
+      "label": "FullRepaint",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L6",
+      "id": "renderer_full_repaint_fullrepaint",
+      "community": 1,
+      "norm_label": "fullrepaint"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L7",
+      "id": "renderer_full_repaint_fullrepaint_initialize",
+      "community": 1,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".render()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L11",
+      "id": "renderer_full_repaint_fullrepaint_render",
+      "community": 1,
+      "norm_label": ".render()"
+    },
+    {
+      "label": "memory_backend.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L1",
+      "id": "lib_charming_internal_terminal_memory_backend_rb",
+      "community": 1,
+      "norm_label": "memory_backend.rb"
+    },
+    {
+      "label": "MemoryBackend",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L6",
+      "id": "terminal_memory_backend_memorybackend",
+      "community": 1,
+      "norm_label": "memorybackend"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L9",
+      "id": "terminal_memory_backend_memorybackend_initialize",
+      "community": 1,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".read_event()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L17",
+      "id": "terminal_memory_backend_memorybackend_read_event",
+      "community": 1,
+      "norm_label": ".read_event()"
+    },
+    {
+      "label": ".write_frame()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L22",
+      "id": "terminal_memory_backend_memorybackend_write_frame",
+      "community": 1,
+      "norm_label": ".write_frame()"
+    },
+    {
+      "label": ".enter_alt_screen()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L27",
+      "id": "terminal_memory_backend_memorybackend_enter_alt_screen",
+      "community": 1,
+      "norm_label": ".enter_alt_screen()"
+    },
+    {
+      "label": ".leave_alt_screen()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L31",
+      "id": "terminal_memory_backend_memorybackend_leave_alt_screen",
+      "community": 1,
+      "norm_label": ".leave_alt_screen()"
+    },
+    {
+      "label": ".show_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L35",
+      "id": "terminal_memory_backend_memorybackend_show_cursor",
+      "community": 1,
+      "norm_label": ".show_cursor()"
+    },
+    {
+      "label": ".hide_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L39",
+      "id": "terminal_memory_backend_memorybackend_hide_cursor",
+      "community": 1,
+      "norm_label": ".hide_cursor()"
+    },
+    {
+      "label": ".clear()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L43",
+      "id": "terminal_memory_backend_memorybackend_clear",
+      "community": 1,
+      "norm_label": ".clear()"
+    },
+    {
+      "label": ".move_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L47",
+      "id": "terminal_memory_backend_memorybackend_move_cursor",
+      "community": 1,
+      "norm_label": ".move_cursor()"
+    },
+    {
+      "label": ".size()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L51",
+      "id": "terminal_memory_backend_memorybackend_size",
+      "community": 1,
+      "norm_label": ".size()"
+    },
+    {
+      "label": "tty_backend.rb",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L1",
+      "id": "lib_charming_internal_terminal_tty_backend_rb",
+      "community": 0,
+      "norm_label": "tty_backend.rb"
+    },
+    {
+      "label": "TTYBackend",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L10",
+      "id": "terminal_tty_backend_ttybackend",
+      "community": 0,
+      "norm_label": "ttybackend"
+    },
+    {
+      "label": ".initialize()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L15",
+      "id": "terminal_tty_backend_ttybackend_initialize",
+      "community": 0,
+      "norm_label": ".initialize()"
+    },
+    {
+      "label": ".read_event()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L22",
+      "id": "terminal_tty_backend_ttybackend_read_event",
+      "community": 0,
+      "norm_label": ".read_event()"
+    },
+    {
+      "label": ".write_frame()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L28",
+      "id": "terminal_tty_backend_ttybackend_write_frame",
+      "community": 0,
+      "norm_label": ".write_frame()"
+    },
+    {
+      "label": ".enter_alt_screen()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L33",
+      "id": "terminal_tty_backend_ttybackend_enter_alt_screen",
+      "community": 0,
+      "norm_label": ".enter_alt_screen()"
+    },
+    {
+      "label": ".leave_alt_screen()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L37",
+      "id": "terminal_tty_backend_ttybackend_leave_alt_screen",
+      "community": 0,
+      "norm_label": ".leave_alt_screen()"
+    },
+    {
+      "label": ".show_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L41",
+      "id": "terminal_tty_backend_ttybackend_show_cursor",
+      "community": 0,
+      "norm_label": ".show_cursor()"
+    },
+    {
+      "label": ".hide_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L45",
+      "id": "terminal_tty_backend_ttybackend_hide_cursor",
+      "community": 0,
+      "norm_label": ".hide_cursor()"
+    },
+    {
+      "label": ".clear()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L49",
+      "id": "terminal_tty_backend_ttybackend_clear",
+      "community": 0,
+      "norm_label": ".clear()"
+    },
+    {
+      "label": ".move_cursor()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L53",
+      "id": "terminal_tty_backend_ttybackend_move_cursor",
+      "community": 0,
+      "norm_label": ".move_cursor()"
+    },
+    {
+      "label": ".size()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L57",
+      "id": "terminal_tty_backend_ttybackend_size",
+      "community": 0,
+      "norm_label": ".size()"
+    },
+    {
+      "label": ".normalize_keypress()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L63",
+      "id": "terminal_tty_backend_ttybackend_normalize_keypress",
+      "community": 0,
+      "norm_label": ".normalize_keypress()"
+    },
+    {
+      "label": ".character_event()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L72",
+      "id": "terminal_tty_backend_ttybackend_character_event",
+      "community": 0,
+      "norm_label": ".character_event()"
+    },
+    {
+      "label": ".named_event()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L76",
+      "id": "terminal_tty_backend_ttybackend_named_event",
+      "community": 0,
+      "norm_label": ".named_event()"
+    },
+    {
+      "label": ".normalize_key_name()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L87",
+      "id": "terminal_tty_backend_ttybackend_normalize_key_name",
+      "community": 0,
+      "norm_label": ".normalize_key_name()"
+    },
+    {
+      "label": ".ctrl_key()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L95",
+      "id": "terminal_tty_backend_ttybackend_ctrl_key",
+      "community": 0,
+      "norm_label": ".ctrl_key()"
+    },
+    {
+      "label": ".printable_char()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L100",
+      "id": "terminal_tty_backend_ttybackend_printable_char",
+      "community": 0,
+      "norm_label": ".printable_char()"
+    },
+    {
+      "label": ".write_control()",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L108",
+      "id": "terminal_tty_backend_ttybackend_write_control",
+      "community": 0,
+      "norm_label": ".write_control()"
+    },
+    {
+      "label": "Charming module",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "charming_charming",
+      "community": 2,
+      "norm_label": "charming module"
+    },
+    {
+      "label": "Charming::Router::Route (Data class)",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "charming_router_route",
+      "community": 6,
+      "norm_label": "charming::router::route (data class)"
+    },
+    {
+      "label": "Charming::Response",
+      "file_type": "code",
+      "source_file": "lib/charming/response.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "charming_response_response",
+      "community": 3,
+      "norm_label": "charming::response"
+    },
+    {
+      "label": "Charming::KeyEvent",
+      "file_type": "code",
+      "source_file": "lib/charming/events.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "charming_events_keyevent",
+      "community": 8,
+      "norm_label": "charming::keyevent"
+    },
+    {
+      "label": "Charming::ResizeEvent",
+      "file_type": "code",
+      "source_file": "lib/charming/events.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "charming_events_resizeevent",
+      "community": 20,
+      "norm_label": "charming::resizeevent"
+    },
+    {
+      "label": "Terminal Backend Interface",
+      "file_type": "concept",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_terminal_backend_interface",
+      "community": 1,
+      "norm_label": "terminal backend interface"
+    },
+    {
+      "label": "MVC-like routing/controller pattern",
+      "file_type": "concept",
+      "source_file": "lib/charming/router.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_mvc_pattern",
+      "community": 3,
+      "norm_label": "mvc-like routing/controller pattern"
+    },
+    {
+      "label": "Terminal event loop with dispatch",
+      "file_type": "concept",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_event_loop",
+      "community": 7,
+      "norm_label": "terminal event loop with dispatch"
+    },
+    {
+      "label": "RSpec Configuration",
+      "file_type": "code",
+      "source_file": "spec/spec_helper.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_spec_helper_rspec_config",
+      "community": 5,
+      "norm_label": "rspec configuration"
+    },
+    {
+      "label": "Runtime Spec",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_runtime_spec_runtime_test",
+      "community": 4,
+      "norm_label": "runtime spec"
+    },
+    {
+      "label": "RuntimeSpecController (counter fixture)",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_runtime_spec_runtime_spec_controller",
+      "community": 5,
+      "norm_label": "runtimespeccontroller (counter fixture)"
+    },
+    {
+      "label": "RuntimeSpecApp (test application)",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_runtime_spec_runtime_spec_app",
+      "community": 5,
+      "norm_label": "runtimespecapp (test application)"
+    },
+    {
+      "label": "Failing Controller Restoration Test",
+      "file_type": "code",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_runtime_spec_failing_controller_test",
+      "community": 4,
+      "norm_label": "failing controller restoration test"
+    },
+    {
+      "label": "Charming Version Spec",
+      "file_type": "code",
+      "source_file": "spec/charming_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_charming_spec_version_test",
+      "community": 5,
+      "norm_label": "charming version spec"
+    },
+    {
+      "label": "Router Spec",
+      "file_type": "code",
+      "source_file": "spec/router_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_router_spec_router_test",
+      "community": 5,
+      "norm_label": "router spec"
+    },
+    {
+      "label": "Controller Spec",
+      "file_type": "code",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "spec_controller_spec_controller_test",
+      "community": 5,
+      "norm_label": "controller spec"
+    },
+    {
+      "label": "FullRepaint Renderer Spec",
+      "file_type": "code",
+      "source_file": "spec/internal/renderer/full_repaint_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "renderer_full_repaint_spec_full_repaint_test",
+      "community": 4,
+      "norm_label": "fullrepaint renderer spec"
+    },
+    {
+      "label": "TTYBackend Spec",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "terminal_tty_backend_spec_tty_backend_test",
+      "community": 4,
+      "norm_label": "ttybackend spec"
+    },
+    {
+      "label": "TTYBackendSpecReader stub",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "terminal_tty_backend_spec_reader_stub",
+      "community": 4,
+      "norm_label": "ttybackendspecreader stub"
+    },
+    {
+      "label": "TTYBackendSpecCursor stub",
+      "file_type": "code",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "terminal_tty_backend_spec_cursor_stub",
+      "community": 4,
+      "norm_label": "ttybackendspeccursor stub"
+    },
+    {
+      "label": "bin/setup script",
+      "file_type": "code",
+      "source_file": "bin/setup",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "bin_setup_setup",
+      "community": 9,
+      "norm_label": "bin/setup script"
+    },
+    {
+      "label": "bin/console IRB launcher",
+      "file_type": "code",
+      "source_file": "bin/console",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "bin_console_console",
+      "community": 9,
+      "norm_label": "bin/console irb launcher"
+    },
+    {
+      "label": "Charming Project Overview",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_charming_overview",
+      "community": 5,
+      "norm_label": "charming project overview"
+    },
+    {
+      "label": "CounterApp README example",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_counter_app_example",
+      "community": 5,
+      "norm_label": "counterapp readme example"
+    },
+    {
+      "label": "Rails-inspired Terminal UI Framework",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_rails_inspired_tui",
+      "community": 5,
+      "norm_label": "rails-inspired terminal ui framework"
+    },
+    {
+      "label": "Explicit TTY and In-Memory Backends",
+      "file_type": "rationale",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_dual_backend_architecture",
+      "community": 4,
+      "norm_label": "explicit tty and in-memory backends"
+    },
+    {
+      "label": "RuboCop Style Configuration",
+      "file_type": "document",
+      "source_file": ".rubocop.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "rubocop_yml_rubocop_config",
+      "community": 9,
+      "norm_label": "rubocop style configuration"
+    },
+    {
+      "label": "MIT License",
+      "file_type": "document",
+      "source_file": "LICENSE.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "license_mit_license",
+      "community": 21,
+      "norm_label": "mit license"
+    },
+    {
+      "label": "GitHub Actions Ruby CI Workflow",
+      "file_type": "document",
+      "source_file": ".github/workflows/main.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "workflows_main_ci_workflow",
+      "community": 9,
+      "norm_label": "github actions ruby ci workflow"
+    },
+    {
+      "label": "Charming::Runtime (production class)",
+      "file_type": "code",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "lib_charming_runtime",
+      "community": 4,
+      "norm_label": "charming::runtime (production class)"
+    },
+    {
+      "label": "Charming::Controller (production class)",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "lib_charming_controller",
+      "community": 5,
+      "norm_label": "charming::controller (production class)"
+    },
+    {
+      "label": "Charming::Application (production class)",
+      "file_type": "code",
+      "source_file": "lib/charming/application.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "lib_charming_application",
+      "community": 5,
+      "norm_label": "charming::application (production class)"
+    },
+    {
+      "label": "Charming::Router (production class)",
+      "file_type": "code",
+      "source_file": "lib/charming/router.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "lib_charming_router",
+      "community": 5,
+      "norm_label": "charming::router (production class)"
+    },
+    {
+      "label": "Charming::KeyEvent (production class)",
+      "file_type": "code",
+      "source_file": "lib/charming/key_event.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "lib_charming_key_event",
+      "community": 4,
+      "norm_label": "charming::keyevent (production class)"
+    },
+    {
+      "label": "Charming::Internal::Terminal::MemoryBackend",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "terminal_memory_backend_memory_backend",
+      "community": 4,
+      "norm_label": "charming::internal::terminal::memorybackend"
+    },
+    {
+      "label": "Charming::Internal::Terminal::TTYBackend",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "terminal_tty_backend_tty_backend",
+      "community": 4,
+      "norm_label": "charming::internal::terminal::ttybackend"
+    },
+    {
+      "label": "Charming::Internal::Renderer::FullRepaint",
+      "file_type": "code",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "renderer_full_repaint_full_repaint",
+      "community": 4,
+      "norm_label": "charming::internal::renderer::fullrepaint"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "spec_runtime_spec_rb",
+      "target": "spec_runtime_spec_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "spec_runtime_spec_rb",
+      "target": "spec_runtime_spec_increment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "spec_controller_spec_rb",
+      "target": "spec_controller_spec_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/controller_spec.rb",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "spec_controller_spec_rb",
+      "target": "spec_controller_spec_increment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_read_keypress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_hide",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_clear_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "spec_internal_terminal_tty_backend_spec_rb",
+      "target": "terminal_tty_backend_spec_move_to",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_read_event",
+      "target": "terminal_tty_backend_spec_read_keypress"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_hide_cursor",
+      "target": "terminal_tty_backend_spec_hide"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_clear",
+      "target": "terminal_tty_backend_spec_clear_screen"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_move_cursor",
+      "target": "terminal_tty_backend_spec_move_to"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "examples_counter_rb",
+      "target": "examples_counter_countercontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "examples_counter_rb",
+      "target": "examples_counter_counterapp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "examples_counter_countercontroller_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "examples_counter_countercontroller_increment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "examples_counter_countercontroller_decrement",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter.rb",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "examples_counter_countercontroller_render_count",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter.rb",
+      "source_location": "class CounterController < Charming::Controller",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "charming_controller_controller"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter.rb",
+      "source_location": "Charming.run(CounterApp.new)",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "charming_charming"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "examples/counter.rb",
+      "source_location": "Same controller pattern, different rendering body",
+      "weight": 1.0,
+      "source": "examples_counter_countercontroller",
+      "target": "examples_counter_memory_countercontroller"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter.rb",
+      "source_location": "class CounterApp < Charming::Application",
+      "weight": 1.0,
+      "source": "examples_counter_counterapp",
+      "target": "charming_application_application"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "examples_counter_memory_rb",
+      "target": "examples_counter_memory_countercontroller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "examples_counter_memory_rb",
+      "target": "examples_counter_memory_counterapp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "examples_counter_memory_countercontroller",
+      "target": "examples_counter_memory_countercontroller_show",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "examples_counter_memory_countercontroller",
+      "target": "examples_counter_memory_countercontroller_increment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "examples_counter_memory_countercontroller",
+      "target": "examples_counter_memory_countercontroller_decrement",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "examples_counter_memory_countercontroller",
+      "target": "examples_counter_memory_countercontroller_render_count",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "class CounterController < Charming::Controller",
+      "weight": 1.0,
+      "source": "examples_counter_memory_countercontroller",
+      "target": "charming_controller_controller"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "class CounterApp < Charming::Application",
+      "weight": 1.0,
+      "source": "examples_counter_memory_counterapp",
+      "target": "charming_application_application"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "Charming::Runtime.new(...).run",
+      "weight": 1.0,
+      "source": "examples_counter_memory_counterapp",
+      "target": "charming_runtime_runtime"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "Charming::Internal::Terminal::MemoryBackend.new(...)",
+      "weight": 1.0,
+      "source": "examples_counter_memory_counterapp",
+      "target": "terminal_memory_backend_memorybackend"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/counter_memory.rb",
+      "source_location": "Charming::KeyEvent.new(key: :up) for scripted events",
+      "weight": 1.0,
+      "source": "examples_counter_memory_counterapp",
+      "target": "charming_events_keyevent"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming.rb",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "lib_charming_rb",
+      "target": "lib_charming_error",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming.rb",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "lib_charming_rb",
+      "target": "lib_charming_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "lib_charming_router_rb",
+      "target": "charming_router_router",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_draw",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_resolve",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_camelize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_router_constantize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "application.routes.resolve('/')",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_router_router"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/application.rb",
+      "source_location": "Application.routes -> Router.new",
+      "weight": 1.0,
+      "source": "charming_application_application",
+      "target": "charming_router_router"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/router.rb",
+      "source_location": "Router#screen creates Route",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "charming_router_route"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "lib/charming/router.rb",
+      "source_location": "Maps path to controller#action",
+      "weight": 1.0,
+      "source": "charming_router_router",
+      "target": "concept_mvc_pattern"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "charming_application_routes",
+      "target": "charming_router_router_draw"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "charming_router_router_root",
+      "target": "charming_router_router_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "charming_router_router_screen",
+      "target": "charming_router_router_constantize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/router.rb",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "charming_router_router_screen",
+      "target": "charming_router_router_camelize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime_initialize",
+      "target": "charming_router_router_resolve"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "lib_charming_application_rb",
+      "target": "charming_application_application",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "lib_charming_application_rb",
+      "target": "charming_application_routes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "charming_application_application",
+      "target": "charming_application_application_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/application.rb",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "charming_application_application",
+      "target": "charming_application_application_routes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "Runtime#initialize -> @application.routes.resolve",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_application_application"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "Controller#session delegates to application.session",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_application_application"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/response.rb",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "lib_charming_response_rb",
+      "target": "charming_response_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/response.rb",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "lib_charming_response_rb",
+      "target": "charming_response_quit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "lib_charming_runtime_rb",
+      "target": "charming_runtime_runtime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_run",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_dispatch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_dispatch_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_setup_terminal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_runtime_runtime_restore_terminal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming.rb",
+      "source_location": "Charming.run -> Runtime.new",
+      "weight": 1.0,
+      "source": "charming_charming",
+      "target": "charming_runtime_runtime"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "Runtime#initialize default backend",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "terminal_tty_backend_ttybackend"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "Runtime#initialize default renderer",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "renderer_full_repaint_fullrepaint"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "Runtime#dispatch -> controller_class.new.dispatch",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_controller_controller"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "response.quit?, response.body",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "charming_response_response"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "loop { backend.read_event; dispatch_key; render }",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime",
+      "target": "concept_event_loop"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime_run",
+      "target": "charming_runtime_runtime_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime_run",
+      "target": "charming_runtime_runtime_dispatch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/runtime.rb",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "charming_runtime_runtime_run",
+      "target": "charming_runtime_runtime_dispatch_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/events.rb",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "lib_charming_events_rb",
+      "target": "charming_events_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "lib_charming_controller_rb",
+      "target": "charming_controller_controller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "lib_charming_controller_rb",
+      "target": "charming_controller_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "lib_charming_controller_rb",
+      "target": "charming_controller_key_bindings",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_dispatch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_dispatch_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_quit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_session",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_controller_controller_key_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/response.rb",
+      "source_location": "Controller stores @response = Response.render/quit",
+      "weight": 1.0,
+      "source": "charming_response_response",
+      "target": "charming_controller_controller"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "Controller#key_name uses event.key (KeyEvent)",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "charming_events_keyevent"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "Controller dispatches actions and renders responses",
+      "weight": 1.0,
+      "source": "charming_controller_controller",
+      "target": "concept_mvc_pattern"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "charming_controller_controller_key_name",
+      "target": "charming_controller_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "charming_controller_controller_dispatch_key",
+      "target": "charming_controller_key_bindings",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "charming_controller_controller_dispatch",
+      "target": "charming_controller_controller_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "charming_controller_controller_dispatch_key",
+      "target": "charming_controller_controller_dispatch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "lib_charming_internal_renderer_full_repaint_rb",
+      "target": "renderer_full_repaint_fullrepaint",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "renderer_full_repaint_fullrepaint",
+      "target": "renderer_full_repaint_fullrepaint_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "renderer_full_repaint_fullrepaint",
+      "target": "renderer_full_repaint_fullrepaint_render",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "@output.clear, move_cursor, write_frame",
+      "weight": 1.0,
+      "source": "renderer_full_repaint_fullrepaint",
+      "target": "terminal_tty_backend_ttybackend"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/internal/renderer/full_repaint.rb",
+      "source_location": "@output.clear/move_cursor/write_frame target backend abstraction",
+      "weight": 1.0,
+      "source": "renderer_full_repaint_fullrepaint",
+      "target": "terminal_memory_backend_memorybackend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "lib_charming_internal_terminal_memory_backend_rb",
+      "target": "terminal_memory_backend_memorybackend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_read_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_write_frame",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_enter_alt_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_leave_alt_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_show_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_hide_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_clear",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_move_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_memory_backend_memorybackend_size",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "Same method surface as TTYBackend",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "concept_terminal_backend_interface"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/internal/terminal/memory_backend.rb",
+      "source_location": "Both implement read_event/write_frame/clear/move_cursor/etc.",
+      "weight": 1.0,
+      "source": "terminal_memory_backend_memorybackend",
+      "target": "terminal_tty_backend_ttybackend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "lib_charming_internal_terminal_tty_backend_rb",
+      "target": "terminal_tty_backend_ttybackend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_initialize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_read_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_write_frame",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_enter_alt_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_leave_alt_screen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_show_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_hide_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_clear",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_move_cursor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_size",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_normalize_keypress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_character_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_named_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_normalize_key_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_ctrl_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_printable_char",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "TTYBackend constructs KeyEvent instances",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "charming_events_keyevent"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "Defines backend method contract (read_event, write_frame, etc.)",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend",
+      "target": "concept_terminal_backend_interface"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_read_event",
+      "target": "terminal_tty_backend_ttybackend_normalize_keypress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_enter_alt_screen",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_leave_alt_screen",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_show_cursor",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_hide_cursor",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_clear",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_move_cursor",
+      "target": "terminal_tty_backend_ttybackend_write_control",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_normalize_keypress",
+      "target": "terminal_tty_backend_ttybackend_character_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_normalize_keypress",
+      "target": "terminal_tty_backend_ttybackend_named_event",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_named_event",
+      "target": "terminal_tty_backend_ttybackend_normalize_key_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_normalize_key_name",
+      "target": "terminal_tty_backend_ttybackend_ctrl_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "terminal_tty_backend_ttybackend_normalize_key_name",
+      "target": "terminal_tty_backend_ttybackend_printable_char",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/spec_helper.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_spec_helper_rspec_config",
+      "target": "spec_charming_spec_version_test"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/spec_helper.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_spec_helper_rspec_config",
+      "target": "spec_runtime_spec_runtime_test"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/spec_helper.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_spec_helper_rspec_config",
+      "target": "spec_router_spec_router_test"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/spec_helper.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_spec_helper_rspec_config",
+      "target": "spec_controller_spec_controller_test"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_test",
+      "target": "lib_charming_runtime"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_test",
+      "target": "terminal_memory_backend_memory_backend"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_test",
+      "target": "lib_charming_key_event"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_spec_controller",
+      "target": "lib_charming_controller"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_spec_controller",
+      "target": "readme_counter_app_example"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_runtime_spec_app",
+      "target": "lib_charming_application"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_failing_controller_test",
+      "target": "lib_charming_runtime"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/runtime_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_runtime_spec_failing_controller_test",
+      "target": "terminal_memory_backend_memory_backend"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "spec/charming_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_charming_spec_version_test",
+      "target": "readme_charming_overview"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/router_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_router_spec_router_test",
+      "target": "lib_charming_router"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/router_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_router_spec_router_test",
+      "target": "lib_charming_controller"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/controller_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_controller_spec_controller_test",
+      "target": "lib_charming_controller"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/controller_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_controller_spec_controller_test",
+      "target": "lib_charming_application"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/controller_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "spec_controller_spec_controller_test",
+      "target": "lib_charming_key_event"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/renderer/full_repaint_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "renderer_full_repaint_spec_full_repaint_test",
+      "target": "renderer_full_repaint_full_repaint"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/renderer/full_repaint_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "renderer_full_repaint_spec_full_repaint_test",
+      "target": "terminal_memory_backend_memory_backend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "terminal_tty_backend_spec_tty_backend_test",
+      "target": "terminal_tty_backend_tty_backend"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "terminal_tty_backend_spec_tty_backend_test",
+      "target": "lib_charming_key_event"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "terminal_tty_backend_spec_tty_backend_test",
+      "target": "terminal_tty_backend_spec_reader_stub"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "terminal_tty_backend_spec_tty_backend_test",
+      "target": "terminal_tty_backend_spec_cursor_stub"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "bin/setup",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "bin_setup_setup",
+      "target": "bin_console_console"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".github/workflows/main.yml",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "workflows_main_ci_workflow",
+      "target": "bin_setup_setup"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_charming_overview",
+      "target": "readme_rails_inspired_tui"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_dual_backend_architecture",
+      "target": "terminal_tty_backend_tty_backend"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_dual_backend_architecture",
+      "target": "terminal_memory_backend_memory_backend"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": ".rubocop.yml",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "rubocop_yml_rubocop_config",
+      "target": "workflows_main_ci_workflow"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "request_dispatch_flow",
+      "label": "Request dispatch flow: Runtime resolves Route, instantiates Controller, returns Response",
+      "nodes": [
+        "charming_runtime_runtime",
+        "charming_router_router",
+        "charming_controller_controller",
+        "charming_response_response"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/runtime.rb"
+    },
+    {
+      "id": "render_pipeline",
+      "label": "Render pipeline: Controller produces Response body, Runtime hands to FullRepaint which writes via Backend",
+      "nodes": [
+        "charming_controller_controller",
+        "charming_response_response",
+        "renderer_full_repaint_fullrepaint",
+        "terminal_tty_backend_ttybackend"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "lib/charming/runtime.rb"
+    },
+    {
+      "id": "backend_abstraction",
+      "label": "Backend abstraction with TTY and Memory implementations consumed by Renderer",
+      "nodes": [
+        "concept_terminal_backend_interface",
+        "terminal_tty_backend_ttybackend",
+        "terminal_memory_backend_memorybackend",
+        "renderer_full_repaint_fullrepaint"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "lib/charming/internal/terminal/tty_backend.rb"
+    },
+    {
+      "id": "runtime_end_to_end_flow",
+      "label": "Runtime End-to-End Counter Flow",
+      "nodes": [
+        "spec_runtime_spec_runtime_spec_controller",
+        "spec_runtime_spec_runtime_spec_app",
+        "terminal_memory_backend_memory_backend",
+        "lib_charming_runtime"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "spec/runtime_spec.rb"
+    },
+    {
+      "source": null,
+      "id": "tty_backend_key_normalization",
+      "label": "TTY Key Event Normalization Pattern",
+      "nodes": [
+        "terminal_tty_backend_spec_reader_stub",
+        "terminal_tty_backend_tty_backend",
+        "lib_charming_key_event"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "spec/internal/terminal/tty_backend_spec.rb"
+    },
+    {
+      "id": "ci_quality_pipeline",
+      "label": "CI Quality and Style Pipeline",
+      "nodes": [
+        "workflows_main_ci_workflow",
+        "rubocop_yml_rubocop_config",
+        "bin_setup_setup"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".github/workflows/main.yml"
+    }
+  ],
+  "built_at_commit": "c700d783107316147481a163641c2bc6166b26d1"
+}
