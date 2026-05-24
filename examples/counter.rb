@@ -26,14 +26,35 @@ class CounterController < Charming::Controller
   private
 
   def render_count
-    render <<~VIEW
-      Charming counter
+    render Charming::UI.style
+                       .foreground(:bright_cyan)
+                       .border(:rounded)
+                       .padding(1, 3)
+                       .width(44)
+                       .render(counter_layout)
+  end
 
-      Count: #{session[:count]}
+  def counter_layout
+    Charming::UI.join_vertical(
+      title,
+      count,
+      help,
+      gap: 1
+    )
+  end
 
-      Press up/down to change the count.
-      Press q to quit.
-    VIEW
+  def title
+    Charming::UI.style.bold.align(:center).width(44).render("Charming counter")
+  end
+
+  def count
+    Charming::UI.style.foreground(:bright_white).bold.render("Count: #{session[:count]}")
+  end
+
+  def help
+    Charming::UI.style.foreground(:bright_black).render(
+      "Press up/down to change the count.\nPress q to quit."
+    )
   end
 end
 

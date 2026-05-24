@@ -49,4 +49,45 @@ RSpec.describe Charming::Controller do
 
     expect(response).to be_quit
   end
+
+  describe ".key_bindings inheritance" do
+    it "inherits a copy of parent bindings, not a live reference" do
+      parent = Class.new(described_class) { key "up", :foo }
+      child = Class.new(parent) { key "down", :bar }
+
+      expect(child.key_bindings).to eq("up" => :foo, "down" => :bar)
+      expect(parent.key_bindings).to eq("up" => :foo)
+      expect(child.key_bindings).not_to equal(parent.key_bindings)
+    end
+
+    it "isolates siblings so adding a key to one does not leak to the other" do
+      parent   = Class.new(described_class) { key "shared", :shared_action }
+      sibling1 = Class.new(parent)          { key "one", :one_action }
+      sibling2 = Class.new(parent)          { key "two", :two_action }
+
+      expect(sibling1.key_bindings).to eq("shared" => :shared_action, "one" => :one_action)
+      expect(sibling2.key_bindings).to eq("shared" => :shared_action, "two" => :two_action)
+    end
+
+    it "cumulates bindings across a three-level chain" do
+      grandparent = Class.new(described_class) { key "g", :grand }
+      parent      = Class.new(grandparent)     { key "p", :parent }
+      child       = Class.new(parent)          { key "c", :child }
+
+      expect(child.key_bindings).to eq("g" => :grand, "p" => :parent, "c" => :child)
+    end
+
+    # Snapshot is taken on first read of #key_bindings (which the `key` class
+    # macro triggers). Additions to the parent after that point are not visible
+    # in the child — locking in this Rails-style inheritance contract.
+    it "does not propagate parent additions made after the child has snapshotted" do
+      parent = Class.new(described_class) { key "up", :foo }
+      child  = Class.new(parent)          { key "down", :bar }
+
+      parent.key "q", :quit
+
+      expect(parent.key_bindings).to include("q" => :quit)
+      expect(child.key_bindings).not_to have_key("q")
+    end
+  end
 end

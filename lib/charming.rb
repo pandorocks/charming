@@ -7,6 +7,7 @@ require_relative "charming/events"
 require_relative "charming/response"
 require_relative "charming/router"
 require_relative "charming/runtime"
+require_relative "charming/ui"
 
 module Charming
   class Error < StandardError; end
