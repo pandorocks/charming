@@ -32,7 +32,6 @@ module Charming
         ["app/controllers/%<name>s/home_controller.rb", :controller],
         ["app/views/%<name>s/home_view.rb", :view],
         ["app/components/%<name>s/app_frame_component.rb", :component],
-        ["app/components/%<name>s/command_palette_modal_component.rb", :command_palette_modal_component],
         ["spec/spec_helper.rb", :spec_helper]
       ].freeze
 

@@ -20,7 +20,7 @@ RSpec.describe Charming::CLI do
       expect(File).to exist(File.join(app_root, "app/models/weather_tui/application_model.rb"))
       expect(File).to exist(File.join(app_root, "app/models/weather_tui/home_model.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/weather_tui/home_controller.rb"))
-      expect(File).to exist(File.join(app_root, "app/components/weather_tui/command_palette_modal_component.rb"))
+      expect(File).not_to exist(File.join(app_root, "app/components/weather_tui/command_palette_modal_component.rb"))
 
       require File.join(app_root, "lib/weather_tui")
       route = WeatherTui::Application.routes.resolve("/")

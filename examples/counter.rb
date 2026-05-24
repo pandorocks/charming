@@ -139,7 +139,12 @@ class CounterView < Charming::View
   end
 
   def palette_modal
-    render_component CommandPaletteModalComponent.new(palette: palette)
+    render_component Charming::Components::Modal.new(
+      content: palette,
+      title: "Command palette",
+      help: "Type to filter. Enter selects. Escape closes.",
+      width: 52
+    )
   end
 end
 
@@ -166,26 +171,6 @@ class CounterCardComponent < Charming::Component
   def help
     text "Press up/down to change the count.\nPress p for commands, q to quit.",
          style: style.foreground(:bright_black)
-  end
-end
-
-class CommandPaletteModalComponent < Charming::Component
-  def render
-    box(column(title, help, render_component(palette), gap: 1), style: modal_style)
-  end
-
-  private
-
-  def title
-    text "Command palette", style: style.bold.align(:center).width(44)
-  end
-
-  def help
-    text "Type to filter. Enter selects. Escape closes.", style: style.foreground(:bright_black)
-  end
-
-  def modal_style
-    style.foreground(:bright_magenta).border(:double).padding(1, 3).width(52)
   end
 end
 

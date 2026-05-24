@@ -87,7 +87,12 @@ end
     end
 
     def command_palette_modal
-      render_component CommandPaletteModalComponent.new(palette: palette)
+      render_component Charming::Components::Modal.new(
+        content: palette,
+        title: "Command palette",
+        help: "Type to filter. Enter selects. Escape closes.",
+        width: 52
+      )
     end)
         end
       end
