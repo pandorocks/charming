@@ -126,6 +126,55 @@ RSpec.describe Charming::Controller do
     expect(first).not_to equal(second)
   end
 
+  it "opens a command palette from registered commands" do
+    controller = Class.new(described_class) do
+      command "Quit", :quit
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    response = controller.new(application: application).open_command_palette
+
+    expect(response.body).to include("Quit")
+  end
+
+  it "dispatches keys to an open command palette before normal bindings" do
+    controller = Class.new(described_class) do
+      key "q", :ignored
+      command "Quit", :quit
+
+      def show
+        render command_palette&.render.to_s
+      end
+
+      def ignored
+        render "ignored"
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+
+    expect(response).to be_quit
+  end
+
+  it "re-renders the default action after palette input" do
+    controller = Class.new(described_class) do
+      command "Open", :open
+      def show = render(command_palette.render)
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(
+      application: application,
+      event: Charming::KeyEvent.new(key: "o", char: "o")
+    ).dispatch_key
+
+    expect(response.body).to include("o|")
+  end
+
   describe ".key_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { key "up", :foo }

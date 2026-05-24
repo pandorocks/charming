@@ -20,104 +20,44 @@ class CounterModel < Charming::ApplicationModel
 end
 
 class CounterController < Charming::Controller
-  ("a".."z").each { |letter| key letter, :handle_key }
-  ("0".."9").each { |number| key number, :handle_key }
-  %w[space backspace delete up down home end enter escape].each do |name|
-    key name, :handle_key
-  end
+  key "up", :increment
+  key "down", :decrement
+  key "p", :open_command_palette
+  key "q", :quit
+
+  command "Increment counter", :increment
+  command "Decrement counter", :decrement
+  command "Reset counter", :reset
+  command "Close palette", :close_command_palette
+  command "Quit app", :quit
 
   def show
     render_counter
   end
 
-  def handle_key
-    if palette_open?
-      handle_palette_key
-    else
-      handle_counter_key
-    end
-
-    render_counter unless response
-  end
-
-  private
-
-  def handle_counter_key
-    case event.key.to_sym
-    when :up then increment
-    when :down then decrement
-    when :p then open_palette
-    when :q then quit
-    end
-  end
-
-  def handle_palette_key
-    result = palette.handle_key(event)
-    close_palette if result == :cancelled
-    apply_command(result.last) if selected?(result)
-  end
-
   def increment
     counter.increment
+    render_counter
   end
 
   def decrement
     counter.decrement
+    render_counter
   end
 
   def reset
     counter.reset
+    render_counter
+  end
+
+  private
+
+  def render_counter
+    render CounterView.new(counter: counter, palette: command_palette)
   end
 
   def counter
     model(:counter, CounterModel)
-  end
-
-  def open_palette
-    session[:palette] = build_palette
-  end
-
-  def close_palette
-    session.delete(:palette)
-  end
-
-  def palette_open?
-    session.key?(:palette)
-  end
-
-  def palette
-    session[:palette]
-  end
-
-  def build_palette
-    Charming::Components::CommandPalette.new(commands: commands, height: 6)
-  end
-
-  def commands
-    [
-      command("Increment counter", :increment),
-      command("Decrement counter", :decrement),
-      command("Reset counter", :reset),
-      command("Close palette", :close_palette),
-      command("Quit app", :quit)
-    ]
-  end
-
-  def command(label, value)
-    Charming::Components::CommandPalette::Command.new(label: label, value: value)
-  end
-
-  def selected?(result)
-    result.is_a?(Array) && result.first == :selected
-  end
-
-  def apply_command(command)
-    send(command.value)
-    close_palette unless command.value == :quit
-  end
-
-  def render_counter
-    render CounterView.new(counter: counter, palette: palette)
   end
 end
 
