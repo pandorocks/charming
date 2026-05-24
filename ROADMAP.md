@@ -66,6 +66,17 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - `Charming::Components::TextInput`
   - mutable value and cursor state
   - key handling for insertion, cursor movement, backspace, and delete
+- Added selectable list component foundation:
+  - `Charming::Components::List`
+  - selection movement and enter activation
+  - custom item labels
+  - fixed-height viewport rendering
+- Added namespaced route resolution for generated apps.
+- Added Rails-like generators:
+  - `charming new <name>`
+  - `charming generate controller <name> [actions]`
+  - `charming generate view <name>`
+  - `charming generate component <name>`
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone
@@ -86,7 +97,6 @@ end
 
 ## Next
 
-- Add `Charming::Components::List` for selectable, scrollable command results.
 - Decide how parent controllers/views route events to focused components.
 - Compose `TextInput` and `List` into `CommandPaletteComponent`.
 - Add specs for command palette filtering, selection, and command activation.
@@ -108,12 +118,7 @@ end
   - vertical alignment
   - min/max width and height
   - viewport-aware layout
-- Add app file conventions:
-  - `app/controllers`
-  - `app/views`
-  - `app/components`
-  - `config/routes.rb`
-- Add generators later if the conventions stabilize.
+- Harden app file conventions and generated app loading.
 - Expand examples and documentation.
 
 ## Verification

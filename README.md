@@ -47,6 +47,38 @@ Then execute:
 bundle install
 ```
 
+## Generating a TUI App
+
+Create a runnable, gem-style Charming app with:
+
+```bash
+charming new weather_tui
+cd weather_tui
+bundle install
+bundle exec weather_tui
+```
+
+Generated apps are namespaced and use Rails-like folders:
+
+```text
+app/controllers/weather_tui
+app/views/weather_tui
+app/components/weather_tui
+config/routes.rb
+exe/weather_tui
+lib/weather_tui.rb
+```
+
+Inside an app, generate more code with:
+
+```bash
+charming generate controller forecast index
+charming generate view forecast
+charming generate component forecast_card
+```
+
+The `generate` command can also be shortened to `g`.
+
 ## Development
 
 After checking out the repo, run:
