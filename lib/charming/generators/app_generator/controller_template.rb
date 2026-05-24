@@ -120,7 +120,11 @@ end
     end
 
     def render_home
-      render HomeView.new(palette: palette)
+      render HomeView.new(home: home, palette: palette)
+    end
+
+    def home
+      model(:home, HomeModel)
     end)
         end
       end

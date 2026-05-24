@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
                      "conventions to Ruby terminal user interfaces."
   spec.homepage = "https://github.com/lbp/charming"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 4.0.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |file| File.basename(file) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "activemodel", "~> 8.1", ">= 8.1.2"
   spec.add_dependency "tty-cursor", "~> 0.7"
   spec.add_dependency "tty-reader", "~> 0.9"
   spec.add_dependency "tty-screen", "~> 0.8"

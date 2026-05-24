@@ -17,6 +17,8 @@ RSpec.describe Charming::CLI do
       expect(File.executable?(File.join(app_root, "exe/weather_tui"))).to be(true)
       expect(File).to exist(File.join(app_root, "weather_tui.gemspec"))
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
+      expect(File).to exist(File.join(app_root, "app/models/weather_tui/application_model.rb"))
+      expect(File).to exist(File.join(app_root, "app/models/weather_tui/home_model.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/weather_tui/home_controller.rb"))
       expect(File).to exist(File.join(app_root, "app/components/weather_tui/command_palette_modal_component.rb"))
 
@@ -24,6 +26,7 @@ RSpec.describe Charming::CLI do
       route = WeatherTui::Application.routes.resolve("/")
       expect(route.controller_class).to eq(WeatherTui::HomeController)
       expect(route.action).to eq(:show)
+      expect(WeatherTui::HomeModel.new.title).to eq("WeatherTui")
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [

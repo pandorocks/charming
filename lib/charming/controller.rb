@@ -43,6 +43,11 @@ module Charming
       application.session
     end
 
+    def model(name, model_class, **attributes)
+      session[:models] ||= {}
+      session[:models][name.to_sym] ||= model_class.new(**attributes)
+    end
+
     private
 
     attr_reader :response

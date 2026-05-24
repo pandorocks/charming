@@ -3,6 +3,22 @@
 require "bundler/setup"
 require "charming"
 
+class CounterModel < Charming::ApplicationModel
+  attribute :count, :integer, default: 0
+
+  def increment
+    self.count += 1
+  end
+
+  def decrement
+    self.count -= 1
+  end
+
+  def reset
+    self.count = 0
+  end
+end
+
 class CounterController < Charming::Controller
   ("a".."z").each { |letter| key letter, :handle_key }
   ("0".."9").each { |number| key number, :handle_key }
@@ -11,7 +27,6 @@ class CounterController < Charming::Controller
   end
 
   def show
-    session[:count] ||= 0
     render_counter
   end
 
@@ -43,15 +58,19 @@ class CounterController < Charming::Controller
   end
 
   def increment
-    session[:count] += 1
+    counter.increment
   end
 
   def decrement
-    session[:count] -= 1
+    counter.decrement
   end
 
   def reset
-    session[:count] = 0
+    counter.reset
+  end
+
+  def counter
+    model(:counter, CounterModel)
   end
 
   def open_palette
@@ -98,7 +117,7 @@ class CounterController < Charming::Controller
   end
 
   def render_counter
-    render CounterView.new(count: session[:count], palette: palette)
+    render CounterView.new(counter: counter, palette: palette)
   end
 end
 
@@ -116,7 +135,7 @@ class CounterView < Charming::View
   private
 
   def counter_card
-    render_component CounterCardComponent.new(count: count, dimmed: !!palette)
+    render_component CounterCardComponent.new(counter: counter, dimmed: !!palette)
   end
 
   def palette_modal
@@ -141,7 +160,7 @@ class CounterCardComponent < Charming::Component
   end
 
   def count_line
-    text "Count: #{count}", style: style.foreground(:bright_white).bold
+    text "Count: #{counter.count}", style: style.foreground(:bright_white).bold
   end
 
   def help

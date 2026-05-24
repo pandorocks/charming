@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "charming/version"
+require_relative "charming/application_model"
 require_relative "charming/application"
 require_relative "charming/controller"
 require_relative "charming/events"

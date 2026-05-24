@@ -23,6 +23,7 @@ require "charming"
 require_relative "#{name.snake_name}/version"
 require_relative "#{name.snake_name}/application"
 
+#{requires_for("models")}
 #{requires_for("components")}
 #{requires_for("views")}
 #{requires_for("controllers")}
@@ -82,7 +83,7 @@ end
     private
 
     def app_frame
-      render_component AppFrameComponent.new(title: "#{name.class_name}", dimmed: !!palette)
+      render_component AppFrameComponent.new(title: home.title, dimmed: !!palette)
     end
 
     def command_palette_modal

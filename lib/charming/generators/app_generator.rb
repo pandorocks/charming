@@ -5,6 +5,7 @@ require_relative "name"
 require_relative "app_generator/basic_templates"
 require_relative "app_generator/component_templates"
 require_relative "app_generator/controller_template"
+require_relative "app_generator/model_templates"
 require_relative "app_generator/view_template"
 
 module Charming
@@ -13,6 +14,7 @@ module Charming
       include AppGeneratorTemplates::BasicTemplates
       include AppGeneratorTemplates::ComponentTemplates
       include AppGeneratorTemplates::ControllerTemplate
+      include AppGeneratorTemplates::ModelTemplates
       include AppGeneratorTemplates::ViewTemplate
 
       FILE_TEMPLATES = [
@@ -25,6 +27,8 @@ module Charming
         ["lib/%<name>s/application.rb", :application],
         ["lib/%<name>s/version.rb", :version],
         ["config/routes.rb", :routes],
+        ["app/models/%<name>s/application_model.rb", :application_model],
+        ["app/models/%<name>s/home_model.rb", :home_model],
         ["app/controllers/%<name>s/home_controller.rb", :controller],
         ["app/views/%<name>s/home_view.rb", :view],
         ["app/components/%<name>s/app_frame_component.rb", :component],

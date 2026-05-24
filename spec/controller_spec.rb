@@ -98,6 +98,34 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("from-to_s-fallback")
   end
 
+  it "stores models in application session across controller instances" do
+    counter_model = Class.new(Charming::ApplicationModel) do
+      attribute :count, :integer, default: 0
+    end
+    controller = Class.new(described_class) do
+      define_method(:show) do
+        counter = model(:counter, counter_model)
+        counter.count += 1
+        render "Count: #{counter.count}"
+      end
+    end
+
+    controller.new(application: application).dispatch(:show)
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Count: 2")
+  end
+
+  it "stores separate model instances for separate keys" do
+    model_class = Class.new(Charming::ApplicationModel)
+    controller = described_class.new(application: application)
+
+    first = controller.model(:first, model_class)
+    second = controller.model(:second, model_class)
+
+    expect(first).not_to equal(second)
+  end
+
   describe ".key_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { key "up", :foo }
