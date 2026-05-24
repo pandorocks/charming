@@ -17,12 +17,29 @@ module Charming
           @output = output
           @reader = reader || TTY::Reader.new(input: input, output: output)
           @cursor = cursor
+          @resized = false
+          @previous_winch_handler = nil
         end
 
         def read_event(timeout: nil)
+          return resize_event if resized?
+
           normalize_keypress(@reader.read_keypress(echo: false, raw: true, nonblock: timeout))
         rescue Errno::EAGAIN, IO::WaitReadable
           nil
+        end
+
+        def install_resize_handler
+          @previous_winch_handler = Signal.trap("WINCH") { @resized = true }
+        end
+
+        def restore_resize_handler
+          Signal.trap("WINCH", @previous_winch_handler) if @previous_winch_handler
+          @previous_winch_handler = nil
+        end
+
+        def notify_resize
+          @resized = true
         end
 
         def write_frame(frame)
@@ -59,6 +76,16 @@ module Charming
         end
 
         private
+
+        def resized?
+          @resized
+        end
+
+        def resize_event
+          @resized = false
+          width, height = size
+          ResizeEvent.new(width: width, height: height)
+        end
 
         def normalize_keypress(keypress)
           return nil unless keypress

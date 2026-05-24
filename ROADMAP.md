@@ -82,6 +82,12 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - command filtering and selection
   - command palette controller helpers
   - command palette included in generated apps by default
+- Added viewport and screen-aware rendering foundations:
+  - `Charming::Components::Viewport`
+  - `Charming::Screen`
+  - backend screen dimensions passed through runtime to controllers and views
+  - runtime re-rendering for `Charming::ResizeEvent`
+  - TTY resize signal integration through `SIGWINCH`
 - Added namespaced route resolution for generated apps.
 - Added Rails-like generators:
   - `charming new <name>`
@@ -96,23 +102,23 @@ The public API should feel familiar to Rails developers: applications, routes, c
 
 ## Current Milestone
 
-Build toward robust larger-screen layout primitives.
+Build toward robust larger-screen interaction primitives.
 
-The command palette is now in place. The next milestone is a reusable viewport and screen-aware layout foundation for larger TUIs: logs, lists, sidebars, long forms, help panes, and command output.
+The command palette, viewport, and screen-aware rendering foundations are now in place. The next milestone is interactive viewport behavior for larger TUIs: logs, lists, sidebars, long forms, help panes, and command output.
 
 Target direction:
 
 ```ruby
 viewport = Charming::Components::Viewport.new(content: body, height: 12, offset: scroll_offset)
+viewport.handle_key(event)
 render_component viewport
 ```
 
 ## Next
 
-- Add `Charming::Components::Viewport`.
-- Add clipping support for content taller or wider than a region.
-- Add specs for vertical scrolling, horizontal clipping, and ANSI-aware sizing.
-- Stop hardcoding `80x24` in examples and generated apps once screen dimensions are exposed cleanly.
+- Add optional key handling to `Charming::Components::Viewport`.
+- Add scroll commands for up/down, page up/down, home/end.
+- Add an example that demonstrates a scrollable panel.
 
 ## Later
 
@@ -120,7 +126,6 @@ render_component viewport
   - viewport
   - spinner
 - Add command/timer system.
-- Add resize event handling.
 - Harden runtime teardown for signals.
 - Improve renderer with diffing.
 - Expand layout features:

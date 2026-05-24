@@ -40,6 +40,16 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
         end
       end
     )
+
+    stub_const(
+      "TTYBackendSpecScreen",
+      Class.new do
+        def self.width = 120
+        def self.height = 40
+      end
+    )
+
+    stub_const("TTY::Screen", TTYBackendSpecScreen)
   end
 
   it "normalizes named keys from tty-reader" do
@@ -92,5 +102,17 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     backend.show_cursor
 
     expect(output.string).to eq("hideclearmove:0:0show")
+  end
+
+  it "returns a resize event after a resize notification" do
+    backend = described_class.new(
+      input: StringIO.new,
+      output: StringIO.new,
+      reader: TTYBackendSpecReader.new(keys: {})
+    )
+
+    backend.notify_resize
+
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::ResizeEvent.new(width: 120, height: 40))
   end
 end

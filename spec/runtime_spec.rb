@@ -69,6 +69,34 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["100x40"])
   end
 
+  it "re-renders the current route after resize events" do
+    screen_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "#{screen.width}x#{screen.height}"
+      end
+    end
+    stub_const("ResizeRuntimeSpecController", screen_controller)
+    screen_app = Class.new(Charming::Application) do
+      routes do
+        root "resize_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::ResizeEvent.new(width: 100, height: 40),
+        Charming::KeyEvent.new(key: :q)
+      ],
+      width: 80,
+      height: 24
+    )
+
+    described_class.new(screen_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(%w[80x24 100x40])
+  end
+
   it "restores terminal state when a controller raises" do
     failing_controller = Class.new(Charming::Controller) do
       def show
