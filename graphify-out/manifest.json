@@ -30,9 +30,9 @@
     "semantic_hash": "91b8f595bba4f5eff8db0369e5a66a1f"
   },
   "/Users/lbp/software/charming/spec/controller_spec.rb": {
-    "mtime": 1779627593.8911352,
-    "ast_hash": "7707650fda7ec048cb99de55c943cf9c",
-    "semantic_hash": "7707650fda7ec048cb99de55c943cf9c"
+    "mtime": 1779630029.647425,
+    "ast_hash": "b791c893a27bb055a0c749d19feb5c94",
+    "semantic_hash": "b791c893a27bb055a0c749d19feb5c94"
   },
   "/Users/lbp/software/charming/spec/internal/renderer/full_repaint_spec.rb": {
     "mtime": 1779627620.163377,
@@ -45,9 +45,9 @@
     "semantic_hash": "64a23e8dfc411c73258aa06244e1ecbb"
   },
   "/Users/lbp/software/charming/examples/counter.rb": {
-    "mtime": 1779627964.2797225,
-    "ast_hash": "7a586a7962b681c7b78d834779a466b3",
-    "semantic_hash": "7a586a7962b681c7b78d834779a466b3"
+    "mtime": 1779630022.276713,
+    "ast_hash": "e096a1f0edb52d2ce2178aca255a2a61",
+    "semantic_hash": "e096a1f0edb52d2ce2178aca255a2a61"
   },
   "/Users/lbp/software/charming/examples/counter_memory.rb": {
     "mtime": 1779627786.143177,
@@ -55,9 +55,9 @@
     "semantic_hash": "461c683e42294aad0188bea1751ab25f"
   },
   "/Users/lbp/software/charming/lib/charming.rb": {
-    "mtime": 1779627560.8004086,
-    "ast_hash": "6b4bfe68783804d400b9dd346d4ded92",
-    "semantic_hash": "6b4bfe68783804d400b9dd346d4ded92"
+    "mtime": 1779630092.494972,
+    "ast_hash": "488d12b586f1162b8166d7ad13faed3b",
+    "semantic_hash": "488d12b586f1162b8166d7ad13faed3b"
   },
   "/Users/lbp/software/charming/lib/charming/router.rb": {
     "mtime": 1779627620.1630795,
@@ -90,9 +90,9 @@
     "semantic_hash": "be05fc83059b963a4bd96d76cef4e456"
   },
   "/Users/lbp/software/charming/lib/charming/controller.rb": {
-    "mtime": 1779627560.8050563,
-    "ast_hash": "e000a1f0c5b851a891c838186d9b422e",
-    "semantic_hash": "e000a1f0c5b851a891c838186d9b422e"
+    "mtime": 1779629489.6202273,
+    "ast_hash": "5622aaa8b2b16ade2245f16dfbce9ea2",
+    "semantic_hash": "5622aaa8b2b16ade2245f16dfbce9ea2"
   },
   "/Users/lbp/software/charming/lib/charming/internal/renderer/full_repaint.rb": {
     "mtime": 1779627560.806361,
@@ -115,9 +115,9 @@
     "semantic_hash": "9988b606aa5bc4ea745b5621ee8b7b4e"
   },
   "/Users/lbp/software/charming/.rubocop.yml": {
-    "mtime": 1779628008.4119785,
-    "ast_hash": "a8c88d65e2e8680e8930d661e2258ee3",
-    "semantic_hash": "a8c88d65e2e8680e8930d661e2258ee3"
+    "mtime": 1779628538.0618882,
+    "ast_hash": "fe45552685f05af4c282c4d703b90bf0",
+    "semantic_hash": "fe45552685f05af4c282c4d703b90bf0"
   },
   "/Users/lbp/software/charming/LICENSE.txt": {
     "mtime": 1779627291.2922866,
@@ -128,5 +128,90 @@
     "mtime": 1779627291.2945895,
     "ast_hash": "3e3cdc743a1898bc423712cb705cab86",
     "semantic_hash": "3e3cdc743a1898bc423712cb705cab86"
+  },
+  "/Users/lbp/software/charming/spec/ui/style_spec.rb": {
+    "mtime": 1779628485.2873192,
+    "ast_hash": "158269f928a6b93f48e9404a22bfb57f",
+    "semantic_hash": "158269f928a6b93f48e9404a22bfb57f"
+  },
+  "/Users/lbp/software/charming/spec/ui/width_spec.rb": {
+    "mtime": 1779628485.287857,
+    "ast_hash": "c0cebf423f6bd8f3f069acc4dab059b8",
+    "semantic_hash": "c0cebf423f6bd8f3f069acc4dab059b8"
+  },
+  "/Users/lbp/software/charming/spec/ui/layout_spec.rb": {
+    "mtime": 1779628485.291191,
+    "ast_hash": "2cbc0668e9c9871922806da8479358d0",
+    "semantic_hash": "2cbc0668e9c9871922806da8479358d0"
+  },
+  "/Users/lbp/software/charming/lib/charming/view.rb": {
+    "mtime": 1779630022.2761216,
+    "ast_hash": "119138f4de33ddd9a3cd4287b8bb5c5d",
+    "semantic_hash": "119138f4de33ddd9a3cd4287b8bb5c5d"
+  },
+  "/Users/lbp/software/charming/lib/charming/ui.rb": {
+    "mtime": 1779628538.0622938,
+    "ast_hash": "bfd149df187d1f463caef6e3da433290",
+    "semantic_hash": "bfd149df187d1f463caef6e3da433290"
+  },
+  "/Users/lbp/software/charming/lib/charming/ui/border.rb": {
+    "mtime": 1779628595.3184464,
+    "ast_hash": "acbd2ccbad0f945383ddbd6551c65fff",
+    "semantic_hash": "acbd2ccbad0f945383ddbd6551c65fff"
+  },
+  "/Users/lbp/software/charming/lib/charming/ui/width.rb": {
+    "mtime": 1779628459.7017336,
+    "ast_hash": "8761b36c704f602481f1998198f9eb04",
+    "semantic_hash": "8761b36c704f602481f1998198f9eb04"
+  },
+  "/Users/lbp/software/charming/lib/charming/ui/style.rb": {
+    "mtime": 1779628538.0626788,
+    "ast_hash": "49f5b8be209cd182d99abc733a55805b",
+    "semantic_hash": "49f5b8be209cd182d99abc733a55805b"
+  },
+  "/Users/lbp/software/charming/ROADMAP.md": {
+    "mtime": 1779630022.2768922,
+    "ast_hash": "9b13067e4263a0ba6fc31333c087a2c5",
+    "semantic_hash": "9b13067e4263a0ba6fc31333c087a2c5"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_132121_verify_the_snapshot_semantics_of_controller_key_bi.md": {
+    "mtime": 1779628881.260724,
+    "ast_hash": "c5a86a1c20aee5286e9c33ee9be4465a",
+    "semantic_hash": "c5a86a1c20aee5286e9c33ee9be4465a"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_131802_where_does_counter_state_survive_between_keypresse.md": {
+    "mtime": 1779628682.7698388,
+    "ast_hash": "214d7850426bd1a04f81b73db86af6a5",
+    "semantic_hash": "214d7850426bd1a04f81b73db86af6a5"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_131520_why_does_runtime_bridge_six_communities_at_once.md": {
+    "mtime": 1779628520.4186826,
+    "ast_hash": "b7505a5ddca0c131d131dc79377377c7",
+    "semantic_hash": "b7505a5ddca0c131d131dc79377377c7"
+  },
+  "/Users/lbp/software/charming/spec/component_spec.rb": {
+    "mtime": 1779630043.568615,
+    "ast_hash": "5c31496c03f07bf5de3ff61a0edb33f5",
+    "semantic_hash": "5c31496c03f07bf5de3ff61a0edb33f5"
+  },
+  "/Users/lbp/software/charming/spec/view_spec.rb": {
+    "mtime": 1779630043.568953,
+    "ast_hash": "b8a1dab0aa764cc2c4ab9a92118d7e76",
+    "semantic_hash": "b8a1dab0aa764cc2c4ab9a92118d7e76"
+  },
+  "/Users/lbp/software/charming/lib/charming/component.rb": {
+    "mtime": 1779630022.2764883,
+    "ast_hash": "0da9f2c6df63a69183ba48a1ed23cf47",
+    "semantic_hash": "0da9f2c6df63a69183ba48a1ed23cf47"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_134229_why_is_style_the_highest_degree_god_node__32_edges.md": {
+    "mtime": 1779630149.4108086,
+    "ast_hash": "2df9a8c3a096c4d3a23e00edc894e8b1",
+    "semantic_hash": "2df9a8c3a096c4d3a23e00edc894e8b1"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_133851_why_does_view_have_higher_betweenness_centrality_t.md": {
+    "mtime": 1779629931.4917722,
+    "ast_hash": "3c6f8ffad5ca3d1ce159257f2cc58811",
+    "semantic_hash": "3c6f8ffad5ca3d1ce159257f2cc58811"
   }
 }
