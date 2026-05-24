@@ -63,4 +63,19 @@ RSpec.describe Charming::View do
 
     expect(view.new.render).to eq("A B\n\nC")
   end
+
+  it "renders components" do
+    component = Class.new(Charming::Component) do
+      def render
+        "Hello #{name}"
+      end
+    end
+    view = Class.new(described_class) do
+      define_method(:render) do
+        render_component component.new(name: "Ruby")
+      end
+    end
+
+    expect(view.new.render).to eq("Hello Ruby")
+  end
 end

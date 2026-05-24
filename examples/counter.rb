@@ -32,6 +32,12 @@ end
 
 class CounterView < Charming::View
   def render
+    render_component CounterCardComponent.new(count: count)
+  end
+end
+
+class CounterCardComponent < Charming::Component
+  def render
     box(column(title, count_line, help, gap: 1), style: card_style)
   end
 

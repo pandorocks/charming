@@ -59,38 +59,40 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - keyword assigns exposed as reader methods
   - view helpers for `style`, `text`, `box`, `row`, and `column`
   - controller rendering of view objects
+- Added component foundation:
+  - `Charming::Component`
+  - component rendering from views
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone
 
-Build the component layer on top of `Charming::View`.
+Design the first stateful component.
 
-The goal is to make reusable UI units use the same assigns, helpers, styling, and rendering conventions as views.
+The goal is to let reusable components handle both rendering and terminal input without leaking runtime internals into application code.
 
 Target direction:
 
 ```ruby
-class CounterComponent < Charming::Component
+class TextInputComponent < Charming::Component
+  key "left", :move_left
+  key "right", :move_right
+  key "backspace", :delete_before_cursor
+
   def render
-    box(style: :card) do
-      text title, style: :title
-      text body
-    end
+    # ...
   end
 end
 ```
 
 ## Next
 
-- Add `Charming::Component`.
-- Share view helper behavior between views and components.
-- Add component rendering from views.
-- Add a simple reusable component example.
-- Add specs for component assigns, rendering, and view integration.
+- Decide how stateful components receive key events.
+- Decide how parent controllers/views route events to focused components.
+- Add the first stateful component: `TextInputComponent`.
+- Add specs for component state, input handling, and rendering.
 
 ## Later
 
-- Add `Charming::Component`.
 - Add first reusable components:
   - text input
   - viewport

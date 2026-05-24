@@ -38,6 +38,10 @@ module Charming
       UI.join_vertical(*items, gap: gap)
     end
 
+    def render_component(component)
+      component.render.to_s
+    end
+
     def capture(&)
       previous_buffer = @output_buffer
       @output_buffer = []
