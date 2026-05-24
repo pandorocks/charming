@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Charming::Components::Viewport do
+  def key(name)
+    Charming::KeyEvent.new(key: name)
+  end
+
   it "renders content unchanged without dimensions" do
     viewport = described_class.new(content: "One\nTwo")
 
@@ -45,5 +49,63 @@ RSpec.describe Charming::Components::Viewport do
     viewport = described_class.new(content: component.new, width: 9)
 
     expect(viewport.render).to eq("Component")
+  end
+
+  it "scrolls down and up with keys" do
+    viewport = described_class.new(content: "One\nTwo\nThree", height: 2)
+
+    expect(viewport.handle_key(key(:down))).to eq(:handled)
+    expect(viewport.render).to eq("Two\nThree")
+
+    viewport.handle_key(key(:up))
+    expect(viewport.render).to eq("One\nTwo")
+  end
+
+  it "scrolls by pages" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2)
+
+    viewport.handle_key(key(:page_down))
+    expect(viewport.offset).to eq(2)
+
+    viewport.handle_key(key(:page_up))
+    expect(viewport.offset).to eq(0)
+  end
+
+  it "scrolls to home and end" do
+    viewport = described_class.new(content: "One\nTwo\nThree", width: 3, height: 1)
+
+    viewport.handle_key(key(:end))
+    expect(viewport.offset).to eq(2)
+    expect(viewport.column).to eq(2)
+
+    viewport.handle_key(key(:home))
+    expect(viewport.offset).to eq(0)
+    expect(viewport.column).to eq(0)
+  end
+
+  it "scrolls horizontally with left and right keys" do
+    viewport = described_class.new(content: "abcdef", width: 3)
+
+    viewport.handle_key(key(:right))
+    expect(viewport.render).to eq("bcd")
+
+    viewport.handle_key(key(:left))
+    expect(viewport.render).to eq("abc")
+  end
+
+  it "clamps scrolling at content boundaries" do
+    viewport = described_class.new(content: "One\nTwo", width: 3, height: 1)
+
+    3.times { viewport.handle_key(key(:down)) }
+    3.times { viewport.handle_key(key(:right)) }
+
+    expect(viewport.offset).to eq(1)
+    expect(viewport.column).to eq(0)
+  end
+
+  it "ignores unsupported keys" do
+    viewport = described_class.new(content: "One")
+
+    expect(viewport.handle_key(key(:enter))).to be_nil
   end
 end

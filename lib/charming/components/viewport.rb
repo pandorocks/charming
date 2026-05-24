@@ -8,6 +8,18 @@ module Charming
   module Components
     class Viewport < Component
       ANSI_PATTERN = /\e\[[0-9;]*m/
+      KEY_ACTIONS = {
+        up: :scroll_up,
+        down: :scroll_down,
+        page_up: :page_up,
+        page_down: :page_down,
+        home: :scroll_home,
+        end: :scroll_end,
+        left: :scroll_left,
+        right: :scroll_right
+      }.freeze
+
+      attr_reader :offset, :column
 
       def initialize(content:, width: nil, height: nil, offset: 0, column: 0)
         super()
@@ -16,15 +28,70 @@ module Charming
         @height = height
         @offset = offset
         @column = column
+        clamp_position
       end
 
       def render
         visible_lines.map { |line| render_line(line) }.join("\n")
       end
 
+      def handle_key(event)
+        key = event.respond_to?(:key) ? event.key : event
+        action = KEY_ACTIONS[key.to_sym]
+        return unless action
+
+        send(action)
+        :handled
+      end
+
       private
 
-      attr_reader :content, :width, :height, :offset, :column
+      attr_reader :content, :width, :height
+
+      def scroll_up
+        @offset -= 1
+        clamp_position
+      end
+
+      def scroll_down
+        @offset += 1
+        clamp_position
+      end
+
+      def page_up
+        @offset -= page_size
+        clamp_position
+      end
+
+      def page_down
+        @offset += page_size
+        clamp_position
+      end
+
+      def scroll_home
+        @offset = 0
+        @column = 0
+      end
+
+      def scroll_end
+        @offset = max_offset
+        @column = max_column
+      end
+
+      def scroll_left
+        @column -= 1
+        clamp_position
+      end
+
+      def scroll_right
+        @column += 1
+        clamp_position
+      end
+
+      def clamp_position
+        @offset = offset.clamp(0, max_offset)
+        @column = column.clamp(0, max_column)
+      end
 
       def visible_lines
         lines = content_lines.slice(offset, viewport_height) || []
@@ -85,6 +152,24 @@ module Charming
 
       def viewport_height
         height || content_lines.length
+      end
+
+      def page_size
+        [viewport_height, 1].max
+      end
+
+      def max_offset
+        [content_lines.length - viewport_height, 0].max
+      end
+
+      def max_column
+        return 0 unless width
+
+        [content_width - width, 0].max
+      end
+
+      def content_width
+        content_lines.map { |line| UI::Width.measure(line) }.max || 0
       end
 
       def ansi?(token)

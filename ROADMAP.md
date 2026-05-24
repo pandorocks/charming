@@ -88,6 +88,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - backend screen dimensions passed through runtime to controllers and views
   - runtime re-rendering for `Charming::ResizeEvent`
   - TTY resize signal integration through `SIGWINCH`
+  - viewport key handling for scrolling
 - Added namespaced route resolution for generated apps.
 - Added Rails-like generators:
   - `charming new <name>`
@@ -104,28 +105,26 @@ The public API should feel familiar to Rails developers: applications, routes, c
 
 Build toward robust larger-screen interaction primitives.
 
-The command palette, viewport, and screen-aware rendering foundations are now in place. The next milestone is interactive viewport behavior for larger TUIs: logs, lists, sidebars, long forms, help panes, and command output.
+The command palette, viewport, and screen-aware rendering foundations are now in place. The next milestone is proving larger-screen interaction patterns with a scrollable example and timer-driven components.
 
 Target direction:
 
 ```ruby
-viewport = Charming::Components::Viewport.new(content: body, height: 12, offset: scroll_offset)
-viewport.handle_key(event)
-render_component viewport
+class ActivityView < Charming::View
+  def render
+    render_component Charming::Components::Viewport.new(content: log, height: 12)
+  end
+end
 ```
 
 ## Next
 
-- Add optional key handling to `Charming::Components::Viewport`.
-- Add scroll commands for up/down, page up/down, home/end.
 - Add an example that demonstrates a scrollable panel.
+- Add a spinner component.
+- Add a command/timer system for animation and polling.
 
 ## Later
 
-- Add first reusable components:
-  - viewport
-  - spinner
-- Add command/timer system.
 - Harden runtime teardown for signals.
 - Improve renderer with diffing.
 - Expand layout features:
