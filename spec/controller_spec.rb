@@ -67,6 +67,37 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("Rendered from view")
   end
 
+  # Locks in the duck-typed dispatch at controller.rb:50 — `body.render` is
+  # invoked, not `body.to_s`. Without distinct return values a refactor to
+  # `body.to_s` would silently pass identical-output tests.
+  it "invokes #render on a renderable body rather than falling back to #to_s" do
+    renderable = Class.new do
+      def render = "from-render"
+      def to_s = "from-to_s"
+    end
+    controller = Class.new(described_class) do
+      define_method(:show) do
+        render renderable.new
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("from-render")
+  end
+
+  it "falls back to #to_s when the body does not respond to #render" do
+    non_renderable = Object.new
+    def non_renderable.to_s = "from-to_s-fallback"
+    controller = Class.new(described_class) do
+      define_method(:show) { render(non_renderable) }
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("from-to_s-fallback")
+  end
+
   describe ".key_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { key "up", :foo }
