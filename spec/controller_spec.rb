@@ -50,6 +50,23 @@ RSpec.describe Charming::Controller do
     expect(response).to be_quit
   end
 
+  it "renders view objects" do
+    view = Class.new(Charming::View) do
+      def render
+        "Rendered from view"
+      end
+    end
+    controller = Class.new(described_class) do
+      define_method(:show) do
+        render view.new
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Rendered from view")
+  end
+
   describe ".key_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { key "up", :foo }

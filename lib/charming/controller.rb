@@ -32,7 +32,7 @@ module Charming
     end
 
     def render(body = "")
-      @response = Response.render(body.to_s)
+      @response = Response.render(render_body(body))
     end
 
     def quit
@@ -46,6 +46,10 @@ module Charming
     private
 
     attr_reader :response
+
+    def render_body(body)
+      body.respond_to?(:render) ? body.render.to_s : body.to_s
+    end
 
     def key_name
       event.respond_to?(:key) ? event.key.to_s : event.to_s

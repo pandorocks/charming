@@ -54,30 +54,27 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - Unicode-aware display width
   - ANSI-aware width measurement
   - horizontal and vertical joins
+- Added Rails-like view foundation:
+  - `Charming::View`
+  - keyword assigns exposed as reader methods
+  - view helpers for `style`, `text`, `box`, `row`, and `column`
+  - controller rendering of view objects
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone
 
-Build the Rails-like view layer on top of `Charming::UI`.
+Build the component layer on top of `Charming::View`.
 
-The goal is to move rendering out of controllers so controllers handle actions/state and views handle presentation.
+The goal is to make reusable UI units use the same assigns, helpers, styling, and rendering conventions as views.
 
 Target direction:
 
 ```ruby
-class CounterController < Charming::Controller
-  def show
-    session[:count] ||= 0
-    render CounterView.new(count: session[:count])
-  end
-end
-
-class CounterView < Charming::View
+class CounterComponent < Charming::Component
   def render
     box(style: :card) do
-      text "Charming counter", style: :title
-      text "Count: #{count}", style: :count
-      text "Press q to quit", style: :muted
+      text title, style: :title
+      text body
     end
   end
 end
@@ -85,17 +82,11 @@ end
 
 ## Next
 
-- Add `Charming::View`.
-- Allow `Controller#render` to accept objects that respond to `render`.
-- Add keyword assigns to views.
-- Add basic view helpers:
-  - `text`
-  - `box`
-  - `row`
-  - `column`
-  - `style`
-- Update `examples/counter.rb` to use a view object.
-- Add specs for view rendering and controller/view integration.
+- Add `Charming::Component`.
+- Share view helper behavior between views and components.
+- Add component rendering from views.
+- Add a simple reusable component example.
+- Add specs for component assigns, rendering, and view integration.
 
 ## Later
 

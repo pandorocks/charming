@@ -10,51 +10,47 @@ class CounterController < Charming::Controller
 
   def show
     session[:count] ||= 0
-    render_count
+    render_counter
   end
 
   def increment
     session[:count] += 1
-    render_count
+    render_counter
   end
 
   def decrement
     session[:count] -= 1
-    render_count
+    render_counter
   end
 
   private
 
-  def render_count
-    render Charming::UI.style
-                       .foreground(:bright_cyan)
-                       .border(:rounded)
-                       .padding(1, 3)
-                       .width(44)
-                       .render(counter_layout)
+  def render_counter
+    render CounterView.new(count: session[:count])
+  end
+end
+
+class CounterView < Charming::View
+  def render
+    box(column(title, count_line, help, gap: 1), style: card_style)
   end
 
-  def counter_layout
-    Charming::UI.join_vertical(
-      title,
-      count,
-      help,
-      gap: 1
-    )
+  private
+
+  def card_style
+    style.foreground(:bright_cyan).border(:rounded).padding(1, 3).width(44)
   end
 
   def title
-    Charming::UI.style.bold.align(:center).width(44).render("Charming counter")
+    text "Charming counter", style: style.bold.align(:center).width(44)
   end
 
-  def count
-    Charming::UI.style.foreground(:bright_white).bold.render("Count: #{session[:count]}")
+  def count_line
+    text "Count: #{count}", style: style.foreground(:bright_white).bold
   end
 
   def help
-    Charming::UI.style.foreground(:bright_black).render(
-      "Press up/down to change the count.\nPress q to quit."
-    )
+    text "Press up/down to change the count.\nPress q to quit.", style: style.foreground(:bright_black)
   end
 end
 
