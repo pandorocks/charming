@@ -10,6 +10,8 @@ require_relative "charming/runtime"
 require_relative "charming/ui"
 require_relative "charming/view"
 require_relative "charming/component"
+require_relative "charming/components/command_palette"
+require_relative "charming/components/list"
 require_relative "charming/components/text_input"
 
 module Charming

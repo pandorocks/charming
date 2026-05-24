@@ -15,4 +15,14 @@ RSpec.describe Charming::UI do
   it "builds styles from the module helper" do
     expect(described_class.style.underline.render("Hi")).to eq("\e[4mHi\e[0m")
   end
+
+  it "centers a block inside a fixed area" do
+    expect(described_class.center("A", width: 3, height: 3)).to eq("   \n A \n   ")
+  end
+
+  it "overlays a block onto the center of another block" do
+    base = ".....\n.....\n....."
+
+    expect(described_class.overlay(base, "X")).to eq(".....\n  X  \n.....")
+  end
 end

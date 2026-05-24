@@ -89,7 +89,13 @@ module Charming
           return ctrl_key(name) if name.match?(CTRL_KEY_PATTERN)
           return { key: :tab, shift: true } if name == "back_tab"
 
-          { key: name.to_sym, char: printable_char(name) }
+          { key: normalized_key(name), char: printable_char(name) }
+        end
+
+        def normalized_key(name)
+          return :enter if name == "return"
+
+          name.to_sym
         end
 
         def ctrl_key(name)
@@ -102,6 +108,8 @@ module Charming
           when "space" then " "
           when "enter", "return" then "\n"
           when "tab" then "\t"
+          else
+            name if name.length == 1 && !name.match?(/[[:cntrl:]]/)
           end
         end
 

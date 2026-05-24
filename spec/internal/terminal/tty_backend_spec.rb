@@ -49,11 +49,25 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :up))
   end
 
+  it "normalizes return as enter" do
+    reader = TTYBackendSpecReader.new(keys: { "\r" => :return }, keypresses: ["\r"])
+    backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
+
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :enter, char: "\n"))
+  end
+
   it "normalizes printable characters" do
     reader = TTYBackendSpecReader.new(keys: {}, keypresses: ["q"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
     expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: "q", char: "q"))
+  end
+
+  it "preserves printable chars when tty-reader maps them as named keys" do
+    reader = TTYBackendSpecReader.new(keys: { "q" => "q" }, keypresses: ["q"])
+    backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
+
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :q, char: "q"))
   end
 
   it "normalizes control-modified keys" do
