@@ -1,0 +1,1290 @@
+{
+  "nodes": [
+    {
+      "id": "components_spinner_spinner",
+      "label": "Charming::Components::Spinner",
+      "file_type": "code",
+      "source_file": "lib/charming/components/spinner.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "generators_app_generator_appgenerator",
+      "label": "Charming::Generators::AppGenerator",
+      "file_type": "code",
+      "source_file": "lib/charming/generators/app_generator.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "generators_app_file_generator_appfilegenerator",
+      "label": "Charming::Generators::AppFileGenerator",
+      "file_type": "code",
+      "source_file": "lib/charming/generators/app_file_generator.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_generator_view_template",
+      "label": "AppGeneratorTemplates::ViewTemplate",
+      "file_type": "code",
+      "source_file": "lib/charming/generators/app_generator/view_template.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_generator_basic_templates",
+      "label": "AppGeneratorTemplates::BasicTemplates",
+      "file_type": "code",
+      "source_file": "lib/charming/generators/app_generator/basic_templates.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cli_spec_cli_spec",
+      "label": "Charming::CLI spec",
+      "file_type": "code",
+      "source_file": "spec/cli_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "components_spinner_spec",
+      "label": "Spinner spec",
+      "file_type": "code",
+      "source_file": "spec/components/spinner_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "examples_demo_app_spec",
+      "label": "demo_app example spec",
+      "file_type": "code",
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "context_md",
+      "label": "Context Handoff",
+      "file_type": "document",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_md",
+      "label": "Charming README",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "roadmap_md",
+      "label": "Charming Roadmap",
+      "file_type": "document",
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_rails_like_public_api",
+      "label": "Rails-like public API",
+      "file_type": "rationale",
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_backend_seam",
+      "label": "Terminal backend seam",
+      "file_type": "rationale",
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_command_palette",
+      "label": "Command palette pattern",
+      "file_type": "concept",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_application_model",
+      "label": "ApplicationModel (ActiveModel-backed)",
+      "file_type": "rationale",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_memory_backend_testing",
+      "label": "MemoryBackend testing seam",
+      "file_type": "rationale",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_timer_driven_spinner",
+      "label": "Timer-driven spinner pattern",
+      "file_type": "concept",
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_viewport_scrolling",
+      "label": "Viewport scrolling pattern",
+      "file_type": "concept",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_screen_dimensions",
+      "label": "Screen dimensions flow",
+      "file_type": "rationale",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_handle_key_returns",
+      "label": "handle_key return conventions",
+      "file_type": "concept",
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "concept_charming_generators",
+      "label": "Charming generators (new/generate)",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_readme",
+      "label": "DemoApp README",
+      "file_type": "document",
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_concept_command_palette",
+      "label": "Command palette and modal overlay",
+      "file_type": "concept",
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_concept_viewport_log",
+      "label": "Viewport-backed activity log",
+      "file_type": "concept",
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_concept_screen_aware_layout",
+      "label": "Screen-aware layout",
+      "file_type": "concept",
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_concept_timer_spinner",
+      "label": "Timer-driven spinner",
+      "file_type": "concept",
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "models_application_model",
+      "label": "DemoApp::ApplicationModel",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/models/application_model.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "models_home_model",
+      "label": "DemoApp::HomeModel",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/models/home_model.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "components_app_frame_component",
+      "label": "DemoApp::AppFrameComponent",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/components/app_frame_component.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "components_activity_log_content_component",
+      "label": "DemoApp::ActivityLogContentComponent",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/components/activity_log_content_component.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "controllers_home_controller",
+      "label": "DemoApp::HomeController",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "views_home_view",
+      "label": "DemoApp::HomeView",
+      "file_type": "code",
+      "source_file": "examples/demo_app/app/views/home_view.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "config_routes",
+      "label": "DemoApp routes",
+      "file_type": "code",
+      "source_file": "examples/demo_app/config/routes.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_spec_helper",
+      "label": "spec_helper",
+      "file_type": "code",
+      "source_file": "examples/demo_app/spec/spec_helper.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lib_demo_app",
+      "label": "DemoApp loader",
+      "file_type": "code",
+      "source_file": "examples/demo_app/lib/demo_app.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_application",
+      "label": "DemoApp::Application",
+      "file_type": "code",
+      "source_file": "examples/demo_app/lib/demo_app/application.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "demo_app_version",
+      "label": "DemoApp::VERSION",
+      "file_type": "code",
+      "source_file": "examples/demo_app/lib/demo_app/version.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "exe_demo_app",
+      "label": "exe/demo_app launcher",
+      "file_type": "code",
+      "source_file": "examples/demo_app/exe/demo_app",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_application_model",
+      "label": "Charming::ApplicationModel",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_component",
+      "label": "Charming::Component",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_controller",
+      "label": "Charming::Controller",
+      "file_type": "code",
+      "source_file": "lib/charming/controller.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_view",
+      "label": "Charming::View",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_application",
+      "label": "Charming::Application",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_components_viewport",
+      "label": "Charming::Components::Viewport",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_components_spinner",
+      "label": "Charming::Components::Spinner",
+      "file_type": "code",
+      "source_file": "lib/charming/components/spinner.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_components_modal",
+      "label": "Charming::Components::Modal",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_ui",
+      "label": "Charming::UI",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "charming_run",
+      "label": "Charming.run",
+      "file_type": "code",
+      "source_file": "lib/charming.rb",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "components_spinner_spec",
+      "target": "components_spinner_spinner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/components/spinner_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_spinner_spec",
+      "target": "components_spinner_spinner",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/components/spinner_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cli_spec_cli_spec",
+      "target": "generators_app_generator_appgenerator",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "spec/cli_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cli_spec_cli_spec",
+      "target": "generators_app_file_generator_appfilegenerator",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "spec/cli_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "generators_app_generator_appgenerator",
+      "target": "app_generator_basic_templates",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/generators/app_generator.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "generators_app_generator_appgenerator",
+      "target": "app_generator_view_template",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/generators/app_generator.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_generator_view_template",
+      "target": "concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/generators/app_generator/view_template.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_generator_basic_templates",
+      "target": "concept_charming_generators",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/generators/app_generator/basic_templates.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "components_spinner_spinner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "concept_timer_driven_spinner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "concept_viewport_scrolling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "concept_screen_dimensions",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "examples_demo_app_spec",
+      "target": "concept_memory_backend_testing",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/examples/demo_app_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cli_spec_cli_spec",
+      "target": "concept_memory_backend_testing",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "spec/cli_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cli_spec_cli_spec",
+      "target": "concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/cli_spec.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "readme_md",
+      "target": "concept_charming_generators",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "readme_md",
+      "target": "concept_application_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "readme_md",
+      "target": "concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "roadmap_md",
+      "target": "concept_rails_like_public_api",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "roadmap_md",
+      "target": "concept_backend_seam",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "roadmap_md",
+      "target": "concept_timer_driven_spinner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "roadmap_md",
+      "target": "concept_viewport_scrolling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ROADMAP.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_rails_like_public_api",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_application_model",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_screen_dimensions",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_memory_backend_testing",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_handle_key_returns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_spinner_spinner",
+      "target": "concept_timer_driven_spinner",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "lib/charming/components/spinner.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "generators_app_file_generator_appfilegenerator",
+      "target": "generators_app_generator_appgenerator",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "lib/charming/generators/app_file_generator.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "app_generator_view_template",
+      "target": "app_generator_basic_templates",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "lib/charming/generators/app_generator/view_template.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "readme_md",
+      "target": "roadmap_md",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "context_md",
+      "target": "roadmap_md",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CONTEXT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_readme",
+      "target": "demo_app_concept_command_palette",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_readme",
+      "target": "demo_app_concept_viewport_log",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_readme",
+      "target": "demo_app_concept_screen_aware_layout",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_readme",
+      "target": "demo_app_concept_timer_spinner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_concept_viewport_log",
+      "target": "charming_components_viewport",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_concept_command_palette",
+      "target": "charming_components_modal",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_concept_timer_spinner",
+      "target": "charming_components_spinner",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "examples/demo_app/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "models_application_model",
+      "target": "charming_application_model",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/models/application_model.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "models_home_model",
+      "target": "models_application_model",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/models/home_model.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_app_frame_component",
+      "target": "charming_component",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/components/app_frame_component.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_activity_log_content_component",
+      "target": "charming_component",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/components/activity_log_content_component.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "charming_controller",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "views_home_view",
+      "target": "charming_view",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/views/home_view.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "demo_app_application",
+      "target": "charming_application",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/lib/demo_app/application.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "models_home_model",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "views_home_view",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "components_activity_log_content_component",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "charming_components_viewport",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "controllers_home_controller",
+      "target": "charming_components_spinner",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "views_home_view",
+      "target": "components_app_frame_component",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/views/home_view.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "views_home_view",
+      "target": "charming_components_modal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/views/home_view.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "views_home_view",
+      "target": "charming_ui",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/views/home_view.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_activity_log_content_component",
+      "target": "models_home_model",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/components/activity_log_content_component.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_app_frame_component",
+      "target": "models_home_model",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/components/app_frame_component.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "config_routes",
+      "target": "controllers_home_controller",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/config/routes.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "config_routes",
+      "target": "demo_app_application",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/config/routes.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "lib_demo_app",
+      "target": "demo_app_application",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/lib/demo_app.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "lib_demo_app",
+      "target": "demo_app_version",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/lib/demo_app.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "lib_demo_app",
+      "target": "config_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/lib/demo_app.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "exe_demo_app",
+      "target": "charming_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/exe/demo_app",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "exe_demo_app",
+      "target": "demo_app_application",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/exe/demo_app",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_spec_helper",
+      "target": "lib_demo_app",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/spec/spec_helper.rb",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "components_app_frame_component",
+      "target": "components_activity_log_content_component",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "examples/demo_app/app/components/app_frame_component.rb",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "app_generator_template_modules",
+      "label": "AppGenerator template module composition",
+      "nodes": [
+        "generators_app_generator_appgenerator",
+        "app_generator_view_template",
+        "app_generator_basic_templates"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/charming/generators/app_generator.rb"
+    },
+    {
+      "id": "demo_app_feature_demonstration",
+      "label": "Demo app feature demonstration flow",
+      "nodes": [
+        "examples_demo_app_spec",
+        "concept_command_palette",
+        "concept_viewport_scrolling",
+        "concept_timer_driven_spinner"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "spec/examples/demo_app_spec.rb"
+    },
+    {
+      "id": "rails_like_architecture_docs",
+      "label": "Rails-like architecture documentation set",
+      "nodes": [
+        "readme_md",
+        "roadmap_md",
+        "context_md",
+        "concept_rails_like_public_api"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "ROADMAP.md"
+    },
+    {
+      "id": "demo_app_mvc_flow",
+      "label": "DemoApp MVC request flow",
+      "nodes": [
+        "controllers_home_controller",
+        "models_home_model",
+        "views_home_view"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/controllers/home_controller.rb"
+    },
+    {
+      "id": "demo_app_boot_flow",
+      "label": "DemoApp boot sequence",
+      "nodes": [
+        "exe_demo_app",
+        "lib_demo_app",
+        "demo_app_application",
+        "config_routes"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/exe/demo_app"
+    },
+    {
+      "id": "demo_app_view_composition",
+      "label": "Home view composition",
+      "nodes": [
+        "views_home_view",
+        "components_app_frame_component",
+        "components_activity_log_content_component",
+        "charming_components_modal"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "examples/demo_app/app/views/home_view.rb"
+    }
+  ],
+  "input_tokens": 48809,
+  "output_tokens": 12201
+}

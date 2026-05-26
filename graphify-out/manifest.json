@@ -15,9 +15,9 @@
     "semantic_hash": "26c88b649b55880a3037faf3ce664a84"
   },
   "/Users/lbp/software/charming/spec/runtime_spec.rb": {
-    "mtime": 1779627593.8913226,
-    "ast_hash": "47600317c0178d2cd3daf5ca5b2d502f",
-    "semantic_hash": "47600317c0178d2cd3daf5ca5b2d502f"
+    "mtime": 1779667581.26385,
+    "ast_hash": "33b0b835d155f5124bd263ba2c3d495a",
+    "semantic_hash": "33b0b835d155f5124bd263ba2c3d495a"
   },
   "/Users/lbp/software/charming/spec/charming_spec.rb": {
     "mtime": 1779627593.8904884,
@@ -25,14 +25,14 @@
     "semantic_hash": "c49fab17fb2d36a555edb6d21aad3628"
   },
   "/Users/lbp/software/charming/spec/router_spec.rb": {
-    "mtime": 1779627593.890907,
-    "ast_hash": "91b8f595bba4f5eff8db0369e5a66a1f",
-    "semantic_hash": "91b8f595bba4f5eff8db0369e5a66a1f"
+    "mtime": 1779631081.912068,
+    "ast_hash": "f42b561a92a34e5b76f1c20a8035c2c2",
+    "semantic_hash": "f42b561a92a34e5b76f1c20a8035c2c2"
   },
   "/Users/lbp/software/charming/spec/controller_spec.rb": {
-    "mtime": 1779630029.647425,
-    "ast_hash": "b791c893a27bb055a0c749d19feb5c94",
-    "semantic_hash": "b791c893a27bb055a0c749d19feb5c94"
+    "mtime": 1779667581.263443,
+    "ast_hash": "1dd5533504ccece2cd6b1fabd0a70b02",
+    "semantic_hash": "1dd5533504ccece2cd6b1fabd0a70b02"
   },
   "/Users/lbp/software/charming/spec/internal/renderer/full_repaint_spec.rb": {
     "mtime": 1779627620.163377,
@@ -40,34 +40,24 @@
     "semantic_hash": "bf3990bb5a3e4d7e1eda78ec1a4f3981"
   },
   "/Users/lbp/software/charming/spec/internal/terminal/tty_backend_spec.rb": {
-    "mtime": 1779628008.4127412,
-    "ast_hash": "64a23e8dfc411c73258aa06244e1ecbb",
-    "semantic_hash": "64a23e8dfc411c73258aa06244e1ecbb"
-  },
-  "/Users/lbp/software/charming/examples/counter.rb": {
-    "mtime": 1779630022.276713,
-    "ast_hash": "e096a1f0edb52d2ce2178aca255a2a61",
-    "semantic_hash": "e096a1f0edb52d2ce2178aca255a2a61"
-  },
-  "/Users/lbp/software/charming/examples/counter_memory.rb": {
-    "mtime": 1779627786.143177,
-    "ast_hash": "461c683e42294aad0188bea1751ab25f",
-    "semantic_hash": "461c683e42294aad0188bea1751ab25f"
+    "mtime": 1779666356.8026047,
+    "ast_hash": "26e470fab5ac48583436899c9f9335ae",
+    "semantic_hash": "26e470fab5ac48583436899c9f9335ae"
   },
   "/Users/lbp/software/charming/lib/charming.rb": {
-    "mtime": 1779630092.494972,
-    "ast_hash": "488d12b586f1162b8166d7ad13faed3b",
-    "semantic_hash": "488d12b586f1162b8166d7ad13faed3b"
+    "mtime": 1779667525.146777,
+    "ast_hash": "79333c563a5ad77ee03d5e868cc6e59d",
+    "semantic_hash": "79333c563a5ad77ee03d5e868cc6e59d"
   },
   "/Users/lbp/software/charming/lib/charming/router.rb": {
-    "mtime": 1779627620.1630795,
-    "ast_hash": "77ef4b3d5637921f9b2e8f531feaaad1",
-    "semantic_hash": "77ef4b3d5637921f9b2e8f531feaaad1"
+    "mtime": 1779630954.7101126,
+    "ast_hash": "267be1f9f0da829c9d7b749c4d8aa490",
+    "semantic_hash": "267be1f9f0da829c9d7b749c4d8aa490"
   },
   "/Users/lbp/software/charming/lib/charming/application.rb": {
-    "mtime": 1779627560.8047667,
-    "ast_hash": "d4b1717206bbf5b1bbeca8ae7e95ac81",
-    "semantic_hash": "d4b1717206bbf5b1bbeca8ae7e95ac81"
+    "mtime": 1779630954.7093396,
+    "ast_hash": "afb3057b8af8d1bc4ca25a52a666e0aa",
+    "semantic_hash": "afb3057b8af8d1bc4ca25a52a666e0aa"
   },
   "/Users/lbp/software/charming/lib/charming/response.rb": {
     "mtime": 1779627560.8053691,
@@ -75,14 +65,14 @@
     "semantic_hash": "560e09237c7e4b4aa938b2be9df10c7d"
   },
   "/Users/lbp/software/charming/lib/charming/runtime.rb": {
-    "mtime": 1779627964.278315,
-    "ast_hash": "c5f2f634a00b4db6d7feb51d487faf7e",
-    "semantic_hash": "c5f2f634a00b4db6d7feb51d487faf7e"
+    "mtime": 1779667550.6456401,
+    "ast_hash": "11b8b933c876790300e1caeff8f398fd",
+    "semantic_hash": "11b8b933c876790300e1caeff8f398fd"
   },
   "/Users/lbp/software/charming/lib/charming/events.rb": {
-    "mtime": 1779627560.8052258,
-    "ast_hash": "010b753d501761af53d7ca2f585f4b63",
-    "semantic_hash": "010b753d501761af53d7ca2f585f4b63"
+    "mtime": 1779667550.644977,
+    "ast_hash": "0fdeb462c6a95f313296bb0b3f6ba527",
+    "semantic_hash": "0fdeb462c6a95f313296bb0b3f6ba527"
   },
   "/Users/lbp/software/charming/lib/charming/version.rb": {
     "mtime": 1779627291.2917163,
@@ -90,9 +80,9 @@
     "semantic_hash": "be05fc83059b963a4bd96d76cef4e456"
   },
   "/Users/lbp/software/charming/lib/charming/controller.rb": {
-    "mtime": 1779629489.6202273,
-    "ast_hash": "5622aaa8b2b16ade2245f16dfbce9ea2",
-    "semantic_hash": "5622aaa8b2b16ade2245f16dfbce9ea2"
+    "mtime": 1779667550.6454127,
+    "ast_hash": "cfe6062d05c973f37f67876a73a3d77f",
+    "semantic_hash": "cfe6062d05c973f37f67876a73a3d77f"
   },
   "/Users/lbp/software/charming/lib/charming/internal/renderer/full_repaint.rb": {
     "mtime": 1779627560.806361,
@@ -105,19 +95,19 @@
     "semantic_hash": "e0cba78b6d723a5c35f9d856c5c54f44"
   },
   "/Users/lbp/software/charming/lib/charming/internal/terminal/tty_backend.rb": {
-    "mtime": 1779628008.4124992,
-    "ast_hash": "fc07eb0f3f3a4fa2652c1e628a4e4637",
-    "semantic_hash": "fc07eb0f3f3a4fa2652c1e628a4e4637"
+    "mtime": 1779666340.681614,
+    "ast_hash": "920cf861267c6ebb593fb9f409cd252f",
+    "semantic_hash": "920cf861267c6ebb593fb9f409cd252f"
   },
   "/Users/lbp/software/charming/README.md": {
-    "mtime": 1779627560.8001995,
-    "ast_hash": "9988b606aa5bc4ea745b5621ee8b7b4e",
-    "semantic_hash": "9988b606aa5bc4ea745b5621ee8b7b4e"
+    "mtime": 1779755337.4635372,
+    "ast_hash": "c41f6f93a7c49c35c813d962662cf15a",
+    "semantic_hash": "c41f6f93a7c49c35c813d962662cf15a"
   },
   "/Users/lbp/software/charming/.rubocop.yml": {
-    "mtime": 1779628538.0618882,
-    "ast_hash": "fe45552685f05af4c282c4d703b90bf0",
-    "semantic_hash": "fe45552685f05af4c282c4d703b90bf0"
+    "mtime": 1779633715.6148915,
+    "ast_hash": "ed391c0ee89917e9ca3b0def23d380df",
+    "semantic_hash": "ed391c0ee89917e9ca3b0def23d380df"
   },
   "/Users/lbp/software/charming/LICENSE.txt": {
     "mtime": 1779627291.2922866,
@@ -130,9 +120,9 @@
     "semantic_hash": "3e3cdc743a1898bc423712cb705cab86"
   },
   "/Users/lbp/software/charming/spec/ui/style_spec.rb": {
-    "mtime": 1779628485.2873192,
-    "ast_hash": "158269f928a6b93f48e9404a22bfb57f",
-    "semantic_hash": "158269f928a6b93f48e9404a22bfb57f"
+    "mtime": 1779634305.7493753,
+    "ast_hash": "782a94cfd740562f6229ae7ac75b78e6",
+    "semantic_hash": "782a94cfd740562f6229ae7ac75b78e6"
   },
   "/Users/lbp/software/charming/spec/ui/width_spec.rb": {
     "mtime": 1779628485.287857,
@@ -140,9 +130,9 @@
     "semantic_hash": "c0cebf423f6bd8f3f069acc4dab059b8"
   },
   "/Users/lbp/software/charming/spec/ui/layout_spec.rb": {
-    "mtime": 1779628485.291191,
-    "ast_hash": "2cbc0668e9c9871922806da8479358d0",
-    "semantic_hash": "2cbc0668e9c9871922806da8479358d0"
+    "mtime": 1779632158.5830147,
+    "ast_hash": "9d2344737e0e1937da5fe2d89a82e24e",
+    "semantic_hash": "9d2344737e0e1937da5fe2d89a82e24e"
   },
   "/Users/lbp/software/charming/lib/charming/view.rb": {
     "mtime": 1779630022.2761216,
@@ -150,9 +140,9 @@
     "semantic_hash": "119138f4de33ddd9a3cd4287b8bb5c5d"
   },
   "/Users/lbp/software/charming/lib/charming/ui.rb": {
-    "mtime": 1779628538.0622938,
-    "ast_hash": "bfd149df187d1f463caef6e3da433290",
-    "semantic_hash": "bfd149df187d1f463caef6e3da433290"
+    "mtime": 1779632178.092382,
+    "ast_hash": "11e23191665668d7a8a9c4054b847646",
+    "semantic_hash": "11e23191665668d7a8a9c4054b847646"
   },
   "/Users/lbp/software/charming/lib/charming/ui/border.rb": {
     "mtime": 1779628595.3184464,
@@ -165,14 +155,14 @@
     "semantic_hash": "8761b36c704f602481f1998198f9eb04"
   },
   "/Users/lbp/software/charming/lib/charming/ui/style.rb": {
-    "mtime": 1779628538.0626788,
-    "ast_hash": "49f5b8be209cd182d99abc733a55805b",
-    "semantic_hash": "49f5b8be209cd182d99abc733a55805b"
+    "mtime": 1779634305.7488325,
+    "ast_hash": "9e9e69dff85ca0c3e4ec1f7fc19822c9",
+    "semantic_hash": "9e9e69dff85ca0c3e4ec1f7fc19822c9"
   },
   "/Users/lbp/software/charming/ROADMAP.md": {
-    "mtime": 1779630022.2768922,
-    "ast_hash": "9b13067e4263a0ba6fc31333c087a2c5",
-    "semantic_hash": "9b13067e4263a0ba6fc31333c087a2c5"
+    "mtime": 1779755397.2239048,
+    "ast_hash": "8d2128dc88f90eac137503aace3080a2",
+    "semantic_hash": "8d2128dc88f90eac137503aace3080a2"
   },
   "/Users/lbp/software/charming/graphify-out/memory/query_20260524_132121_verify_the_snapshot_semantics_of_controller_key_bi.md": {
     "mtime": 1779628881.260724,
@@ -190,9 +180,9 @@
     "semantic_hash": "b7505a5ddca0c131d131dc79377377c7"
   },
   "/Users/lbp/software/charming/spec/component_spec.rb": {
-    "mtime": 1779630043.568615,
-    "ast_hash": "5c31496c03f07bf5de3ff61a0edb33f5",
-    "semantic_hash": "5c31496c03f07bf5de3ff61a0edb33f5"
+    "mtime": 1779632187.4303105,
+    "ast_hash": "1fd0ef086a7a3df6f6d93b9cbf9a8886",
+    "semantic_hash": "1fd0ef086a7a3df6f6d93b9cbf9a8886"
   },
   "/Users/lbp/software/charming/spec/view_spec.rb": {
     "mtime": 1779630043.568953,
@@ -213,5 +203,245 @@
     "mtime": 1779629931.4917722,
     "ast_hash": "3c6f8ffad5ca3d1ce159257f2cc58811",
     "semantic_hash": "3c6f8ffad5ca3d1ce159257f2cc58811"
+  },
+  "/Users/lbp/software/charming/spec/cli_spec.rb": {
+    "mtime": 1779755191.7275987,
+    "ast_hash": "414a5290e7474479f44679fdbccf6104",
+    "semantic_hash": "414a5290e7474479f44679fdbccf6104"
+  },
+  "/Users/lbp/software/charming/spec/application_model_spec.rb": {
+    "mtime": 1779633697.0800548,
+    "ast_hash": "03adca1896449fa3e4d04f5d41b2b015",
+    "semantic_hash": "03adca1896449fa3e4d04f5d41b2b015"
+  },
+  "/Users/lbp/software/charming/spec/screen_spec.rb": {
+    "mtime": 1779665416.7437983,
+    "ast_hash": "62fab50b6a53f06854eda5587b66f6b7",
+    "semantic_hash": "62fab50b6a53f06854eda5587b66f6b7"
+  },
+  "/Users/lbp/software/charming/spec/components/command_palette_spec.rb": {
+    "mtime": 1779631627.124886,
+    "ast_hash": "7bca09d026c6bbeddd29e3e30c0235d9",
+    "semantic_hash": "7bca09d026c6bbeddd29e3e30c0235d9"
+  },
+  "/Users/lbp/software/charming/spec/components/viewport_spec.rb": {
+    "mtime": 1779666566.6818128,
+    "ast_hash": "f4bd7a706e8540ca1f359bb6c92c541e",
+    "semantic_hash": "f4bd7a706e8540ca1f359bb6c92c541e"
+  },
+  "/Users/lbp/software/charming/spec/components/list_spec.rb": {
+    "mtime": 1779631032.9022949,
+    "ast_hash": "648392fbfea938ca240a159a0b998f93",
+    "semantic_hash": "648392fbfea938ca240a159a0b998f93"
+  },
+  "/Users/lbp/software/charming/spec/components/text_input_spec.rb": {
+    "mtime": 1779630754.5159297,
+    "ast_hash": "96997dd28dc9b5964d86963a0de10a23",
+    "semantic_hash": "96997dd28dc9b5964d86963a0de10a23"
+  },
+  "/Users/lbp/software/charming/spec/components/modal_spec.rb": {
+    "mtime": 1779634435.6984007,
+    "ast_hash": "d69a4624ac6967e5eaa269492a22397e",
+    "semantic_hash": "d69a4624ac6967e5eaa269492a22397e"
+  },
+  "/Users/lbp/software/charming/lib/charming/application_model.rb": {
+    "mtime": 1779633593.3489656,
+    "ast_hash": "0ceb3ba32c9e6791f410ed26cc86565b",
+    "semantic_hash": "0ceb3ba32c9e6791f410ed26cc86565b"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators.rb": {
+    "mtime": 1779630994.2883778,
+    "ast_hash": "1cfebdd7402c2de19500e775c54dc226",
+    "semantic_hash": "1cfebdd7402c2de19500e775c54dc226"
+  },
+  "/Users/lbp/software/charming/lib/charming/cli.rb": {
+    "mtime": 1779630994.2880175,
+    "ast_hash": "d27df0020f376cb0a88e56ac1e40bd18",
+    "semantic_hash": "d27df0020f376cb0a88e56ac1e40bd18"
+  },
+  "/Users/lbp/software/charming/lib/charming/screen.rb": {
+    "mtime": 1779665416.7429338,
+    "ast_hash": "11c3257745f52f49cf1010eaf395ffbd",
+    "semantic_hash": "11c3257745f52f49cf1010eaf395ffbd"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/modal.rb": {
+    "mtime": 1779634435.6980631,
+    "ast_hash": "2dc5c5a8c3a13a17a8e461cd743356bd",
+    "semantic_hash": "2dc5c5a8c3a13a17a8e461cd743356bd"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/viewport.rb": {
+    "mtime": 1779666566.6813462,
+    "ast_hash": "64647e02c143aff55a7b594d8ddc0c3f",
+    "semantic_hash": "64647e02c143aff55a7b594d8ddc0c3f"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/command_palette.rb": {
+    "mtime": 1779631611.0917141,
+    "ast_hash": "b59bbbdcdaa25a6e12de9ff473d79726",
+    "semantic_hash": "b59bbbdcdaa25a6e12de9ff473d79726"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/list.rb": {
+    "mtime": 1779631032.9014935,
+    "ast_hash": "2c747858b90cd0c7ec4c1dcde4a424e5",
+    "semantic_hash": "2c747858b90cd0c7ec4c1dcde4a424e5"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/text_input.rb": {
+    "mtime": 1779630754.5151155,
+    "ast_hash": "8b6ce4506992b862c82d3bc1c28c904d",
+    "semantic_hash": "8b6ce4506992b862c82d3bc1c28c904d"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/base.rb": {
+    "mtime": 1779630994.2924693,
+    "ast_hash": "edbe70ad1da7aab41f3d1b3f5e693bfc",
+    "semantic_hash": "edbe70ad1da7aab41f3d1b3f5e693bfc"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/name.rb": {
+    "mtime": 1779630994.292761,
+    "ast_hash": "ea0f7f0b0dcd73184a2544232fae7e3f",
+    "semantic_hash": "ea0f7f0b0dcd73184a2544232fae7e3f"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/component_generator.rb": {
+    "mtime": 1779631043.9616373,
+    "ast_hash": "9f900a05de43854934b24a4445bf4b22",
+    "semantic_hash": "9f900a05de43854934b24a4445bf4b22"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator.rb": {
+    "mtime": 1779755191.7263205,
+    "ast_hash": "40f337056b5616b623fe3b9d3f11cecc",
+    "semantic_hash": "40f337056b5616b623fe3b9d3f11cecc"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/controller_generator.rb": {
+    "mtime": 1779631043.9608996,
+    "ast_hash": "d669e6ff28067d1a443bde8e5df08928",
+    "semantic_hash": "d669e6ff28067d1a443bde8e5df08928"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/view_generator.rb": {
+    "mtime": 1779631043.9613743,
+    "ast_hash": "94251b8b64f2f99d41d8d1105312a2a6",
+    "semantic_hash": "94251b8b64f2f99d41d8d1105312a2a6"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_file_generator.rb": {
+    "mtime": 1779755191.727366,
+    "ast_hash": "e80d12f8a43583268e118434059d25af",
+    "semantic_hash": "e80d12f8a43583268e118434059d25af"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator/view_template.rb": {
+    "mtime": 1779755191.7270763,
+    "ast_hash": "58d2ae67dbd74e008a60c4b4a0496a08",
+    "semantic_hash": "58d2ae67dbd74e008a60c4b4a0496a08"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator/basic_templates.rb": {
+    "mtime": 1779754870.2964444,
+    "ast_hash": "cb628c6151b825e59cd845e6e566fc16",
+    "semantic_hash": "cb628c6151b825e59cd845e6e566fc16"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator/component_templates.rb": {
+    "mtime": 1779633928.376926,
+    "ast_hash": "e5377e80b58f3a0d8e46f66b2bdbf5a7",
+    "semantic_hash": "e5377e80b58f3a0d8e46f66b2bdbf5a7"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator/controller_template.rb": {
+    "mtime": 1779665453.672151,
+    "ast_hash": "f96e742c7bcd28b785951ae6cf09eee8",
+    "semantic_hash": "f96e742c7bcd28b785951ae6cf09eee8"
+  },
+  "/Users/lbp/software/charming/lib/charming/generators/app_generator/model_templates.rb": {
+    "mtime": 1779633662.7774866,
+    "ast_hash": "5db45ba3a50600a615b0a5b214055d26",
+    "semantic_hash": "5db45ba3a50600a615b0a5b214055d26"
+  },
+  "/Users/lbp/software/charming/exe/charming": {
+    "mtime": 1779630994.2840075,
+    "ast_hash": "408f38c7596b1e018fc044e7fb952042",
+    "semantic_hash": "408f38c7596b1e018fc044e7fb952042"
+  },
+  "/Users/lbp/software/charming/CONTEXT.md": {
+    "mtime": 1779755337.4643185,
+    "ast_hash": "5b760dc099e1a404163852d4c1d32813",
+    "semantic_hash": "5b760dc099e1a404163852d4c1d32813"
+  },
+  "/Users/lbp/software/charming/graphify-out/memory/query_20260524_140011_why_did_view_s_betweenness_centrality_jump_from_0.md": {
+    "mtime": 1779631211.9545531,
+    "ast_hash": "a5b609d6d19259d09ef475b09d2401ba",
+    "semantic_hash": "a5b609d6d19259d09ef475b09d2401ba"
+  },
+  "/Users/lbp/software/charming/spec/components/spinner_spec.rb": {
+    "mtime": 1779667638.5277615,
+    "ast_hash": "b0ff116fcdcc343442e11032e7850844",
+    "semantic_hash": "b0ff116fcdcc343442e11032e7850844"
+  },
+  "/Users/lbp/software/charming/spec/examples/demo_app_spec.rb": {
+    "mtime": 1779754718.5761366,
+    "ast_hash": "443fbeb56f119a201f8dd3399780be6c",
+    "semantic_hash": "443fbeb56f119a201f8dd3399780be6c"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/models/application_model.rb": {
+    "mtime": 1779755270.4926155,
+    "ast_hash": "2f046203780cd7e49e1c374eb5dda470",
+    "semantic_hash": "2f046203780cd7e49e1c374eb5dda470"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/models/home_model.rb": {
+    "mtime": 1779755306.3118842,
+    "ast_hash": "9ada4c25b8181b5735ac2b6d1886f888",
+    "semantic_hash": "9ada4c25b8181b5735ac2b6d1886f888"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/components/app_frame_component.rb": {
+    "mtime": 1779755306.3125153,
+    "ast_hash": "3ea9ae1876555fcfc05128f71c15c4e3",
+    "semantic_hash": "3ea9ae1876555fcfc05128f71c15c4e3"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/components/activity_log_content_component.rb": {
+    "mtime": 1779755306.3128092,
+    "ast_hash": "aae4eecd50070c9d6be2f01400851c75",
+    "semantic_hash": "aae4eecd50070c9d6be2f01400851c75"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/controllers/home_controller.rb": {
+    "mtime": 1779755306.312092,
+    "ast_hash": "9a7b4abb66364fd09235753ad572540d",
+    "semantic_hash": "9a7b4abb66364fd09235753ad572540d"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/app/views/home_view.rb": {
+    "mtime": 1779755306.31231,
+    "ast_hash": "a7d3bec964657dc059c23d99fb3d2d21",
+    "semantic_hash": "a7d3bec964657dc059c23d99fb3d2d21"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/config/routes.rb": {
+    "mtime": 1779755270.4924698,
+    "ast_hash": "e2516339f047f709843f41be208aec2c",
+    "semantic_hash": "e2516339f047f709843f41be208aec2c"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/spec/spec_helper.rb": {
+    "mtime": 1779755270.4931922,
+    "ast_hash": "0d56db4b0fa06ceec1334e1a40378412",
+    "semantic_hash": "0d56db4b0fa06ceec1334e1a40378412"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/lib/demo_app.rb": {
+    "mtime": 1779755270.4921916,
+    "ast_hash": "3e4615787fe9c7a13968fca923226d58",
+    "semantic_hash": "3e4615787fe9c7a13968fca923226d58"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/lib/demo_app/application.rb": {
+    "mtime": 1779755270.4922998,
+    "ast_hash": "e64d4c7211a87e3250ca6ef90c64edd5",
+    "semantic_hash": "e64d4c7211a87e3250ca6ef90c64edd5"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/lib/demo_app/version.rb": {
+    "mtime": 1779755270.492367,
+    "ast_hash": "7b0e34d2187b8626de74e5bdb1e0bb83",
+    "semantic_hash": "7b0e34d2187b8626de74e5bdb1e0bb83"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/exe/demo_app": {
+    "mtime": 1779755270.492032,
+    "ast_hash": "29e39679397a02936b0421642e517feb",
+    "semantic_hash": "29e39679397a02936b0421642e517feb"
+  },
+  "/Users/lbp/software/charming/lib/charming/components/spinner.rb": {
+    "mtime": 1779667638.52738,
+    "ast_hash": "fbe93c1ecd04dfee504a9e26f9630508",
+    "semantic_hash": "fbe93c1ecd04dfee504a9e26f9630508"
+  },
+  "/Users/lbp/software/charming/examples/demo_app/README.md": {
+    "mtime": 1779755306.311653,
+    "ast_hash": "02fe1aec6f74cb66b335369596344b1b",
+    "semantic_hash": "02fe1aec6f74cb66b335369596344b1b"
   }
 }
