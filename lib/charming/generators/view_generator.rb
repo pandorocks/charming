@@ -20,12 +20,16 @@ module Charming
 
 module #{app_name.class_name}
   class #{name.view_class_name} < Charming::View
-    def render
-      text "#{name.class_name}"
-    end
+#{view_body}
   end
 end
 )
+      end
+
+      def view_body
+        %(    def render
+      "#{name.class_name}"
+    end)
       end
     end
   end

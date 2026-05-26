@@ -97,6 +97,119 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(%w[80x24 100x40])
   end
 
+  it "navigates to routed screens" do
+    home_controller = Class.new(Charming::Controller) do
+      key "s", :settings
+
+      def show
+        render "Home"
+      end
+
+      def settings
+        navigate_to "/settings"
+      end
+    end
+    settings_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "Settings"
+      end
+    end
+    stub_const("NavigationRuntimeSpecHomeController", home_controller)
+    stub_const("NavigationRuntimeSpecSettingsController", settings_controller)
+    navigation_app = Class.new(Charming::Application) do
+      routes do
+        root "navigation_runtime_spec_home#show"
+        screen "/settings", to: "navigation_runtime_spec_settings#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :s),
+        Charming::KeyEvent.new(key: :q)
+      ]
+    )
+
+    described_class.new(navigation_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(%w[Home Settings])
+  end
+
+  it "re-renders the navigated route after resize events" do
+    home_controller = Class.new(Charming::Controller) do
+      key "s", :settings
+
+      def show
+        render "Home"
+      end
+
+      def settings
+        navigate_to "/settings"
+      end
+    end
+    settings_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "Settings: #{screen.width}x#{screen.height}"
+      end
+    end
+    stub_const("ResizeNavigationRuntimeSpecHomeController", home_controller)
+    stub_const("ResizeNavigationRuntimeSpecSettingsController", settings_controller)
+    navigation_app = Class.new(Charming::Application) do
+      routes do
+        root "resize_navigation_runtime_spec_home#show"
+        screen "/settings", to: "resize_navigation_runtime_spec_settings#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :s),
+        Charming::ResizeEvent.new(width: 100, height: 40),
+        Charming::KeyEvent.new(key: :q)
+      ],
+      width: 80,
+      height: 24
+    )
+
+    described_class.new(navigation_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(["Home", "Settings: 80x24", "Settings: 100x40"])
+  end
+
+  it "dispatches due timer events without backend input" do
+    timer_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      timer :clock, every: 0.1, action: :tick
+
+      def show
+        session[:ticks] ||= 0
+        render "Ticks: #{session[:ticks]}"
+      end
+
+      def tick
+        session[:ticks] += 1
+        render "Ticks: #{session[:ticks]}"
+      end
+    end
+    stub_const("TimerRuntimeSpecController", timer_controller)
+    timer_app = Class.new(Charming::Application) do
+      routes do
+        root "timer_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::KeyEvent.new(key: :q)]
+    )
+    times = [0.0, 0.0, 0.0, 0.1, 0.2]
+    clock = -> { times.shift || 0.2 }
+
+    described_class.new(timer_app.new, backend: backend, clock: clock).run
+
+    expect(backend.frames).to eq(["Ticks: 0", "Ticks: 1"])
+  end
+
   it "restores terminal state when a controller raises" do
     failing_controller = Class.new(Charming::Controller) do
       def show

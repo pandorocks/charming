@@ -78,4 +78,29 @@ RSpec.describe Charming::View do
 
     expect(view.new.render).to eq("Hello Ruby")
   end
+
+  it "renders partials" do
+    partial = Class.new(described_class) do
+      def render
+        "Partial #{name}"
+      end
+    end
+    view = Class.new(described_class) do
+      define_method(:render) do
+        render_partial partial.new(name: "Ruby")
+      end
+    end
+
+    expect(view.new.render).to eq("Partial Ruby")
+  end
+
+  it "yields layout content" do
+    layout = Class.new(described_class) do
+      def render
+        "Layout: #{yield_content}"
+      end
+    end
+
+    expect(layout.new(content: "Body").render).to eq("Layout: Body")
+  end
 end

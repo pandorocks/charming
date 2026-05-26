@@ -1,19 +1,33 @@
 # frozen_string_literal: true
 
-RSpec.describe "counter example" do
+RSpec.describe "demo app example" do
   before(:context) do
-    load File.expand_path("../../examples/counter.rb", __dir__)
+    require File.expand_path("../../examples/demo_app/lib/demo_app", __dir__)
   end
 
-  it "renders the counter app" do
+  it "renders the generated demo app" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [Charming::KeyEvent.new(key: :q)]
     )
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
-    expect(backend.frames.first).to include("Charming counter")
+    expect(backend.frames.first).to include("Charming demo")
     expect(backend.frames.first).to include("Activity log")
+    expect(backend.frames.first).to include("- Ready")
+  end
+
+  it "animates the status spinner from timer events" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::KeyEvent.new(key: :q)]
+    )
+    times = [0.0, 0.0, 0.0, 0.1, 0.1, 0.1]
+    clock = -> { times.shift || 0.1 }
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend, clock: clock).run
+
+    expect(backend.frames[0]).to include("- Ready")
+    expect(backend.frames[1]).to include("\\ Ready")
   end
 
   it "records counter actions in the activity log" do
@@ -25,7 +39,7 @@ RSpec.describe "counter example" do
       ]
     )
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
     expect(backend.frames.join("\n")).to include("Incremented to 1")
     expect(backend.frames.join("\n")).to include("Decremented to 0")
@@ -37,19 +51,19 @@ RSpec.describe "counter example" do
     events << Charming::KeyEvent.new(key: :q)
     backend = Charming::Internal::Terminal::MemoryBackend.new(events: events)
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
     expect(backend.frames.last).to include("Incremented to 6")
   end
 
-  it "uses backend dimensions when rendering the counter app" do
+  it "uses backend dimensions when rendering the demo app" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [Charming::KeyEvent.new(key: :q)],
       width: 60,
       height: 12
     )
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
     expect(backend.frames.first.lines.count).to eq(12)
   end
@@ -63,7 +77,7 @@ RSpec.describe "counter example" do
       ]
     )
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
     expect(backend.frames.join("\n")).to include("Command palette")
   end
@@ -77,7 +91,7 @@ RSpec.describe "counter example" do
       ]
     )
 
-    Charming::Runtime.new(CounterApp.new, backend: backend).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
     expect(backend.frames.last).to include("Count: 1")
   end

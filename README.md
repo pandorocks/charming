@@ -75,10 +75,10 @@ bundle exec weather_tui
 Generated apps are namespaced and use Rails-like folders:
 
 ```text
-app/controllers/weather_tui
-app/models/weather_tui
-app/views/weather_tui
-app/components/weather_tui
+app/controllers
+app/models
+app/views
+app/components
 config/routes.rb
 exe/weather_tui
 lib/weather_tui.rb
@@ -96,6 +96,70 @@ The `generate` command can also be shortened to `g`.
 
 New apps include a command palette by default. Press `p` to open it, type to
 filter commands, press `enter` to select, and press `escape` to close it.
+
+## Layouts And Partials
+
+Generated apps include a Rails-style application layout at
+`app/views/layouts/application.rb`. `ApplicationController` uses it by default:
+
+```ruby
+class ApplicationController < Charming::Controller
+  layout Layouts::Application
+end
+```
+
+Controller subclasses inherit their parent layout. Override it with another
+layout class, or disable layout wrapping for a controller with `layout false`.
+
+Layouts are `Charming::View` objects. Use `yield_content` to render the current
+screen inside the layout:
+
+```ruby
+module WeatherTui
+  module Layouts
+    class Application < Charming::View
+      def render
+        Charming::UI.center(yield_content, width: screen.width, height: screen.height)
+      end
+    end
+  end
+end
+```
+
+Partials are class-based views too. Render them from another view with
+`render_partial`:
+
+```ruby
+class HomeView < Charming::View
+  def render
+    render_partial HeaderPartial.new(title: "Home")
+  end
+end
+```
+
+## Example App
+
+The canonical example lives at `examples/demo_app`. It was created with
+`charming new demo_app` and then extended to demonstrate application models,
+components, command palettes, modal overlays, viewport scrolling, screen-aware
+layout, and timer-driven spinners.
+
+Run it with:
+
+```bash
+cd examples/demo_app
+bundle install
+bundle exec exe/demo_app
+```
+
+Useful keys:
+
+```text
+up/down     change the counter
+j/k         scroll the activity log
+p           open the command palette
+q           quit
+```
 
 ## Development
 

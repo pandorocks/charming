@@ -8,4 +8,6 @@ module Charming
   end
 
   ResizeEvent = Data.define(:width, :height)
+
+  TimerEvent = Data.define(:name, :now)
 end

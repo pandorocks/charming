@@ -17,7 +17,7 @@ module Charming
       attr_reader :name, :app_name
 
       def app_path(*parts)
-        File.join(*parts, app_name.snake_name, "#{name.snake_name}_#{suffix}.rb")
+        File.join(*parts, "#{name.snake_name}_#{suffix}.rb")
       end
 
       def app_name_from_gemspec

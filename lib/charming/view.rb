@@ -7,6 +7,10 @@ module Charming
       define_assign_readers
     end
 
+    def layout_assigns
+      assigns
+    end
+
     def render
       ""
     end
@@ -40,6 +44,14 @@ module Charming
 
     def render_component(component)
       component.render.to_s
+    end
+
+    def render_partial(partial)
+      render_component(partial)
+    end
+
+    def yield_content
+      assigns.fetch(:content, "")
     end
 
     def capture(&)

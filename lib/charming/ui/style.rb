@@ -147,7 +147,7 @@ module Charming
         return value if codes.empty?
 
         start = "\e[#{codes.join(";")}m"
-        "#{start}#{value.gsub("\e[0m", "\e[0m#{start}")}\e[0m"
+        value.split("\n", -1).map { |line| "#{start}#{line.gsub("\e[0m", "\e[0m#{start}")}\e[0m" }.join("\n")
       end
 
       def ansi_codes

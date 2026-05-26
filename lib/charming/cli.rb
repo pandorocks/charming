@@ -48,6 +48,7 @@ module Charming
     def generator_class(type)
       {
         "controller" => Generators::ControllerGenerator,
+        "scaffold" => Generators::ScaffoldGenerator,
         "view" => Generators::ViewGenerator,
         "component" => Generators::ComponentGenerator
       }.fetch(type) { raise Generators::Error, "Unknown generator: #{type}" }

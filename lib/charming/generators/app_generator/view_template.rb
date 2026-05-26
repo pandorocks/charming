@@ -33,7 +33,7 @@ require_relative "../config/routes"
         end
 
         def requires_for(folder)
-          path = "../app/#{folder}/#{name.snake_name}/**/*.rb"
+          path = "../app/#{folder}/**/*.rb"
           %(Dir[File.expand_path("#{path}", __dir__)].sort.each do |file|
   require file
 end)
@@ -64,10 +64,7 @@ end
 module #{name.class_name}
   class HomeView < Charming::View
     def render
-      body = Charming::UI.center(app_frame, width: screen.width, height: screen.height)
-      return body unless palette
-
-      Charming::UI.overlay(body, command_palette_modal)
+      app_frame
     end
 #{view_helpers}
   end
@@ -80,16 +77,7 @@ end
     private
 
     def app_frame
-      render_component AppFrameComponent.new(title: home.title, dimmed: !!palette)
-    end
-
-    def command_palette_modal
-      render_component Charming::Components::Modal.new(
-        content: palette,
-        title: "Command palette",
-        help: "Type to filter. Enter selects. Escape closes.",
-        width: 52
-      )
+      render_component AppFrameComponent.new(title: home.title)
     end)
         end
       end

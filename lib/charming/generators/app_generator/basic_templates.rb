@@ -39,7 +39,14 @@ bundle exec #{name.snake_name}
 require_relative "lib/#{name.snake_name}/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "#{name.snake_name}"
+#{gemspec_attributes}
+#{gemspec_dependencies}
+end
+)
+        end
+
+        def gemspec_attributes
+          %(  spec.name = "#{name.snake_name}"
   spec.version = #{name.class_name}::VERSION
   spec.summary = "A Charming terminal user interface."
   spec.authors = ["TODO: Your name"]
@@ -48,10 +55,8 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables = ["#{name.snake_name}"]
   spec.require_paths = ["lib"]
-  spec.required_ruby_version = ">= 3.2.0"
-#{gemspec_dependencies}
-end
-)
+  spec.required_ruby_version = ">= 4.0.0"
+  spec.metadata["rubygems_mfa_required"] = "true")
         end
 
         def gemspec_dependencies

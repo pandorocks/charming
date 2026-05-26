@@ -16,11 +16,32 @@ RSpec.describe Charming::CLI do
       expect(output.string).to include("create exe/weather_tui")
       expect(File.executable?(File.join(app_root, "exe/weather_tui"))).to be(true)
       expect(File).to exist(File.join(app_root, "weather_tui.gemspec"))
+      expect(File.read(File.join(app_root, "weather_tui.gemspec"))).to include(
+        'spec.required_ruby_version = ">= 4.0.0"'
+      )
+      expect(File.read(File.join(app_root, "weather_tui.gemspec"))).to include(
+        'spec.metadata["rubygems_mfa_required"] = "true"'
+      )
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
-      expect(File).to exist(File.join(app_root, "app/models/weather_tui/application_model.rb"))
-      expect(File).to exist(File.join(app_root, "app/models/weather_tui/home_model.rb"))
-      expect(File).to exist(File.join(app_root, "app/controllers/weather_tui/home_controller.rb"))
-      expect(File).not_to exist(File.join(app_root, "app/components/weather_tui/command_palette_modal_component.rb"))
+      expect(File).to exist(File.join(app_root, "app/models/application_model.rb"))
+      expect(File).to exist(File.join(app_root, "app/models/home_model.rb"))
+      expect(File).to exist(File.join(app_root, "app/controllers/application_controller.rb"))
+      expect(File).to exist(File.join(app_root, "app/controllers/home_controller.rb"))
+      expect(File).to exist(File.join(app_root, "app/views/layouts/application.rb"))
+      expect(File).not_to exist(File.join(app_root, "app/components/command_palette_modal_component.rb"))
+      expect(File).not_to exist(File.join(app_root, "app/controllers/weather_tui/home_controller.rb"))
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        "layout Layouts::Application"
+      )
+      expect(File.read(File.join(app_root, "app/controllers/home_controller.rb"))).to include(
+        "class HomeController < ApplicationController"
+      )
+      expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
+        "class Application < Charming::View"
+      )
+      expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
+        "def sidebar"
+      )
 
       require File.join(app_root, "lib/weather_tui")
       route = WeatherTui::Application.routes.resolve("/")
@@ -38,12 +59,14 @@ RSpec.describe Charming::CLI do
         height: 12
       )
       Charming::Runtime.new(WeatherTui::Application.new, backend: backend).run
+      expect(backend.frames.first).to include("p commands")
+      expect(backend.frames.first).to include("q quit")
       expect(backend.frames.join("\n")).to include("Command palette")
       expect(backend.frames.first.lines.count).to eq(12)
     end
   end
 
-  it "generates namespaced app files in an existing app" do
+  it "generates app files in non-namespaced app folders" do
     Dir.mktmpdir do |dir|
       described_class.new(out: StringIO.new, pwd: dir).call(%w[new weather_tui])
       app_root = File.join(dir, "weather_tui")
@@ -54,12 +77,113 @@ RSpec.describe Charming::CLI do
       described_class.new(out: output, pwd: app_root).call(%w[g component forecast_card])
 
       expect(status).to eq(0)
-      expect(output.string).to include("create app/controllers/weather_tui/forecast_controller.rb")
-      expect(File).to exist(File.join(app_root, "app/views/weather_tui/forecast_view.rb"))
-      expect(File).to exist(File.join(app_root, "app/components/weather_tui/forecast_card_component.rb"))
-      expect(File.read(File.join(app_root, "app/controllers/weather_tui/forecast_controller.rb"))).to include(
-        "class ForecastController < Charming::Controller"
+      expect(output.string).to include("create app/controllers/forecast_controller.rb")
+      expect(File).to exist(File.join(app_root, "app/views/forecast_view.rb"))
+      expect(File).to exist(File.join(app_root, "app/components/forecast_card_component.rb"))
+      expect(File.read(File.join(app_root, "app/controllers/forecast_controller.rb"))).to include(
+        "class ForecastController < ApplicationController"
       )
+      expect(File.read(File.join(app_root, "app/controllers/forecast_controller.rb"))).to include(
+        "render ForecastView.new("
+      )
+      expect(File.read(File.join(app_root, "app/views/forecast_view.rb"))).to include(
+        '"Forecast"'
+      )
+    end
+  end
+
+  it "opens the inherited command palette on generated secondary screens" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new nav_tui])
+      app_root = File.join(dir, "nav_tui")
+      described_class.new(out: output, pwd: app_root).call(%w[g controller settings show])
+      described_class.new(out: output, pwd: app_root).call(%w[g view settings])
+      File.write(
+        File.join(app_root, "config/routes.rb"),
+        "# frozen_string_literal: true\n\nNavTui::Application.routes do\n  root \"settings#show\"\nend\n"
+      )
+
+      require File.join(app_root, "lib/nav_tui")
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::KeyEvent.new(key: :p, char: "p"),
+          Charming::KeyEvent.new(key: :escape),
+          Charming::KeyEvent.new(key: :q, char: "q")
+        ]
+      )
+
+      Charming::Runtime.new(NavTui::Application.new, backend: backend).run
+
+      expect(backend.frames.join("\n")).to include("Command palette")
+      expect(backend.frames.join("\n")).to include("Home")
+    end
+  end
+
+  it "generates a routed scaffold reachable from the command palette" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new scaffold_tui])
+      app_root = File.join(dir, "scaffold_tui")
+
+      status = described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings])
+
+      expect(status).to eq(0)
+      expect(output.string).to include("create app/models/settings_model.rb")
+      expect(output.string).to include("create app/controllers/settings_controller.rb")
+      expect(output.string).to include("create app/views/settings_view.rb")
+      expect(output.string).to include("insert route config/routes.rb")
+      expect(output.string).to include("insert command app/controllers/application_controller.rb")
+      expect(File.read(File.join(app_root, "config/routes.rb"))).to include(
+        'screen "/settings", to: "settings#show"'
+      )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        'command "Settings" do'
+      )
+
+      require File.join(app_root, "lib/scaffold_tui")
+      expect(ScaffoldTui::Application.routes.resolve("/settings").controller_class).to eq(
+        ScaffoldTui::SettingsController
+      )
+
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::KeyEvent.new(key: :p, char: "p"),
+          Charming::KeyEvent.new(key: "s", char: "s"),
+          Charming::KeyEvent.new(key: "e", char: "e"),
+          Charming::KeyEvent.new(key: "t", char: "t"),
+          Charming::KeyEvent.new(key: "t", char: "t"),
+          Charming::KeyEvent.new(key: "i", char: "i"),
+          Charming::KeyEvent.new(key: "n", char: "n"),
+          Charming::KeyEvent.new(key: "g", char: "g"),
+          Charming::KeyEvent.new(key: "s", char: "s"),
+          Charming::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::KeyEvent.new(key: :p, char: "p"),
+          Charming::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::KeyEvent.new(key: :q, char: "q")
+        ]
+      )
+
+      Charming::Runtime.new(ScaffoldTui::Application.new, backend: backend).run
+
+      expect(backend.frames.join("\n")).to include("Settings")
+      expect(backend.frames.last).to include("ScaffoldTui")
+    end
+  end
+
+  it "does not duplicate scaffold route or command when forced" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new duplicate_tui])
+      app_root = File.join(dir, "duplicate_tui")
+
+      described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings])
+      described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings --force])
+
+      routes = File.read(File.join(app_root, "config/routes.rb"))
+      application_controller = File.read(File.join(app_root, "app/controllers/application_controller.rb"))
+      expect(routes.scan('screen "/settings", to: "settings#show"').size).to eq(1)
+      expect(application_controller.scan('command "Settings" do').size).to eq(1)
     end
   end
 

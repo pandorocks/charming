@@ -4,29 +4,38 @@ module Charming
   module Generators
     module AppGeneratorTemplates
       module ControllerTemplate
-        def controller
+        def application_controller
           %(# frozen_string_literal: true
 
 module #{name.class_name}
-  class HomeController < Charming::Controller
-#{controller_key_bindings}
-#{controller_commands}
-#{controller_actions}
-#{controller_helpers}
+  class ApplicationController < Charming::Controller
+    layout Layouts::Application
+
+    key "p", :open_command_palette
+    key "q", :quit
+    key "tab", :focus_sidebar
+
+    command "Home" do
+      navigate_to "/"
+    end
+
+    command "Close palette", :close_command_palette
+    command "Quit app", :quit
   end
 end
 )
         end
 
-        def controller_key_bindings
-          %(    key "p", :open_command_palette
-    key "q", :quit)
-        end
+        def controller
+          %(# frozen_string_literal: true
 
-        def controller_commands
-          %(
-    command "Close palette", :close_command_palette
-    command "Quit app", :quit)
+module #{name.class_name}
+  class HomeController < ApplicationController
+#{controller_actions}
+#{controller_helpers}
+  end
+end
+)
         end
 
         def controller_actions

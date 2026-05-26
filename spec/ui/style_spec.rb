@@ -36,13 +36,28 @@ RSpec.describe Charming::UI::Style do
   it "combines layout and ANSI styling" do
     output = described_class.new.foreground(:red).padding(0, 1).border(:normal).render("Hi")
 
-    expect(output).to eq("\e[31m+----+\n| Hi |\n+----+\e[0m")
+    expect(output).to eq("\e[31m+----+\e[0m\n\e[31m| Hi |\e[0m\n\e[31m+----+\e[0m")
   end
 
   it "keeps outer styling after nested ANSI resets" do
     nested = "\e[1mHi\e[0m"
     output = described_class.new.foreground(:red).border(:normal).render(nested)
 
-    expect(output).to eq("\e[31m+--+\n|\e[1mHi\e[0m\e[31m|\n+--+\e[0m")
+    expect(output).to eq("\e[31m+--+\e[0m\n\e[31m|\e[1mHi\e[0m\e[31m|\e[0m\n\e[31m+--+\e[0m")
+  end
+
+  it "does not leak inner ANSI styling across newlines into outer borders" do
+    # Realistic chain: a multi-line styled text rendered inside a styled box.
+    # Pre-fix, the inner gray would carry across newlines and tint the next
+    # row's outer border, producing visible gaps in the colored box.
+    inner = described_class.new.foreground(:bright_black).render("a\nb")
+    output = described_class.new.foreground(:cyan).border(:normal).render(inner)
+
+    expect(output).to eq(
+      "\e[36m+-+\e[0m\n" \
+      "\e[36m|\e[90ma\e[0m\e[36m|\e[0m\n" \
+      "\e[36m|\e[90mb\e[0m\e[36m|\e[0m\n" \
+      "\e[36m+-+\e[0m"
+    )
   end
 end

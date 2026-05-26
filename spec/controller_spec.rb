@@ -50,6 +50,19 @@ RSpec.describe Charming::Controller do
     expect(response).to be_quit
   end
 
+  it "returns a navigation response from controller actions" do
+    controller = Class.new(described_class) do
+      def settings
+        navigate_to "/settings"
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:settings)
+
+    expect(response).to be_navigate
+    expect(response.path).to eq("/settings")
+  end
+
   it "renders view objects" do
     view = Class.new(Charming::View) do
       def render
@@ -98,6 +111,135 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("from-to_s-fallback")
   end
 
+  it "wraps rendered bodies with a configured layout" do
+    layout = Class.new(Charming::View) do
+      def render
+        "Layout(#{yield_content})"
+      end
+    end
+    controller = Class.new(described_class) do
+      layout layout
+
+      def show
+        render "Body"
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Layout(Body)")
+  end
+
+  it "passes view assigns to layouts" do
+    view = Class.new(Charming::View) do
+      def render
+        title
+      end
+    end
+    layout = Class.new(Charming::View) do
+      def render
+        "#{title}: #{yield_content}"
+      end
+    end
+    controller = Class.new(described_class) do
+      layout layout
+
+      define_method(:show) do
+        render view.new(title: "Greeting")
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Greeting: Greeting")
+  end
+
+  it "passes screen and controller to layouts" do
+    layout = Class.new(Charming::View) do
+      def render
+        "#{screen.width}x#{screen.height} #{controller.class.name}: #{yield_content}"
+      end
+    end
+    controller = Class.new(described_class) do
+      layout layout
+
+      def show
+        render "Body"
+      end
+    end
+    stub_const("LayoutControllerSpecController", controller)
+
+    response = LayoutControllerSpecController.new(
+      application: application,
+      screen: Charming::Screen.new(width: 100, height: 30)
+    ).dispatch(:show)
+
+    expect(response.body).to eq("100x30 LayoutControllerSpecController: Body")
+  end
+
+  it "inherits layouts from parent controllers" do
+    layout = Class.new(Charming::View) do
+      def render
+        "Parent(#{yield_content})"
+      end
+    end
+    parent = Class.new(described_class) { layout layout }
+    child = Class.new(parent) do
+      def show
+        render "Body"
+      end
+    end
+
+    response = child.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Parent(Body)")
+  end
+
+  it "allows child controllers to override inherited layouts" do
+    parent_layout = Class.new(Charming::View) do
+      def render
+        "Parent(#{yield_content})"
+      end
+    end
+    child_layout = Class.new(Charming::View) do
+      def render
+        "Child(#{yield_content})"
+      end
+    end
+    parent = Class.new(described_class) { layout parent_layout }
+    child = Class.new(parent) do
+      layout child_layout
+
+      def show
+        render "Body"
+      end
+    end
+
+    response = child.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Child(Body)")
+  end
+
+  it "allows child controllers to disable inherited layouts" do
+    parent_layout = Class.new(Charming::View) do
+      def render
+        "Parent(#{yield_content})"
+      end
+    end
+    parent = Class.new(described_class) { layout parent_layout }
+    child = Class.new(parent) do
+      layout false
+
+      def show
+        render "Body"
+      end
+    end
+
+    response = child.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Body")
+  end
+
   it "stores models in application session across controller instances" do
     counter_model = Class.new(Charming::ApplicationModel) do
       attribute :count, :integer, default: 0
@@ -132,6 +274,23 @@ RSpec.describe Charming::Controller do
     expect(controller.screen).to eq(Charming::Screen.new(width: 80, height: 24))
   end
 
+  it "dispatches timer bindings to actions" do
+    controller = Class.new(described_class) do
+      timer :refresh, every: 0.5, action: :refresh
+
+      def refresh
+        render "refreshed at #{event.now}"
+      end
+    end
+
+    response = controller.new(
+      application: application,
+      event: Charming::TimerEvent.new(name: :refresh, now: 1.5)
+    ).dispatch_timer
+
+    expect(response.body).to eq("refreshed at 1.5")
+  end
+
   it "opens a command palette from registered commands" do
     controller = Class.new(described_class) do
       command "Quit", :quit
@@ -164,6 +323,45 @@ RSpec.describe Charming::Controller do
     response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
 
     expect(response).to be_quit
+  end
+
+  it "preserves navigation responses from command palette actions" do
+    controller = Class.new(described_class) do
+      command "Settings", :settings
+
+      def show
+        render "Home"
+      end
+
+      def settings
+        navigate_to "/settings"
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+
+    expect(response).to be_navigate
+    expect(response.path).to eq("/settings")
+    expect(application.session).not_to have_key(:command_palette)
+  end
+
+  it "executes command blocks in the controller context" do
+    controller = Class.new(described_class) do
+      command "Settings" do
+        navigate_to "/settings"
+      end
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+
+    expect(response).to be_navigate
+    expect(response.path).to eq("/settings")
   end
 
   it "re-renders the default action after palette input" do
@@ -219,6 +417,17 @@ RSpec.describe Charming::Controller do
 
       expect(parent.key_bindings).to include("q" => :quit)
       expect(child.key_bindings).not_to have_key("q")
+    end
+  end
+
+  describe ".timer_bindings inheritance" do
+    it "inherits a copy of parent bindings, not a live reference" do
+      parent = Class.new(described_class) { timer :refresh, every: 1, action: :refresh }
+      child = Class.new(parent) { timer :poll, every: 2, action: :poll }
+
+      expect(child.timer_bindings.keys).to eq(%i[refresh poll])
+      expect(parent.timer_bindings.keys).to eq([:refresh])
+      expect(child.timer_bindings).not_to equal(parent.timer_bindings)
     end
   end
 end
