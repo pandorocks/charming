@@ -12,6 +12,8 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Max: 15
+  Exclude:
+    - "lib/charming/generators/app_generator/layout_template.rb"
 
 Metrics/ClassLength:
   Max: 180
@@ -25,3 +27,24 @@ Style/StringLiterals:
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+Metrics/ParameterLists:
+  Exclude:
+    - "lib/charming/events.rb"
+
+Naming/MethodParameterName:
+  AllowedNames:
+    - x
+    - y
+    - ctrl
+    - alt
+    - shift
+    - to
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - "lib/charming/events.rb"
+
+Metrics/ModuleLength:
+  Exclude:
+    - "lib/charming/generators/app_generator/layout_template.rb"
