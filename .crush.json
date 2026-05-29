@@ -1,0 +1,11 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "models": {
+    "large": {
+      "model": "qwen/qwen3.6-35b-a3b",
+      "provider": "lm-studio",
+      "reasoning_effort": "high",
+      "think": true
+    }
+  }
+}
