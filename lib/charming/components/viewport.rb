@@ -3,10 +3,12 @@
 require "unicode/display_width"
 
 require_relative "../component"
+require_relative "keyboard_handler"
 
 module Charming
   module Components
     class Viewport < Component
+      include KeyboardHandler
       ANSI_PATTERN = /\e\[[0-9;]*m/
       KEY_ACTIONS = {
         up: :scroll_up,
@@ -35,12 +37,23 @@ module Charming
         visible_lines.map { |line| render_line(line) }.join("\n")
       end
 
-      def handle_key(event)
-        key = event.respond_to?(:key) ? event.key : event
-        action = KEY_ACTIONS[key.to_sym]
-        return unless action
+      def handle_mouse(event)
+        return nil unless height
 
-        send(action)
+        if event.scroll?
+          scroll_delta = event.button_name == :scroll_up ? -1 : 1
+          @offset += scroll_delta
+          clamp_position
+          return :handled
+        end
+
+        return nil unless event.click?
+
+        clicked_row = event.y
+        return nil if clicked_row < offset || clicked_row >= offset + viewport_height
+
+        @offset = clicked_row
+        clamp_position
         :handled
       end
 

@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "../component"
+require_relative "keyboard_handler"
 
 module Charming
   module Components
     class List < Component
+      include KeyboardHandler
       KEY_ACTIONS = {
         up: :move_up,
         down: :move_down,
@@ -20,7 +22,7 @@ module Charming
         @selected_index = selected_index
         @height = height
         @label = label || :to_s.to_proc
-        clamp_selection
+        clamp_position
       end
 
       def selected_item
@@ -28,10 +30,25 @@ module Charming
       end
 
       def handle_key(event)
-        key = event.respond_to?(:key) ? event.key : event
+        key = Charming.key_of(event)
         return [:selected, selected_item] if key.to_sym == :enter && selected_item
 
-        handle_named_key(key)
+        super
+      end
+
+      def handle_mouse(event)
+        return nil unless event.click?
+        return nil unless @height
+
+        visible_start = viewport_start
+        visible_end = visible_start + viewport_height
+
+        return nil unless (visible_start...visible_end).cover?(event.y)
+
+        clicked_index = event.y
+        @selected_index = clicked_index
+        clamp_position
+        :handled
       end
 
       def render
@@ -41,14 +58,6 @@ module Charming
       end
 
       private
-
-      def handle_named_key(key)
-        action = KEY_ACTIONS[key.to_sym]
-        return unless action
-
-        send(action)
-        :handled
-      end
 
       def move_up
         @selected_index -= 1 if selected_index.positive?
@@ -90,7 +99,7 @@ module Charming
         index == selected_index ? style.reverse.render(rendered) : rendered
       end
 
-      def clamp_selection
+      def clamp_position
         @selected_index = 0 if items.empty?
         @selected_index = selected_index.clamp(0, items.length - 1) unless items.empty?
       end

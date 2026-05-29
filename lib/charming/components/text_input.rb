@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "../component"
+require_relative "keyboard_handler"
 
 module Charming
   module Components
     class TextInput < Component
+      include KeyboardHandler
       KEY_ACTIONS = {
         left: :move_left,
         right: :move_right,
@@ -22,17 +24,13 @@ module Charming
         @placeholder = placeholder
         @width = width
         @cursor = cursor || @value.length
-        clamp_cursor
+        clamp_position
       end
 
       def handle_key(event)
-        key = event.respond_to?(:key) ? event.key : event
-        if character_event?(event)
-          insert(event.char)
-          return :handled
-        end
+        return :handled if character_event?(event) && insert(event.char)
 
-        handle_named_key(key)
+        super
       end
 
       def render
@@ -43,14 +41,6 @@ module Charming
       private
 
       attr_reader :placeholder
-
-      def handle_named_key(key)
-        action = KEY_ACTIONS[key.to_sym]
-        return unless action
-
-        send(action)
-        :handled
-      end
 
       def character_event?(event)
         event.respond_to?(:char) && event.char && event.char.length == 1 && printable?(event.char)
@@ -104,7 +94,7 @@ module Charming
         "|"
       end
 
-      def clamp_cursor
+      def clamp_position
         @cursor = cursor.clamp(0, value.length)
       end
     end
