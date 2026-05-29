@@ -74,4 +74,34 @@ RSpec.describe Charming::Components::List do
 
     expect(list.render).to eq("  Two\n\e[7m> Three\e[0m")
   end
+
+  it "handles mouse click selection within viewport" do
+    list = described_class.new(items: %w[One Two Three Four Five], selected_index: 0, height: 3)
+
+    mouse = Charming::MouseEvent.new(button: 0, x: 5, y: 2)
+    expect(list.handle_mouse(mouse)).to eq(:handled)
+    expect(list.selected_index).to eq(2)
+  end
+
+  it "ignores mouse clicks outside viewport" do
+    list = described_class.new(items: %w[One Two Three Four Five], selected_index: 0, height: 3)
+
+    mouse = Charming::MouseEvent.new(button: 0, x: 5, y: 10)
+    expect(list.handle_mouse(mouse)).to be_nil
+    expect(list.selected_index).to eq(0)
+  end
+
+  it "ignores mouse scroll events" do
+    list = described_class.new(items: %w[One Two Three])
+
+    mouse = Charming::MouseEvent.new(button: 64, x: 0, y: 0)
+    expect(list.handle_mouse(mouse)).to be_nil
+  end
+
+  it "ignores mouse when no height is set" do
+    list = described_class.new(items: %w[One Two Three])
+
+    mouse = Charming::MouseEvent.new(button: 0, x: 0, y: 1)
+    expect(list.handle_mouse(mouse)).to be_nil
+  end
 end

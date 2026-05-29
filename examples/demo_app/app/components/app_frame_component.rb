@@ -25,7 +25,7 @@ module DemoApp
     end
 
     def help_line
-      text "up/down changes count\nj/k scrolls log\np commands, q quits",
+      text "up/down: count  j/k: scroll  p: commands  q: quit  mouse: scroll",
            style: style.foreground(:bright_black)
     end
 
@@ -34,7 +34,7 @@ module DemoApp
     end
 
     def log_help
-      text "j/k, page up/down, home/end", style: style.foreground(:bright_black)
+      text "j/k, page up/down, home/end, mouse", style: style.foreground(:bright_black)
     end
 
     def counter_style

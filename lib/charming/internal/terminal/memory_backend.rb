@@ -12,6 +12,7 @@ module Charming
           @height = height
           @frames = []
           @operations = []
+          @mouse_enabled = false
         end
 
         def read_event(timeout: nil)
@@ -20,8 +21,15 @@ module Charming
         end
 
         def write_frame(frame)
+          @current_frame = frame
           @frames << frame
           @operations << [:write_frame, frame]
+        end
+
+        def write_lines(line_changes, frame: nil)
+          @current_frame = frame || apply_line_changes(line_changes)
+          @frames << @current_frame
+          @operations << [:write_lines, line_changes]
         end
 
         def enter_alt_screen
@@ -50,6 +58,30 @@ module Charming
 
         def size
           [@width, @height]
+        end
+
+        def enable_mouse_tracking
+          @mouse_enabled = true
+          @operations << :enable_mouse_tracking
+        end
+
+        def disable_mouse_tracking
+          @mouse_enabled = false
+          @operations << :disable_mouse_tracking
+        end
+
+        def mouse_enabled?
+          @mouse_enabled
+        end
+
+        private
+
+        def apply_line_changes(line_changes)
+          lines = @current_frame.to_s.lines(chomp: true)
+          line_changes.each do |row, line|
+            lines[row - 1] = line
+          end
+          lines.join("\n")
         end
       end
     end

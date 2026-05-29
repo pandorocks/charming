@@ -55,6 +55,16 @@ module DemoApp
       render_home
     end
 
+    def dispatch_component_mouse
+      scroll_log_mouse
+      response
+    end
+
+    def scroll_log_mouse
+      log_viewport.handle_mouse(event)
+      render_home
+    end
+
     def tick_spinner
       spinner.tick
       render_home

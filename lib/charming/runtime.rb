@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "internal/renderer/full_repaint"
+require_relative "internal/renderer/differential"
 require_relative "internal/terminal/memory_backend"
 require_relative "internal/terminal/tty_backend"
 
@@ -11,7 +11,7 @@ module Charming
     def initialize(application, backend: nil, renderer: nil, clock: nil)
       @application = application
       @backend = backend || Internal::Terminal::TTYBackend.new
-      @renderer = renderer || Internal::Renderer::FullRepaint.new(@backend)
+      @renderer = renderer || Internal::Renderer::Differential.new(@backend)
       @clock = clock || -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
       @route = @application.routes.resolve("/")
       @screen = backend_screen
@@ -54,9 +54,14 @@ module Charming
       @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_timer
     end
 
+    def dispatch_mouse(event)
+      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_mouse
+    end
+
     def dispatch_event(event)
       return dispatch_resize(event) if event.is_a?(ResizeEvent)
       return dispatch_timer(event) if event.is_a?(TimerEvent)
+      return dispatch_mouse(event) if event.is_a?(MouseEvent)
 
       dispatch_key(event)
     end
