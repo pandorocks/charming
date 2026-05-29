@@ -24,7 +24,7 @@ module Charming
       end
 
       def handle_key(event)
-        key = event.respond_to?(:key) ? event.key : event
+        key = Charming.key_of(event)
         return :cancelled if key.to_sym == :escape
 
         return handle_list_key(event) if list_key?(key)

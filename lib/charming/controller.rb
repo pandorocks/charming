@@ -73,6 +73,13 @@ module Charming
       binding ? dispatch(binding.action) : nil
     end
 
+    def dispatch_mouse
+      return dispatch_command_palette_mouse if command_palette_open?
+      return dispatch_sidebar_mouse if sidebar_focused?
+
+      dispatch_component_mouse
+    end
+
     def render(body = "")
       @response = Response.render(render_with_layout(body))
     end
@@ -160,7 +167,7 @@ module Charming
     end
 
     def key_name
-      event.respond_to?(:key) ? event.key.to_s : event.to_s
+      Charming.key_of(event).to_s
     end
 
     def dispatch_command_palette_key
@@ -169,6 +176,10 @@ module Charming
       perform_command(result.last) if selected_command?(result)
       render_default_action unless response
       response
+    end
+
+    def dispatch_command_palette_mouse
+      nil
     end
 
     def dispatch_sidebar_key
@@ -180,6 +191,10 @@ module Charming
       else render_default_action
       end
       response
+    end
+
+    def dispatch_component_mouse
+      nil
     end
 
     def sidebar_move(delta)
