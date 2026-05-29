@@ -210,6 +210,36 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["Ticks: 0", "Ticks: 1"])
   end
 
+  it "does not repaint unchanged timer frames" do
+    timer_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      timer :clock, every: 0.1, action: :tick
+
+      def show
+        render "Still"
+      end
+
+      def tick
+        render "Still"
+      end
+    end
+    stub_const("UnchangedTimerRuntimeSpecController", timer_controller)
+    timer_app = Class.new(Charming::Application) do
+      routes do
+        root "unchanged_timer_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::KeyEvent.new(key: :q)]
+    )
+    times = [0.0, 0.0, 0.0, 0.1, 0.2, 0.2, 0.2]
+    clock = -> { times.shift || 0.2 }
+
+    described_class.new(timer_app.new, backend: backend, clock: clock).run
+
+    expect(backend.frames).to eq(["Still"])
+  end
+
   it "restores terminal state when a controller raises" do
     failing_controller = Class.new(Charming::Controller) do
       def show
