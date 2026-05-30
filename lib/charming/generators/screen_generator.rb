@@ -1,19 +1,25 @@
 # frozen_string_literal: true
 
 require_relative "app_file_generator"
+require_relative "app_generator/screen_spec_templates"
 
 module Charming
   module Generators
-    class ScaffoldGenerator < AppFileGenerator
+    class ScreenGenerator < AppFileGenerator
+      include AppGeneratorTemplates::ScreenSpecTemplates
+
       def initialize(name, args, out:, destination:, force: false)
         super
-        raise Error, "Usage: charming generate scaffold NAME" if args.any?
+        raise Error, "Usage: charming generate screen NAME" if args.any?
       end
 
       def generate
         create_file(model_path, model)
         create_file(controller_path, controller)
         create_file(view_path, view)
+        create_file(spec_model_path, spec_model)
+        create_file(spec_controller_path, spec_controller)
+        create_file(spec_view_path, spec_view)
         insert_route
         insert_command
       end
@@ -21,7 +27,7 @@ module Charming
       private
 
       def suffix
-        "scaffold"
+        "screen"
       end
 
       def model_path
@@ -34,6 +40,18 @@ module Charming
 
       def view_path
         File.join("app", "views", "#{name.snake_name}_view.rb")
+      end
+
+      def spec_model_path
+        File.join("spec", "models", "#{name.snake_name}_model_spec.rb")
+      end
+
+      def spec_controller_path
+        File.join("spec", "controllers", "#{name.snake_name}_controller_spec.rb")
+      end
+
+      def spec_view_path
+        File.join("spec", "views", "#{name.snake_name}_view_spec.rb")
       end
 
       def route_path

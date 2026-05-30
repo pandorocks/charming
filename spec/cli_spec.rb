@@ -120,13 +120,13 @@ RSpec.describe Charming::CLI do
     end
   end
 
-  it "generates a routed scaffold reachable from the command palette" do
+  it "generates a routed screen reachable from the command palette" do
     Dir.mktmpdir do |dir|
       output = StringIO.new
-      described_class.new(out: output, pwd: dir).call(%w[new scaffold_tui])
-      app_root = File.join(dir, "scaffold_tui")
+      described_class.new(out: output, pwd: dir).call(%w[new screen_tui])
+      app_root = File.join(dir, "screen_tui")
 
-      status = described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings])
+      status = described_class.new(out: output, pwd: app_root).call(%w[g screen settings])
 
       expect(status).to eq(0)
       expect(output.string).to include("create app/models/settings_model.rb")
@@ -134,6 +134,27 @@ RSpec.describe Charming::CLI do
       expect(output.string).to include("create app/views/settings_view.rb")
       expect(output.string).to include("insert route config/routes.rb")
       expect(output.string).to include("insert command app/controllers/application_controller.rb")
+      expect(File).to exist(File.join(app_root, "spec/models/settings_model_spec.rb"))
+      expect(File).to exist(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))
+      expect(File).to exist(File.join(app_root, "spec/views/settings_view_spec.rb"))
+      expect(File.read(File.join(app_root, "spec/models/settings_model_spec.rb"))).to include(
+        'describe "#title"'
+      )
+      expect(File.read(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))).to include(
+        'describe "#show"'
+      )
+      expect(File.read(File.join(app_root, "spec/views/settings_view_spec.rb"))).to include(
+        'describe "#render"'
+      )
+      expect(File.read(File.join(app_root, "spec/models/settings_model_spec.rb"))).to include(
+        'require "screen_tui"'
+      )
+      expect(File.read(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))).to include(
+        'require "screen_tui"'
+      )
+      expect(File.read(File.join(app_root, "spec/views/settings_view_spec.rb"))).to include(
+        'require "screen_tui"'
+      )
       expect(File.read(File.join(app_root, "config/routes.rb"))).to include(
         'screen "/settings", to: "settings#show"'
       )
@@ -141,9 +162,9 @@ RSpec.describe Charming::CLI do
         'command "Settings" do'
       )
 
-      require File.join(app_root, "lib/scaffold_tui")
-      expect(ScaffoldTui::Application.routes.resolve("/settings").controller_class).to eq(
-        ScaffoldTui::SettingsController
+      require File.join(app_root, "lib/screen_tui")
+      expect(ScreenTui::Application.routes.resolve("/settings").controller_class).to eq(
+        ScreenTui::SettingsController
       )
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
@@ -164,26 +185,39 @@ RSpec.describe Charming::CLI do
         ]
       )
 
-      Charming::Runtime.new(ScaffoldTui::Application.new, backend: backend).run
+      Charming::Runtime.new(ScreenTui::Application.new, backend: backend).run
 
       expect(backend.frames.join("\n")).to include("Settings")
-      expect(backend.frames.last).to include("ScaffoldTui")
+      expect(backend.frames.last).to include("ScreenTui")
     end
   end
 
-  it "does not duplicate scaffold route or command when forced" do
+  it "does not duplicate screen route or command when forced" do
     Dir.mktmpdir do |dir|
       output = StringIO.new
       described_class.new(out: output, pwd: dir).call(%w[new duplicate_tui])
       app_root = File.join(dir, "duplicate_tui")
 
-      described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings])
-      described_class.new(out: output, pwd: app_root).call(%w[g scaffold settings --force])
+      described_class.new(out: output, pwd: app_root).call(%w[g screen settings])
+      described_class.new(out: output, pwd: app_root).call(%w[g screen settings --force])
 
       routes = File.read(File.join(app_root, "config/routes.rb"))
       application_controller = File.read(File.join(app_root, "app/controllers/application_controller.rb"))
       expect(routes.scan('screen "/settings", to: "settings#show"').size).to eq(1)
       expect(application_controller.scan('command "Settings" do').size).to eq(1)
+    end
+  end
+
+  it "rejects the removed g scaffold subcommand" do
+    Dir.mktmpdir do |dir|
+      described_class.new(out: StringIO.new, pwd: dir).call(%w[new legacy_tui])
+      app_root = File.join(dir, "legacy_tui")
+
+      error = StringIO.new
+      status = described_class.new(out: StringIO.new, err: error, pwd: app_root).call(%w[g scaffold settings])
+
+      expect(status).to eq(1)
+      expect(error.string).to include("Unknown generator: scaffold")
     end
   end
 
