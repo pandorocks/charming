@@ -85,6 +85,10 @@ end
         controller.sidebar_focused?
       end
 
+      def content_focused?
+        controller.content_focused?
+      end
+
       def sidebar_index
         controller.sidebar_index
       end
@@ -123,6 +127,7 @@ end
 
       def main_content_style
         base = style.border(:rounded).padding(1, 2).width(main_content_width).height(panel_height)
+        base = base.foreground(:bright_cyan) if content_focused?
         palette ? base.faint : base
       end)
         end

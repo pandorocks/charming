@@ -10,10 +10,10 @@ module Charming
 module #{name.class_name}
   class ApplicationController < Charming::Controller
     layout Layouts::Application
+    focus_ring :sidebar, :content
 
     key "p", :open_command_palette
     key "q", :quit
-    key "tab", :focus_sidebar
 
     command "Home" do
       navigate_to "/"

@@ -39,6 +39,12 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
         "layout Layouts::Application"
       )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        "focus_ring :sidebar, :content"
+      )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).not_to include(
+        'key "tab", :focus_sidebar'
+      )
       expect(File.read(File.join(app_root, "app/controllers/home_controller.rb"))).to include(
         "class HomeController < ApplicationController"
       )
@@ -47,6 +53,12 @@ RSpec.describe Charming::CLI do
       )
       expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
         "def sidebar"
+      )
+      expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
+        "def content_focused?"
+      )
+      expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
+        "base = base.foreground(:bright_cyan) if content_focused?"
       )
 
       require File.join(app_root, "lib/weather_tui")

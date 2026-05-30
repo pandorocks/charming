@@ -390,9 +390,9 @@ RSpec.describe Charming::Controller do
     end
 
     it "isolates siblings so adding a key to one does not leak to the other" do
-      parent   = Class.new(described_class) { key "shared", :shared_action }
-      sibling1 = Class.new(parent)          { key "one", :one_action }
-      sibling2 = Class.new(parent)          { key "two", :two_action }
+      parent = Class.new(described_class) { key "shared", :shared_action }
+      sibling1 = Class.new(parent) { key "one", :one_action }
+      sibling2 = Class.new(parent) { key "two", :two_action }
 
       expect(sibling1.key_bindings).to eq("shared" => :shared_action, "one" => :one_action)
       expect(sibling2.key_bindings).to eq("shared" => :shared_action, "two" => :two_action)
@@ -400,8 +400,8 @@ RSpec.describe Charming::Controller do
 
     it "cumulates bindings across a three-level chain" do
       grandparent = Class.new(described_class) { key "g", :grand }
-      parent      = Class.new(grandparent)     { key "p", :parent }
-      child       = Class.new(parent)          { key "c", :child }
+      parent = Class.new(grandparent) { key "p", :parent }
+      child = Class.new(parent) { key "c", :child }
 
       expect(child.key_bindings).to eq("g" => :grand, "p" => :parent, "c" => :child)
     end
@@ -411,7 +411,7 @@ RSpec.describe Charming::Controller do
     # in the child — locking in this Rails-style inheritance contract.
     it "does not propagate parent additions made after the child has snapshotted" do
       parent = Class.new(described_class) { key "up", :foo }
-      child  = Class.new(parent)          { key "down", :bar }
+      child = Class.new(parent) { key "down", :bar }
 
       parent.key "q", :quit
 
@@ -446,7 +446,7 @@ RSpec.describe Charming::Controller do
         end
 
         define_method(:widget) { session[:widget] ||= component_klass.new }
-        define_method(:other)  { session[:other]  ||= component_klass.new(echo: false) }
+        define_method(:other) { session[:other] ||= component_klass.new(echo: false) }
       end
       klass.instance_exec(&extra) if extra
       stub_const(name, klass)
@@ -624,6 +624,56 @@ RSpec.describe Charming::Controller do
 
       expect(controller.focused?(:widget)).to be(true)
       expect(controller.focused?(:other)).to be(false)
+    end
+
+    it "uses focus_ring state for sidebar and content focus helpers" do
+      controller_class = focus_controller(component_class, ring: %i[sidebar content])
+
+      controller_class.new(application: application).focus_content
+      controller = controller_class.new(application: application)
+
+      expect(controller.sidebar_focused?).to be(false)
+      expect(controller.content_focused?).to be(true)
+    end
+
+    it "moves from sidebar to content on Tab when sidebar is in the focus ring" do
+      controller_class = focus_controller(component_class, ring: %i[sidebar content])
+      controller_class.new(application: application).dispatch(:show)
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab)
+      ).dispatch_key
+
+      expect(controller_class.new(application: application).focus.current).to eq(:content)
+    end
+
+    it "preserves global key bindings while the sidebar is focused" do
+      controller_class = focus_controller(
+        component_class,
+        ring: %i[sidebar content],
+        extra: -> { key "q", :quit }
+      )
+      controller_class.new(application: application).dispatch(:show)
+
+      response = controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :q)
+      ).dispatch_key
+
+      expect(response).to be_quit
+    end
+
+    it "preserves session focus fallback when no focus_ring slot is declared" do
+      controller_class = Class.new(described_class) { def show = render("ok") }
+      stub_const("SessionFocusFallbackController", controller_class)
+
+      controller_class.new(application: application).focus_content
+      controller = controller_class.new(application: application)
+
+      expect(controller.sidebar_focused?).to be(false)
+      expect(controller.content_focused?).to be(true)
+      expect(application.session[:focus]).to eq(:content)
     end
   end
 

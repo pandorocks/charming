@@ -144,18 +144,34 @@ module Charming
     end
 
     def focus_sidebar
-      session[:focus] = :sidebar
+      if focus_ring_slot?(:sidebar)
+        focus.focus(:sidebar)
+      else
+        session[:focus] = :sidebar
+      end
       session[:sidebar_index] ||= current_route_index
       render_default_action
     end
 
     def focus_content
-      session[:focus] = :content
+      if focus_ring_slot?(:content)
+        focus.focus(:content)
+      else
+        session[:focus] = :content
+      end
       render_default_action
     end
 
     def sidebar_focused?
+      return focused?(:sidebar) if focus_ring_slot?(:sidebar)
+
       session[:focus] == :sidebar
+    end
+
+    def content_focused?
+      return focused?(:content) if focus_ring_slot?(:content)
+
+      session[:focus] == :content
     end
 
     def sidebar_index
@@ -166,6 +182,10 @@ module Charming
 
     def current_route_index
       application.routes.all.index { |route| route.controller_class == self.class && route.action == :show } || 0
+    end
+
+    def focus_ring_slot?(slot)
+      self.class.focus_ring_slots.include?(slot)
     end
 
     attr_reader :response
@@ -232,12 +252,17 @@ module Charming
     def dispatch_sidebar_key
       case key_name
       when "j", "down" then sidebar_move(+1)
-      when "k", "up"   then sidebar_move(-1)
-      when "enter"     then sidebar_select
+      when "k", "up" then sidebar_move(-1)
+      when "enter" then sidebar_select
       when "escape", "tab" then focus_content
-      else render_default_action
+      else dispatch_sidebar_bound_key
       end
       response
+    end
+
+    def dispatch_sidebar_bound_key
+      action = self.class.key_bindings[key_name]
+      action ? dispatch(action) : render_default_action
     end
 
     def dispatch_component_mouse
