@@ -94,6 +94,46 @@ RSpec.describe Charming::View do
     expect(view.new.render).to eq("Partial Ruby")
   end
 
+  describe "#focused?" do
+    let(:controller_double) do
+      Class.new do
+        def initialize(slot) = @slot = slot
+        def focused?(slot) = slot == @slot
+      end
+    end
+
+    it "delegates to the controller assign when one is passed" do
+      view = Class.new(described_class) do
+        def render
+          focused?(:input) ? "input!" : "other"
+        end
+      end
+
+      expect(view.new(controller: controller_double.new(:input)).render).to eq("input!")
+      expect(view.new(controller: controller_double.new(:other)).render).to eq("other")
+    end
+
+    it "delegates to focus_controller for sub-components that aren't a layout" do
+      view = Class.new(described_class) do
+        def render
+          focused?(:input) ? "yes" : "no"
+        end
+      end
+
+      expect(view.new(focus_controller: controller_double.new(:input)).render).to eq("yes")
+    end
+
+    it "returns false when no controller assign is present" do
+      view = Class.new(described_class) do
+        def render
+          focused?(:anything).to_s
+        end
+      end
+
+      expect(view.new.render).to eq("false")
+    end
+  end
+
   it "yields layout content" do
     layout = Class.new(described_class) do
       def render

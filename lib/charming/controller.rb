@@ -27,6 +27,14 @@ module Charming
         @key_bindings ||= superclass.respond_to?(:key_bindings) ? superclass.key_bindings.dup : {}
       end
 
+      def focus_ring(*slots)
+        @focus_ring_slots = slots
+      end
+
+      def focus_ring_slots
+        @focus_ring_slots ||= superclass.respond_to?(:focus_ring_slots) ? superclass.focus_ring_slots.dup : []
+      end
+
       def command_bindings
         @command_bindings ||= superclass.respond_to?(:command_bindings) ? superclass.command_bindings.dup : []
       end
@@ -65,7 +73,11 @@ module Charming
       return dispatch_sidebar_key if sidebar_focused?
 
       action = self.class.key_bindings[key_name]
-      action ? dispatch(action) : nil
+      return dispatch(action) if action
+      return response if dispatch_tab_traversal == :handled
+      return response if dispatch_to_focused_component == :handled
+
+      nil
     end
 
     def dispatch_timer
@@ -103,12 +115,24 @@ module Charming
 
     def open_command_palette
       session[:command_palette] = build_command_palette
+      focus.push_scope([:command_palette], origin: :command_palette)
       render_default_action
     end
 
     def close_command_palette
       session.delete(:command_palette)
+      pop_command_palette_scope
       render_default_action
+    end
+
+    def focus
+      @focus ||= Focus.for(session, self.class).tap do |f|
+        f.define(self.class.focus_ring_slots) unless self.class.focus_ring_slots.empty?
+      end
+    end
+
+    def focused?(slot)
+      focus.focused?(slot)
     end
 
     def command_palette_open?
@@ -170,6 +194,29 @@ module Charming
       Charming.key_of(event).to_s
     end
 
+    def dispatch_to_focused_component
+      slot = focus.current
+      return nil unless slot && respond_to?(slot, true)
+
+      component = send(slot)
+      return nil unless component.respond_to?(:handle_key)
+
+      result = component.handle_key(event)
+      return nil if result.nil?
+
+      render_default_action
+      :handled
+    end
+
+    def dispatch_tab_traversal
+      return nil unless event.is_a?(KeyEvent) && event.key == :tab
+      return nil if focus.ring.empty?
+
+      focus.cycle(event.shift ? -1 : +1)
+      render_default_action
+      :handled
+    end
+
     def dispatch_command_palette_key
       result = command_palette.handle_key(event)
       close_command_palette if result == :cancelled
@@ -220,9 +267,14 @@ module Charming
     end
 
     def perform_command(command)
+      pop_command_palette_scope
       perform_command_value(command.value)
       session.delete(:command_palette) unless command.value == :quit
       render_default_action unless response&.navigate? || response&.quit?
+    end
+
+    def pop_command_palette_scope
+      focus.pop_scope while focus.ring == [:command_palette]
     end
 
     def perform_command_value(value)

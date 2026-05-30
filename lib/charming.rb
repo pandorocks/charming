@@ -1,29 +1,23 @@
 # frozen_string_literal: true
 
-require_relative "charming/version"
-require_relative "charming/application_model"
-require_relative "charming/application"
-require_relative "charming/controller"
-require_relative "charming/events"
-require_relative "charming/response"
-require_relative "charming/router"
-require_relative "charming/screen"
-require_relative "charming/runtime"
-require_relative "charming/ui"
-require_relative "charming/view"
-require_relative "charming/component"
-require_relative "charming/components/command_palette"
-require_relative "charming/components/list"
-require_relative "charming/components/modal"
-require_relative "charming/components/spinner"
-require_relative "charming/components/text_input"
-require_relative "charming/components/table"
-require_relative "charming/components/viewport"
+require "zeitwerk"
+
+loader = Zeitwerk::Loader.for_gem
+loader.inflector.inflect(
+  "cli" => "CLI",
+  "ui" => "UI",
+  "tty_backend" => "TTYBackend"
+)
+loader.setup
 
 module Charming
   class Error < StandardError; end
 
   def self.run(application, backend: nil)
     Runtime.new(application, backend: backend).run
+  end
+
+  def self.key_of(event)
+    event.respond_to?(:key) ? event.key : event
   end
 end

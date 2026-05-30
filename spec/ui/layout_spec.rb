@@ -23,6 +23,18 @@ RSpec.describe Charming::UI do
   it "overlays a block onto the center of another block" do
     base = ".....\n.....\n....."
 
-    expect(described_class.overlay(base, "X")).to eq(".....\n  X  \n.....")
+    expect(described_class.overlay(base, "X")).to eq(".....\n..X..\n.....")
+  end
+
+  it "preserves content to the left and right of the overlay" do
+    base = "|.....|\n|.....|\n|.....|"
+
+    expect(described_class.overlay(base, "XXX", top: 1, left: 2)).to eq("|.....|\n|.XXX.|\n|.....|")
+  end
+
+  it "preserves ansi styling around the overlay" do
+    base = described_class.style.faint.render(".....")
+
+    expect(described_class.overlay(base, "X", left: 2)).to eq("\e[2m..\e[0mX\e[2m..\e[0m")
   end
 end

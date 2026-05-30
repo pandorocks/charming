@@ -1,23 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "base"
-require_relative "name"
-require_relative "app_generator/basic_templates"
-require_relative "app_generator/component_templates"
-require_relative "app_generator/controller_template"
-require_relative "app_generator/layout_template"
-require_relative "app_generator/model_templates"
-require_relative "app_generator/view_template"
-
 module Charming
   module Generators
     class AppGenerator < Base
-      include AppGeneratorTemplates::BasicTemplates
-      include AppGeneratorTemplates::ComponentTemplates
-      include AppGeneratorTemplates::ControllerTemplate
-      include AppGeneratorTemplates::LayoutTemplate
-      include AppGeneratorTemplates::ModelTemplates
-      include AppGeneratorTemplates::ViewTemplate
+      include BasicTemplates
+      include ComponentTemplates
+      include ControllerTemplate
+      include LayoutTemplate
+      include ModelTemplates
+      include ScreenSpecTemplates
+      include ViewTemplate
+      include AppSpecTemplates
 
       FILE_TEMPLATES = [
         ["Gemfile", :gemfile],
@@ -36,7 +29,11 @@ module Charming
         ["app/views/layouts/application.rb", :layout],
         ["app/views/home_view.rb", :view],
         ["app/components/app_frame_component.rb", :component],
-        ["spec/spec_helper.rb", :spec_helper]
+        ["spec/spec_helper.rb", :spec_helper],
+        ["spec/models/home_model_spec.rb", :spec_model],
+        ["spec/controllers/home_controller_spec.rb", :spec_controller],
+        ["spec/views/home_view_spec.rb", :spec_view],
+        ["spec/components/app_frame_component_spec.rb", :spec_component]
       ].freeze
 
       def initialize(name, out:, destination:, force: false)
@@ -53,6 +50,7 @@ module Charming
       private
 
       attr_reader :name
+      alias app_name name
 
       def file_path(path)
         format(path, name: name.snake_name)

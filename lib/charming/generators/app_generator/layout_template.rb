@@ -2,7 +2,7 @@
 
 module Charming
   module Generators
-    module AppGeneratorTemplates
+    class AppGenerator
       module LayoutTemplate
         def layout
           %(# frozen_string_literal: true

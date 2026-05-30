@@ -420,6 +420,231 @@ RSpec.describe Charming::Controller do
     end
   end
 
+  describe "focus_ring" do
+    let(:component_class) do
+      Class.new do
+        attr_reader :received
+
+        def initialize(echo: true)
+          @received = []
+          @echo = echo
+        end
+
+        def handle_key(event)
+          @received << Charming.key_of(event)
+          @echo ? :handled : nil
+        end
+      end
+    end
+
+    def focus_controller(component_klass, ring: %i[widget], extra: nil, name: "FocusRingController")
+      klass = Class.new(described_class) do
+        focus_ring(*ring)
+
+        def show
+          render "current=#{focus.current}"
+        end
+
+        define_method(:widget) { session[:widget] ||= component_klass.new }
+        define_method(:other)  { session[:other]  ||= component_klass.new(echo: false) }
+      end
+      klass.instance_exec(&extra) if extra
+      stub_const(name, klass)
+      klass
+    end
+
+    it "auto-dispatches non-bound keys to the focused component" do
+      controller_class = focus_controller(component_class)
+      controller_class.new(application: application).dispatch(:show)
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :j)
+      ).dispatch_key
+
+      expect(application.session[:widget].received).to eq([:j])
+    end
+
+    it "drops unbound keys when the focused component returns nil" do
+      controller_class = focus_controller(component_class, ring: %i[other])
+      controller_class.new(application: application).dispatch(:show)
+
+      response = controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :j)
+      ).dispatch_key
+
+      expect(response).to be_nil
+      expect(application.session[:other].received).to eq([:j])
+    end
+
+    it "drops Tab when no focus_ring is defined" do
+      controller_class = Class.new(described_class) { def show = render("ok") }
+      stub_const("NoFocusRingController", controller_class)
+
+      response = controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab)
+      ).dispatch_key
+
+      expect(response).to be_nil
+    end
+
+    it "lets explicit key bindings win over component dispatch" do
+      controller_class = focus_controller(
+        component_class,
+        extra: -> {
+          key "q", :quit
+        }
+      )
+      controller_class.new(application: application).dispatch(:show)
+
+      response = controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :q)
+      ).dispatch_key
+
+      expect(response).to be_quit
+      expect(application.session[:widget]&.received || []).to be_empty
+    end
+
+    it "cycles focus on Tab across fresh controller instances" do
+      controller_class = focus_controller(component_class, ring: %i[widget other])
+      controller_class.new(application: application).dispatch(:show)
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab)
+      ).dispatch_key
+
+      expect(controller_class.new(application: application).focus.current).to eq(:other)
+    end
+
+    it "cycles focus backward on Shift+Tab" do
+      controller_class = focus_controller(component_class, ring: %i[widget other])
+      controller_class.new(application: application).dispatch(:show)
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab, shift: true)
+      ).dispatch_key
+
+      expect(controller_class.new(application: application).focus.current).to eq(:other)
+    end
+
+    it "preserves underlying focus when the command palette opens and closes" do
+      controller_class = focus_controller(
+        component_class,
+        ring: %i[widget other],
+        extra: -> { command "Close palette", :close_command_palette }
+      )
+      controller_class.new(application: application).dispatch(:show)
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab)
+      ).dispatch_key
+
+      controller_class.new(application: application).open_command_palette
+      controller_class.new(application: application).close_command_palette
+
+      expect(controller_class.new(application: application).focus.current).to eq(:other)
+    end
+
+    it "restores underlying focus after a same-controller command is selected via Enter" do
+      controller_class = focus_controller(
+        component_class,
+        ring: %i[widget other],
+        extra: -> {
+          command "Render again", :show
+        }
+      )
+      controller_class.new(application: application).dispatch(:show)
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :tab)
+      ).dispatch_key
+      controller_class.new(application: application).open_command_palette
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :enter)
+      ).dispatch_key
+
+      reborn = controller_class.new(application: application)
+      expect(reborn.focus.current).to eq(:other)
+      expect(application.session[:focus_state][controller_class.name][:scopes].length).to eq(1)
+    end
+
+    it "restores underlying focus after a navigate-to command is selected via Enter" do
+      controller_class = focus_controller(
+        component_class,
+        extra: -> {
+          command "Go somewhere" do
+            navigate_to "/other"
+          end
+        }
+      )
+      controller_class.new(application: application).dispatch(:show)
+      controller_class.new(application: application).open_command_palette
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :enter)
+      ).dispatch_key
+
+      reborn = controller_class.new(application: application)
+      expect(reborn.focus.current).to eq(:widget)
+      expect(application.session[:focus_state][controller_class.name][:scopes].length).to eq(1)
+    end
+
+    it "delivers subsequent unbound keys to the focused component after a palette command" do
+      controller_class = focus_controller(
+        component_class,
+        extra: -> { command "Render again", :show }
+      )
+      controller_class.new(application: application).dispatch(:show)
+      controller_class.new(application: application).open_command_palette
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :enter)
+      ).dispatch_key
+
+      controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :j)
+      ).dispatch_key
+
+      expect(application.session[:widget].received).to eq([:j])
+    end
+
+    it "exposes focused?(:slot) on the controller for views to query" do
+      controller_class = focus_controller(component_class, ring: %i[widget other])
+      controller = controller_class.new(application: application)
+      controller.dispatch(:show)
+
+      expect(controller.focused?(:widget)).to be(true)
+      expect(controller.focused?(:other)).to be(false)
+    end
+  end
+
+  describe ".focus_ring_slots inheritance" do
+    it "inherits a copy of parent slots, not a live reference" do
+      parent = Class.new(described_class) { focus_ring :widget }
+      child = Class.new(parent) { focus_ring :widget, :other }
+
+      expect(child.focus_ring_slots).to eq(%i[widget other])
+      expect(parent.focus_ring_slots).to eq(%i[widget])
+      expect(child.focus_ring_slots).not_to equal(parent.focus_ring_slots)
+    end
+
+    it "leaves children with the inherited slots when no override is declared" do
+      parent = Class.new(described_class) { focus_ring :widget }
+      child = Class.new(parent)
+
+      expect(child.focus_ring_slots).to eq(%i[widget])
+    end
+  end
+
   describe ".timer_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { timer :refresh, every: 1, action: :refresh }

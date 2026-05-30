@@ -28,6 +28,12 @@ RSpec.describe Charming::CLI do
       expect(File).to exist(File.join(app_root, "app/controllers/application_controller.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/home_controller.rb"))
       expect(File).to exist(File.join(app_root, "app/views/layouts/application.rb"))
+      expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('describe "#title"')
+      expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('describe "#show"')
+      expect(File.read(File.join(app_root, "spec/views/home_view_spec.rb"))).to include('describe "#render"')
+      expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('require "weather_tui"')
+      expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('require "weather_tui"')
+      expect(File.read(File.join(app_root, "spec/views/home_view_spec.rb"))).to include('require "weather_tui"')
       expect(File).not_to exist(File.join(app_root, "app/components/command_palette_modal_component.rb"))
       expect(File).not_to exist(File.join(app_root, "app/controllers/weather_tui/home_controller.rb"))
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(

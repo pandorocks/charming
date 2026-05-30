@@ -2,7 +2,7 @@
 
 module Charming
   module Generators
-    module AppGeneratorTemplates
+    class AppGenerator
       module ScreenSpecTemplates
         def spec_model
           %(# frozen_string_literal: true
@@ -56,7 +56,7 @@ RSpec.describe #{app_name.class_name}::#{name.view_class_name} do
     it "renders the model title" do
       view = described_class.new(
         #{name.snake_name}: double(title: "#{name.class_name}")
-      )
+       )
 
       expect(view.render).to eq("#{name.class_name}")
     end

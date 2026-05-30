@@ -15,6 +15,11 @@ module Charming
       ""
     end
 
+    def focused?(slot)
+      ctrl = assigns[:focus_controller] || assigns[:controller]
+      ctrl ? ctrl.focused?(slot) : false
+    end
+
     private
 
     attr_reader :assigns

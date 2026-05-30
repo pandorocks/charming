@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "internal/renderer/differential"
-require_relative "internal/terminal/memory_backend"
-require_relative "internal/terminal/tty_backend"
-
 module Charming
   class Runtime
     DEFAULT_READ_TIMEOUT = 0.05

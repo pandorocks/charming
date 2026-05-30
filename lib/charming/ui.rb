@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "ui/border"
-require_relative "ui/style"
-require_relative "ui/width"
-
 module Charming
   module UI
     module_function
@@ -78,14 +74,92 @@ module Charming
       value
     end
 
-    def padded_overlay_line(line, column, width)
-      right = [width - column - Width.measure(line), 0].max
-      (" " * column) + line + (" " * right)
+    def composed_overlay_line(base_line, overlay_line, column, width)
+      overlay_width = Width.measure(overlay_line)
+      right_column = column + overlay_width
+
+      visible_slice(base_line, 0, column) +
+        overlay_line +
+        visible_slice(base_line, right_column, [width - right_column, 0].max)
+    end
+
+    def visible_slice(line, start_column, width)
+      return "" unless width.positive?
+
+      slice_visible_text(line.to_s, start_column, start_column + width)
+    end
+
+    def slice_visible_text(line, start_column, end_column)
+      state = {active: [], column: 0, output: +"", started: false}
+
+      each_ansi_or_char(line) do |token, ansi|
+        ansi ? slice_ansi(token, state, start_column, end_column) : slice_char(token, state, start_column, end_column)
+        break if state[:column] >= end_column
+      end
+
+      terminate_slice(state)
+    end
+
+    def each_ansi_or_char(line)
+      index = 0
+      while index < line.length
+        match = line.match(Width::ANSI_PATTERN, index)
+        if match&.begin(0) == index
+          yield match[0], true
+          index = match.end(0)
+        else
+          char = line[index]
+          yield char, false
+          index += 1
+        end
+      end
+    end
+
+    def slice_ansi(token, state, start_column, end_column)
+      started = state[:started]
+      update_active_styles(state[:active], token)
+      return unless state[:column].between?(start_column, end_column - 1)
+
+      start_slice(state)
+      state[:output] << token if started
+    end
+
+    def slice_char(char, state, start_column, end_column)
+      char_width = Width.measure(char)
+      char_start = state[:column]
+      char_end = char_start + char_width
+      state[:column] = char_end
+      return unless char_end > start_column && char_start < end_column
+
+      start_slice(state)
+      state[:output] << char
+    end
+
+    def start_slice(state)
+      return if state[:started]
+
+      state[:output] << state[:active].join
+      state[:started] = true
+    end
+
+    def terminate_slice(state)
+      return state[:output] if state[:active].empty? || state[:output].empty?
+
+      "#{state[:output]}\e[0m"
+    end
+
+    def update_active_styles(active, token)
+      if token.include?("[0m")
+        active.clear
+      else
+        active << token
+      end
     end
 
     def draw_lines(canvas, lines, row:, column:, width:)
       lines.each_with_index do |line, index|
-        canvas[row + index] = padded_overlay_line(line, column, width)
+        line_index = row + index
+        canvas[line_index] = composed_overlay_line(canvas[line_index], line, column, width)
       end
 
       canvas.join("\n")

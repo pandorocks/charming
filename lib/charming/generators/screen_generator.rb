@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "app_file_generator"
-require_relative "app_generator/screen_spec_templates"
-
 module Charming
   module Generators
     class ScreenGenerator < AppFileGenerator
-      include AppGeneratorTemplates::ScreenSpecTemplates
+      include AppGenerator::ScreenSpecTemplates
 
       def initialize(name, args, out:, destination:, force: false)
         super

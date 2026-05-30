@@ -2,7 +2,7 @@
 
 module Charming
   module Generators
-    module AppGeneratorTemplates
+    class AppGenerator
       module ViewTemplate
         def executable
           %(#!/usr/bin/env ruby

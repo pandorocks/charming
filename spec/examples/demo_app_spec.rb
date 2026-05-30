@@ -82,6 +82,41 @@ RSpec.describe "demo app example" do
     expect(backend.frames.join("\n")).to include("Command palette")
   end
 
+  it "auto-routes navigation keys to the focused log viewport via focus_ring" do
+    base = Array.new(20) { Charming::KeyEvent.new(key: :up) } +
+           [Charming::KeyEvent.new(key: :tab)]
+    pre_end = base + [Charming::KeyEvent.new(key: :q)]
+    post_end = base + [Charming::KeyEvent.new(key: :end), Charming::KeyEvent.new(key: :q)]
+
+    pre = Charming::Internal::Terminal::MemoryBackend.new(events: pre_end)
+    post = Charming::Internal::Terminal::MemoryBackend.new(events: post_end)
+    Charming::Runtime.new(DemoApp::Application.new, backend: pre).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: post).run
+
+    expect(pre.frames.last).not_to include("Incremented to 20")
+    expect(post.frames.last).to include("Incremented to 20")
+  end
+
+  it "switches the bold border between counter and log when Tab cycles focus" do
+    initial = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :q)]
+    )
+    after_tab = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :tab), Charming::KeyEvent.new(key: :q)]
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: initial).run
+    Charming::Runtime.new(DemoApp::Application.new, backend: after_tab).run
+
+    # Thick border corners (┏ / ┓ / ┗ / ┛) mark the focused card; rounded
+    # (╭ / ╮ / ╰ / ╯) mark unfocused cards. Initial focus is the counter card;
+    # after Tab the log viewport card becomes the focused one.
+    expect(initial.frames.last).to include("┏").and include("╭")
+    expect(after_tab.frames.last).to include("┏").and include("╭")
+    expect(initial.frames.last.index("┏")).to be < initial.frames.last.index("╭")
+    expect(after_tab.frames.last.index("╭")).to be < after_tab.frames.last.index("┏")
+  end
+
   it "selects a command from the palette with enter" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
