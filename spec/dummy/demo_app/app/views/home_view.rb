@@ -12,6 +12,7 @@ module DemoApp
       render_component AppFrameComponent.new(
         title: home.title,
         status: home.status,
+        progress: home.progress,
         message: home.message
       )
     end

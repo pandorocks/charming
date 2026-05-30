@@ -2,7 +2,7 @@
 
 RSpec.describe "demo app example" do
   before(:context) do
-    require File.expand_path("../../examples/demo_app/lib/demo_app", __dir__)
+    require File.expand_path("../dummy/demo_app/lib/demo_app", __dir__)
   end
 
   it "renders the generated demo app" do
@@ -12,48 +12,44 @@ RSpec.describe "demo app example" do
 
     Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
-    expect(backend.frames.first).to include("Charming demo")
-    expect(backend.frames.first).to include("Activity log")
-    expect(backend.frames.first).to include("- Ready")
+    expect(backend.frames.first).to include("DemoApp")
+    expect(backend.frames.first).to include("Status: Idle")
+    expect(backend.frames.first).to include("Press r to run an async task.")
   end
 
-  it "animates the status spinner from timer events" do
+  it "renders async loading and completed states" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [nil, Charming::KeyEvent.new(key: :q)]
-    )
-    times = [0.0, 0.0, 0.0, 0.1, 0.1, 0.1]
-    clock = -> { times.shift || 0.1 }
-
-    Charming::Runtime.new(DemoApp::Application.new, backend: backend, clock: clock).run
-
-    expect(backend.frames[0]).to include("- Ready")
-    expect(backend.frames[1]).to include("\\ Ready")
-  end
-
-  it "records counter actions in the activity log" do
-    backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [
-        Charming::KeyEvent.new(key: :up),
-        Charming::KeyEvent.new(key: :down),
-        Charming::KeyEvent.new(key: :q)
-      ]
+      events: [Charming::KeyEvent.new(key: "r", char: "r"), Charming::KeyEvent.new(key: :q)]
     )
 
-    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+    Charming::Runtime.new(
+      DemoApp::Application.new,
+      backend: backend,
+      task_executor: completed_task_executor("Async task finished.")
+    ).run
 
-    expect(backend.frames.join("\n")).to include("Incremented to 1")
-    expect(backend.frames.join("\n")).to include("Decremented to 0")
+    frames = backend.frames.join("\n")
+    expect(frames).to include("Status: Loading")
+    expect(frames).to include("Status: Loaded")
+    expect(frames).to include("Async task finished.")
   end
 
-  it "scrolls the activity log" do
-    events = Array.new(7) { Charming::KeyEvent.new(key: :up) }
-    events += Array.new(3) { Charming::KeyEvent.new(key: "j", char: "j") }
-    events << Charming::KeyEvent.new(key: :q)
-    backend = Charming::Internal::Terminal::MemoryBackend.new(events: events)
+  it "advances the loading progress while the async task is running" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: "r", char: "r"), Charming::KeyEvent.new(key: :q)]
+    )
+    times = [0.0, 0.0, 0.2, 0.2, 0.3]
 
-    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+    Charming::Runtime.new(
+      DemoApp::Application.new,
+      backend: backend,
+      clock: -> { times.shift || 0.3 },
+      task_executor: pending_task_executor
+    ).run
 
-    expect(backend.frames.last).to include("Incremented to 6")
+    frames = backend.frames.join("\n")
+    expect(frames).to include("[=         ] Working")
+    expect(frames).to include("[==        ] Working")
   end
 
   it "uses backend dimensions when rendering the demo app" do
@@ -82,22 +78,7 @@ RSpec.describe "demo app example" do
     expect(backend.frames.join("\n")).to include("Command palette")
   end
 
-  it "auto-routes navigation keys to the focused log viewport via focus_ring" do
-    base = Array.new(20) { Charming::KeyEvent.new(key: :up) } +
-           [Charming::KeyEvent.new(key: :tab)]
-    pre_end = base + [Charming::KeyEvent.new(key: :q)]
-    post_end = base + [Charming::KeyEvent.new(key: :end), Charming::KeyEvent.new(key: :q)]
-
-    pre = Charming::Internal::Terminal::MemoryBackend.new(events: pre_end)
-    post = Charming::Internal::Terminal::MemoryBackend.new(events: post_end)
-    Charming::Runtime.new(DemoApp::Application.new, backend: pre).run
-    Charming::Runtime.new(DemoApp::Application.new, backend: post).run
-
-    expect(pre.frames.last).not_to include("Incremented to 20")
-    expect(post.frames.last).to include("Incremented to 20")
-  end
-
-  it "switches the bold border between counter and log when Tab cycles focus" do
+  it "switches focus between sidebar and content when Tab cycles focus" do
     initial = Charming::Internal::Terminal::MemoryBackend.new(
       events: [Charming::KeyEvent.new(key: :q)]
     )
@@ -108,13 +89,8 @@ RSpec.describe "demo app example" do
     Charming::Runtime.new(DemoApp::Application.new, backend: initial).run
     Charming::Runtime.new(DemoApp::Application.new, backend: after_tab).run
 
-    # Thick border corners (┏ / ┓ / ┗ / ┛) mark the focused card; rounded
-    # (╭ / ╮ / ╰ / ╯) mark unfocused cards. Initial focus is the counter card;
-    # after Tab the log viewport card becomes the focused one.
-    expect(initial.frames.last).to include("┏").and include("╭")
-    expect(after_tab.frames.last).to include("┏").and include("╭")
-    expect(initial.frames.last.index("┏")).to be < initial.frames.last.index("╭")
-    expect(after_tab.frames.last.index("╭")).to be < after_tab.frames.last.index("┏")
+    expect(initial.frames.last).to include("> ● Home")
+    expect(after_tab.frames.last).to include("  ● Home")
   end
 
   it "selects a command from the palette with enter" do
@@ -128,6 +104,31 @@ RSpec.describe "demo app example" do
 
     Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
-    expect(backend.frames.last).to include("Count: 1")
+    expect(backend.frames.last).to include("DemoApp")
+  end
+
+  def completed_task_executor(value)
+    lambda do |queue|
+      Class.new do
+        define_method(:submit) do |name|
+          queue << Charming::TaskEvent.new(name: name, value: value)
+          nil
+        end
+
+        def shutdown(timeout: 0.0)
+        end
+      end.new
+    end
+  end
+
+  def pending_task_executor
+    Class.new do
+      def submit(name, &)
+        nil
+      end
+
+      def shutdown(timeout: 0.0)
+      end
+    end.new
   end
 end

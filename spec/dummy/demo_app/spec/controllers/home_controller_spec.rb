@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "demo_app"
+require_relative "../spec_helper"
 
 RSpec.describe DemoApp::HomeController do
   let(:application) { DemoApp::Application.new }
@@ -31,6 +31,22 @@ RSpec.describe DemoApp::HomeController do
 
       expect(executor.name).to eq(:refresh_home)
       expect(response.body).to include("Status: Loading")
+      expect(response.body).to include("[=         ] Working")
+    end
+  end
+
+  describe "#advance_loading_progress" do
+    it "advances the persisted loading progress" do
+      application.task_executor = Class.new do
+        def submit(name, &)
+          nil
+        end
+      end.new
+      controller.dispatch(:refresh)
+
+      response = described_class.new(application: application).dispatch(:advance_loading_progress)
+
+      expect(response.body).to include("[==        ] Working")
     end
   end
 
