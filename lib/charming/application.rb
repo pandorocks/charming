@@ -14,6 +14,7 @@ module Charming
       end
     end
 
+    attr_accessor :task_executor
     attr_reader :session
 
     def initialize

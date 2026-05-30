@@ -291,6 +291,71 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("refreshed at 1.5")
   end
 
+  describe "on_task" do
+    it "registers task bindings keyed by symbol" do
+      controller = Class.new(described_class) do
+        on_task "fetch", action: :loaded
+      end
+
+      expect(controller.task_bindings).to eq(
+        fetch: Charming::Controller::TaskBinding.new(name: :fetch, action: :loaded)
+      )
+    end
+
+    it "dispatches task bindings to actions" do
+      controller = Class.new(described_class) do
+        on_task :fetch, action: :loaded
+
+        def loaded
+          render "#{event.name}: #{event.value}"
+        end
+      end
+
+      response = controller.new(
+        application: application,
+        event: Charming::TaskEvent.new(name: :fetch, value: "feed")
+      ).dispatch_task
+
+      expect(response.body).to eq("fetch: feed")
+    end
+
+    it "returns nil when no task binding matches" do
+      controller = Class.new(described_class)
+
+      response = controller.new(
+        application: application,
+        event: Charming::TaskEvent.new(name: :missing, value: "feed")
+      ).dispatch_task
+
+      expect(response).to be_nil
+    end
+
+    it "delegates task submission to the application task executor" do
+      executor = Class.new do
+        attr_reader :name, :block
+
+        def submit(name, &block)
+          @name = name
+          @block = block
+          nil
+        end
+      end.new
+      application.task_executor = executor
+      controller = Class.new(described_class) do
+        def show
+          run_task(:fetch) { "feed" }
+          render "queued"
+        end
+      end
+
+      response = controller.new(application: application).dispatch(:show)
+
+      expect(response.body).to eq("queued")
+      expect(executor.name).to eq(:fetch)
+      expect(executor.block.call).to eq("feed")
+    end
+  end
+
   it "opens a command palette from registered commands" do
     controller = Class.new(described_class) do
       command "Quit", :quit
@@ -703,6 +768,17 @@ RSpec.describe Charming::Controller do
       expect(child.timer_bindings.keys).to eq(%i[refresh poll])
       expect(parent.timer_bindings.keys).to eq([:refresh])
       expect(child.timer_bindings).not_to equal(parent.timer_bindings)
+    end
+  end
+
+  describe ".task_bindings inheritance" do
+    it "inherits a copy of parent bindings, not a live reference" do
+      parent = Class.new(described_class) { on_task :fetch, action: :loaded }
+      child = Class.new(parent) { on_task :refresh, action: :refreshed }
+
+      expect(child.task_bindings.keys).to eq(%i[fetch refresh])
+      expect(parent.task_bindings.keys).to eq([:fetch])
+      expect(child.task_bindings).not_to equal(parent.task_bindings)
     end
   end
 end

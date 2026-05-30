@@ -3,6 +3,7 @@
 module Charming
   class Controller
     TimerBinding = Data.define(:name, :interval, :action)
+    TaskBinding = Data.define(:name, :action)
 
     class << self
       def key(name, action)
@@ -15,6 +16,10 @@ module Charming
 
       def timer(name, every:, action:)
         timer_bindings[name.to_sym] = TimerBinding.new(name: name.to_sym, interval: every, action: action)
+      end
+
+      def on_task(name, action:)
+        task_bindings[name.to_sym] = TaskBinding.new(name: name.to_sym, action: action)
       end
 
       def layout(layout_class = :__charming_layout_reader__)
@@ -41,6 +46,10 @@ module Charming
 
       def timer_bindings
         @timer_bindings ||= superclass.respond_to?(:timer_bindings) ? superclass.timer_bindings.dup : {}
+      end
+
+      def task_bindings
+        @task_bindings ||= superclass.respond_to?(:task_bindings) ? superclass.task_bindings.dup : {}
       end
 
       private
@@ -85,6 +94,11 @@ module Charming
       binding ? dispatch(binding.action) : nil
     end
 
+    def dispatch_task
+      binding = self.class.task_bindings[event.name.to_sym]
+      binding ? dispatch(binding.action) : nil
+    end
+
     def dispatch_mouse
       return dispatch_command_palette_mouse if command_palette_open?
       return dispatch_sidebar_mouse if sidebar_focused?
@@ -111,6 +125,10 @@ module Charming
     def model(name, model_class, **attributes)
       session[:models] ||= {}
       session[:models][name.to_sym] ||= model_class.new(**attributes)
+    end
+
+    def run_task(name, &block)
+      application.task_executor.submit(name, &block)
     end
 
     def open_command_palette

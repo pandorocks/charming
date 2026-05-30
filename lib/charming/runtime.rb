@@ -4,11 +4,14 @@ module Charming
   class Runtime
     DEFAULT_READ_TIMEOUT = 0.05
 
-    def initialize(application, backend: nil, renderer: nil, clock: nil)
+    def initialize(application, backend: nil, renderer: nil, clock: nil, task_executor: nil)
       @application = application
       @backend = backend || Internal::Terminal::TTYBackend.new
       @renderer = renderer || Internal::Renderer::Differential.new(@backend)
       @clock = clock || -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
+      @task_queue = Thread::Queue.new
+      @task_executor = build_task_executor(task_executor)
+      @application.task_executor = @task_executor
       @route = @application.routes.resolve("/")
       @screen = backend_screen
       @timers = build_timers
@@ -18,7 +21,7 @@ module Charming
       setup_terminal
       render(resolve_response(dispatch(@route.action)))
       loop do
-        event = next_timer_event || @backend.read_event(timeout: read_timeout)
+        event = next_task_event || next_timer_event || @backend.read_event(timeout: read_timeout)
         next unless event
 
         response = dispatch_event(event)
@@ -31,6 +34,7 @@ module Charming
         render(response)
       end
     ensure
+      @task_executor&.shutdown(timeout: 0.0)
       restore_terminal
     end
 
@@ -50,12 +54,17 @@ module Charming
       @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_timer
     end
 
+    def dispatch_task(event)
+      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_task
+    end
+
     def dispatch_mouse(event)
       @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_mouse
     end
 
     def dispatch_event(event)
       return dispatch_resize(event) if event.is_a?(ResizeEvent)
+      return dispatch_task(event) if event.is_a?(TaskEvent)
       return dispatch_timer(event) if event.is_a?(TimerEvent)
       return dispatch_mouse(event) if event.is_a?(MouseEvent)
 
@@ -87,7 +96,7 @@ module Charming
     def build_timers
       now = clock_now
       @route.controller_class.timer_bindings.values.map do |binding|
-        { binding: binding, next_at: now + binding.interval }
+        {binding: binding, next_at: now + binding.interval}
       end
     end
 
@@ -100,6 +109,12 @@ module Charming
       TimerEvent.new(name: timer.fetch(:binding).name, now: now)
     end
 
+    def next_task_event
+      @task_queue.pop(true)
+    rescue ThreadError
+      nil
+    end
+
     def due_timer
       now = clock_now
       @timers.select { |timer| timer.fetch(:next_at) <= now }.min_by { |timer| timer.fetch(:next_at) }
@@ -109,7 +124,15 @@ module Charming
       next_at = @timers.map { |timer| timer.fetch(:next_at) }.min
       return DEFAULT_READ_TIMEOUT unless next_at
 
-      [next_at - clock_now, 0].max
+      (next_at - clock_now).clamp(0, DEFAULT_READ_TIMEOUT)
+    end
+
+    def build_task_executor(task_executor)
+      return TaskExecutor::Threaded.new(@task_queue) unless task_executor
+      return task_executor if task_executor.respond_to?(:submit)
+      return task_executor.call(@task_queue) if task_executor.respond_to?(:call) && !task_executor.respond_to?(:new)
+
+      task_executor.new(@task_queue)
     end
 
     def clock_now

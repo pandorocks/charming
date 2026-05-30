@@ -240,6 +240,215 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["Still"])
   end
 
+  it "caps backend reads at the default timeout when timers are later" do
+    timer_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      timer :clock, every: 10.0, action: :tick
+
+      def show
+        render "Waiting"
+      end
+
+      def tick
+        render "Tick"
+      end
+    end
+    stub_const("ReadTimeoutRuntimeSpecController", timer_controller)
+    timer_app = Class.new(Charming::Application) do
+      routes do
+        root "read_timeout_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :q)]
+    )
+    clock = -> { 0.0 }
+
+    described_class.new(timer_app.new, backend: backend, clock: clock).run
+
+    expect(backend.operations).to include([:read_event, described_class::DEFAULT_READ_TIMEOUT])
+  end
+
+  it "dispatches inline task results before backend input" do
+    task_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      on_task :fetch, action: :loaded
+
+      def show
+        unless session[:started]
+          session[:started] = true
+          run_task(:fetch) { "feed" }
+        end
+        render "Loading"
+      end
+
+      def loaded
+        render "Loaded: #{event.value}"
+      end
+    end
+    stub_const("InlineTaskRuntimeSpecController", task_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "inline_task_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
+
+    expect(backend.frames).to eq(["Loading", "Loaded: feed"])
+  end
+
+  it "renders task errors and continues dispatching keys" do
+    task_controller = Class.new(Charming::Controller) do
+      key "up", :moved
+      key "q", :quit
+      on_task :fetch, action: :loaded
+
+      def show
+        unless session[:started]
+          session[:started] = true
+          run_task(:fetch) { raise "boom" }
+        end
+        render "Loading"
+      end
+
+      def loaded
+        render "Error: #{event.error.message}"
+      end
+
+      def moved
+        render "Key ok"
+      end
+    end
+    stub_const("ErrorTaskRuntimeSpecController", task_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "error_task_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::KeyEvent.new(key: :up), Charming::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
+
+    expect(backend.frames).to eq(["Loading", "Error: boom", "Key ok"])
+  end
+
+  it "drops task events that have no binding after navigation" do
+    home_controller = Class.new(Charming::Controller) do
+      key "s", :settings
+      on_task :fetch, action: :loaded
+
+      def show
+        render "Home"
+      end
+
+      def settings
+        navigate_to "/settings"
+      end
+
+      def loaded
+        render "Loaded"
+      end
+    end
+    settings_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "Settings"
+      end
+    end
+    stub_const("StaleTaskRuntimeSpecHomeController", home_controller)
+    stub_const("StaleTaskRuntimeSpecSettingsController", settings_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "stale_task_runtime_spec_home#show"
+        screen "/settings", to: "stale_task_runtime_spec_settings#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :s),
+        Charming::TaskEvent.new(name: :fetch, value: "feed"),
+        Charming::KeyEvent.new(key: :q)
+      ]
+    )
+
+    described_class.new(task_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(%w[Home Settings])
+  end
+
+  it "dispatches task events supplied by the backend" do
+    task_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      on_task :fetch, action: :loaded
+
+      def show
+        render "Waiting"
+      end
+
+      def loaded
+        render "Loaded: #{event.value}"
+      end
+    end
+    stub_const("BackendTaskRuntimeSpecController", task_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "backend_task_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::TaskEvent.new(name: :fetch, value: "feed"), Charming::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(task_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(["Waiting", "Loaded: feed"])
+  end
+
+  it "dispatches threaded task results within a few loop iterations" do
+    task_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      on_task :fetch, action: :loaded
+
+      def show
+        unless session[:started]
+          session[:started] = true
+          run_task(:fetch) { "feed" }
+        end
+        render "Loading"
+      end
+
+      def loaded
+        render "Loaded: #{event.value}"
+      end
+    end
+    stub_const("ThreadedTaskRuntimeSpecController", task_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "threaded_task_runtime_spec#show"
+      end
+    end
+    yielding_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      def read_event(timeout: nil)
+        Thread.pass
+        super
+      end
+    end
+    backend = yielding_backend.new(
+      events: Array.new(20) + [Charming::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(task_app.new, backend: backend).run
+
+    expect(backend.frames).to include("Loaded: feed")
+  end
+
   it "restores terminal state when a controller raises" do
     failing_controller = Class.new(Charming::Controller) do
       def show

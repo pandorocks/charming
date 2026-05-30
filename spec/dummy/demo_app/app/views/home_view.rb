@@ -9,7 +9,11 @@ module DemoApp
     private
 
     def app_frame
-      render_component AppFrameComponent.new(title: home.title)
+      render_component AppFrameComponent.new(
+        title: home.title,
+        status: home.status,
+        message: home.message
+      )
     end
   end
 end
