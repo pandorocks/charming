@@ -157,7 +157,7 @@ module Charming
     end
 
     def open_theme_palette
-      session[:command_palette] = build_theme_palette
+      session[:command_palette] = command_palette_state(:themes)
       focus.push_scope([:command_palette], origin: :command_palette)
       render_default_action
     end
@@ -191,15 +191,15 @@ module Charming
       application.task_executor.submit(name, &block)
     end
 
-    # Opens the command palette (fuzzy search UI): registers the palette component and pushes it onto
-    # the focus ring so input is captured inside it. Renders the default action afterward.
+    # Opens the command palette (fuzzy search UI): stores primitive palette state and pushes a palette
+    # scope onto the focus ring so input is captured inside it. Renders the default action afterward.
     def open_command_palette
-      session[:command_palette] = build_command_palette
+      session[:command_palette] = command_palette_state(:commands)
       focus.push_scope([:command_palette], origin: :command_palette)
       render_default_action
     end
 
-    # Closes the command palette: removes it from the session, pops its scope from the focus ring,
+    # Closes the command palette: removes its state from the session, pops its scope from the focus ring,
     # and re-renders the default action. Pops all nested scopes until only the palette remains.
     def close_command_palette
       session.delete(:command_palette)
@@ -226,9 +226,9 @@ module Charming
       session.key?(:command_palette)
     end
 
-    # Returns the current command palette component (fuzzy search UI) from session, if open.
+    # Returns a command palette component rebuilt from the current primitive session state, if open.
     def command_palette
-      session[:command_palette]
+      build_command_palette_from_state(session[:command_palette]) if command_palette_open?
     end
 
     # Shifts focus to the sidebar: moves the focus ring cursor or sets `session[:focus]` to :sidebar,
@@ -351,10 +351,18 @@ module Charming
     # Dispatches key events to an open command palette (fuzzy search). Handles cancellation (Escape),
     # command execution when a selection is made, and renders the default action if no response was produced.
     def dispatch_command_palette_key
-      result = command_palette.handle_key(event)
-      close_command_palette if result == :cancelled
-      perform_command(result.last) if selected_command?(result)
-      render_default_action unless response
+      palette = command_palette
+      result = palette.handle_key(event)
+
+      if result == :cancelled
+        close_command_palette
+      elsif selected_command?(result)
+        perform_command(result.last)
+      else
+        save_command_palette_state(palette)
+        render_default_action unless response
+      end
+
       response
     end
 
@@ -405,10 +413,32 @@ module Charming
       route ? navigate_to(route.path) : render_default_action
     end
 
-    # Builds a new command palette component (fuzzy search UI) from the controller's registered commands.
-    # Used when opening the command palette from anywhere in the app.
-    def build_command_palette
-      Components::CommandPalette.new(commands: self.class.command_bindings, height: 6)
+    def build_command_palette_from_state(state)
+      case state.fetch(:type)
+      when :commands
+        build_command_palette_with_state(self.class.command_bindings, state, height: 6)
+      when :themes
+        build_command_palette_with_state(theme_commands, state, placeholder: "Search themes", height: 10)
+      end
+    end
+
+    def build_command_palette_with_state(commands, state, placeholder: "Search commands", height: nil)
+      Components::CommandPalette.new(
+        commands: commands,
+        placeholder: placeholder,
+        height: height,
+        value: state.fetch(:value),
+        cursor: state.fetch(:cursor),
+        selected_index: state.fetch(:selected_index)
+      )
+    end
+
+    def command_palette_state(type)
+      {type: type, value: "", cursor: 0, selected_index: 0}
+    end
+
+    def save_command_palette_state(palette)
+      session[:command_palette] = session.fetch(:command_palette).merge(palette.state)
     end
 
     # Checks if a command palette result indicates a selected command (as opposed to cancel or no-op).
@@ -419,15 +449,13 @@ module Charming
     # Executes a command value — either a callable block (inline command) or a method name (bound action).
     # Pops the command palette scope and re-renders unless the result is navigation or quit.
     def perform_command(command)
-      current_palette = command_palette
+      current_palette_state = session[:command_palette]
       pop_command_palette_scope
       perform_command_value(command.value)
-      session.delete(:command_palette) if command.value != :quit && command_palette.equal?(current_palette)
+      if command.value != :quit && session[:command_palette].equal?(current_palette_state)
+        session.delete(:command_palette)
+      end
       render_default_action unless response&.navigate? || response&.quit?
-    end
-
-    def build_theme_palette
-      Components::CommandPalette.new(commands: theme_commands, placeholder: "Search themes", height: 10)
     end
 
     def theme_commands

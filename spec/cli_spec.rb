@@ -114,6 +114,7 @@ RSpec.describe Charming::CLI do
         height: 12
       )
       Charming::Runtime.new(WeatherTui::Application.new, backend: theme_backend).run
+      expect(theme_backend.frames.join("\n")).to include("Search themes")
       expect(theme_backend.frames.last).to include("\e[38;2;122;162;247m")
     end
   end

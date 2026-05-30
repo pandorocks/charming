@@ -49,6 +49,27 @@ RSpec.describe Charming::Components::CommandPalette do
     expect(palette.handle_key(key(:escape))).to eq(:cancelled)
   end
 
+  it "initializes from primitive state" do
+    palette = described_class.new(
+      commands: [command("Open"), command("Quit")],
+      value: "qu",
+      cursor: 1,
+      selected_index: 0
+    )
+
+    expect(palette.render).to eq("q|u\n\e[7m> Quit\e[0m")
+    expect(palette.selected_command.label).to eq("Quit")
+  end
+
+  it "exposes primitive state after input and selection changes" do
+    palette = described_class.new(commands: [command("Open"), command("Run"), command("Read")])
+
+    palette.handle_key(key("r", char: "r"))
+    palette.handle_key(key(:down))
+
+    expect(palette.state).to eq(value: "r", cursor: 1, selected_index: 1)
+  end
+
   it "renders an empty state when no commands match" do
     palette = described_class.new(commands: [command("Open")])
 

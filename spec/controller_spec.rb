@@ -370,6 +370,74 @@ RSpec.describe Charming::Controller do
     expect(response.body).to include("Quit")
   end
 
+  it "stores primitive command palette state in the session" do
+    controller = Class.new(described_class) do
+      command "Quit", :quit
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+
+    expect(application.session[:command_palette]).to eq(type: :commands, value: "", cursor: 0, selected_index: 0)
+    expect(application.session[:command_palette]).not_to be_a(Charming::Components::CommandPalette)
+  end
+
+  it "preserves command palette input across fresh controller instances" do
+    controller = Class.new(described_class) do
+      command "Open", :show
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(
+      application: application,
+      event: Charming::KeyEvent.new(key: "o", char: "o")
+    ).dispatch_key
+
+    expect(application.session[:command_palette]).to include(value: "o", cursor: 1)
+    expect(response.body).to include("o|")
+    expect(controller.new(application: application).command_palette.render).to include("o|")
+  end
+
+  it "preserves command palette selection across fresh controller instances" do
+    controller = Class.new(described_class) do
+      command "Open", :show
+      command "Run", :show
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    controller.new(application: application, event: Charming::KeyEvent.new(key: :down)).dispatch_key
+
+    expect(application.session[:command_palette]).to include(selected_index: 1)
+    expect(controller.new(application: application).command_palette.selected_command.label).to eq("Run")
+  end
+
+  it "replaces command palette state when opening the theme palette from a command" do
+    controller = Class.new(described_class) do
+      command "Theme", :open_theme_palette
+
+      def show
+        render command_palette&.render.to_s
+      end
+    end
+
+    controller.new(application: application).open_command_palette
+    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+
+    expect(application.session[:command_palette]).to include(type: :themes, value: "", cursor: 0, selected_index: 0)
+    expect(response.body).to include("Search themes")
+  end
+
   it "dispatches keys to an open command palette before normal bindings" do
     controller = Class.new(described_class) do
       key "q", :ignored

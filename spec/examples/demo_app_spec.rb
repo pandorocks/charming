@@ -80,6 +80,38 @@ RSpec.describe "demo app example" do
     expect(backend.frames.join("\n")).to include("Command palette")
   end
 
+  it "preserves command palette input between generated demo app dispatches" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :p, char: "p"),
+        Charming::KeyEvent.new(key: "q", char: "q"),
+        Charming::KeyEvent.new(key: :escape),
+        Charming::KeyEvent.new(key: :q, char: "q")
+      ]
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+
+    expect(backend.frames.join("\n")).to include("q|")
+    expect(backend.frames.join("\n")).to include("Quit app")
+  end
+
+  it "opens the generated demo app theme palette from the command palette" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :p, char: "p"),
+        Charming::KeyEvent.new(key: "t", char: "t"),
+        Charming::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::KeyEvent.new(key: :escape),
+        Charming::KeyEvent.new(key: :q, char: "q")
+      ]
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+
+    expect(backend.frames.join("\n")).to include("Search themes")
+  end
+
   it "switches themes from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [

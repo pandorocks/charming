@@ -7,16 +7,24 @@ module Charming
 
       attr_reader :commands, :input
 
-      def initialize(commands:, placeholder: "Search commands", height: nil)
+      def initialize(commands:, placeholder: "Search commands", height: nil, value: "", cursor: nil, selected_index: 0)
         super()
         @commands = commands
         @height = height
-        @input = TextInput.new(placeholder: placeholder)
-        @list = build_list
+        @input = TextInput.new(value: value, placeholder: placeholder, cursor: cursor)
+        @list = build_list(selected_index: selected_index)
       end
 
       def selected_command
         list.selected_item
+      end
+
+      def state
+        {
+          value: input.value,
+          cursor: input.cursor,
+          selected_index: list.selected_index
+        }
       end
 
       def handle_key(event)
@@ -56,8 +64,8 @@ module Charming
         list.render
       end
 
-      def build_list
-        List.new(items: filtered_commands, height: height, label: :label.to_proc)
+      def build_list(selected_index: list&.selected_index || 0)
+        List.new(items: filtered_commands, selected_index: selected_index, height: height, label: :label.to_proc)
       end
 
       def filtered_commands
