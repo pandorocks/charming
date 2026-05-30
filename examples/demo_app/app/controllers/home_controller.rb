@@ -18,6 +18,9 @@ module DemoApp
     command "Reset counter", :reset
     command "Close palette", :close_command_palette
     command "Quit app", :quit
+    command "Tables" do
+      navigate_to "/tables"
+    end
 
     timer :spinner, every: 0.1, action: :tick_spinner
 

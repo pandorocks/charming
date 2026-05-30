@@ -1,50 +1,8 @@
 AllCops:
   TargetRubyVersion: 4.0
-  NewCops: enable
-  SuggestExtensions: false
 
-Style/Documentation:
-  Enabled: false
+require:
+  - standard
 
-Metrics/BlockLength:
-  Exclude:
-    - "spec/**/*"
-
-Metrics/MethodLength:
-  Max: 15
-  Exclude:
-    - "lib/charming/generators/app_generator/layout_template.rb"
-
-Metrics/ClassLength:
-  Max: 180
-
-Style/OneClassPerFile:
-  Exclude:
-    - "examples/**/*"
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
-Metrics/ParameterLists:
-  Exclude:
-    - "lib/charming/events.rb"
-
-Naming/MethodParameterName:
-  AllowedNames:
-    - x
-    - y
-    - ctrl
-    - alt
-    - shift
-    - to
-
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - "lib/charming/events.rb"
-
-Metrics/ModuleLength:
-  Exclude:
-    - "lib/charming/generators/app_generator/layout_template.rb"
+inherit_gem:
+  standard: config/base.yml

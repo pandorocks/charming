@@ -26,6 +26,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activemodel", "~> 8.1", ">= 8.1.2"
   spec.add_dependency "tty-cursor", "~> 0.7"
+  spec.add_dependency "tty-progressbar", "~> 0.18"
+  spec.add_dependency "tty-table", "~> 0.12"
   spec.add_dependency "tty-reader", "~> 0.9"
   spec.add_dependency "tty-screen", "~> 0.8"
   spec.add_dependency "unicode-display_width", "~> 2.6"

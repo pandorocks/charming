@@ -2,4 +2,5 @@
 
 DemoApp::Application.routes do
   root "home#show"
+  screen "/tables", to: "tables#show", title: "Tables"
 end
