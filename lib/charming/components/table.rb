@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../component"
-require_relative "keyboard_handler"
 require "tty-table"
 
 module Charming

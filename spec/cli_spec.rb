@@ -22,6 +22,11 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "weather_tui.gemspec"))).to include(
         'spec.metadata["rubygems_mfa_required"] = "true"'
       )
+      root_file = File.read(File.join(app_root, "lib/weather_tui.rb"))
+      expect(root_file).to include("loader = Zeitwerk::Loader.new")
+      expect(root_file).to include('loader.inflector.inflect("version" => "VERSION")')
+      expect(root_file).to include('loader.push_dir(File.expand_path("../app/models", __dir__), namespace: WeatherTui)')
+      expect(root_file).not_to include("Dir[File.expand_path")
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
       expect(File).to exist(File.join(app_root, "app/models/application_model.rb"))
       expect(File).to exist(File.join(app_root, "app/models/home_model.rb"))
@@ -31,6 +36,9 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('describe "#title"')
       expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('describe "#show"')
       expect(File.read(File.join(app_root, "spec/views/home_view_spec.rb"))).to include('describe "#render"')
+      expect(File.read(File.join(app_root, "spec/views/home_view_spec.rb"))).to include(
+        'expect(view.render).to include("WeatherTui")'
+      )
       expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('require "weather_tui"')
       expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('require "weather_tui"')
       expect(File.read(File.join(app_root, "spec/views/home_view_spec.rb"))).to include('require "weather_tui"')

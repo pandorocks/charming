@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "full_repaint"
-
 module Charming
   module Internal
     module Renderer

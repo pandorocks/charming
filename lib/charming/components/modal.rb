@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../component"
-
 module Charming
   module Components
     class Modal < Component

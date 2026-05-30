@@ -19,24 +19,23 @@ Charming.run(#{name.class_name}::Application.new)
           %(# frozen_string_literal: true
 
 require "charming"
+require "zeitwerk"
 
-require_relative "#{name.snake_name}/version"
-require_relative "#{name.snake_name}/application"
+module #{name.class_name}
+end
 
-#{requires_for("models")}
-#{requires_for("components")}
-#{requires_for("views")}
-#{requires_for("controllers")}
+loader = Zeitwerk::Loader.new
+loader.tag = "#{name.snake_name}"
+loader.inflector.inflect("version" => "VERSION")
+loader.push_dir(File.expand_path("#{name.snake_name}", __dir__), namespace: #{name.class_name})
+loader.push_dir(File.expand_path("../app/models", __dir__), namespace: #{name.class_name})
+loader.push_dir(File.expand_path("../app/components", __dir__), namespace: #{name.class_name})
+loader.push_dir(File.expand_path("../app/views", __dir__), namespace: #{name.class_name})
+loader.push_dir(File.expand_path("../app/controllers", __dir__), namespace: #{name.class_name})
+loader.setup
 
 require_relative "../config/routes"
 )
-        end
-
-        def requires_for(folder)
-          path = "../app/#{folder}/**/*.rb"
-          %(Dir[File.expand_path("#{path}", __dir__)].sort.each do |file|
-  require file
-end)
         end
 
         def application

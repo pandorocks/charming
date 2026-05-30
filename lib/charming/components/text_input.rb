@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../component"
-require_relative "keyboard_handler"
-
 module Charming
   module Components
     class TextInput < Component

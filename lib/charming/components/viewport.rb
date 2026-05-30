@@ -2,9 +2,6 @@
 
 require "unicode/display_width"
 
-require_relative "../component"
-require_relative "keyboard_handler"
-
 module Charming
   module Components
     class Viewport < Component

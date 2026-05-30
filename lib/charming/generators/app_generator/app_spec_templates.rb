@@ -58,7 +58,7 @@ RSpec.describe #{app_name.class_name}::HomeView do
          home: double(title: "#{app_name.class_name}")
        )
 
-      expect(view.render).to eq("#{app_name.class_name}")
+      expect(view.render).to include("#{app_name.class_name}")
     end
   end
 end

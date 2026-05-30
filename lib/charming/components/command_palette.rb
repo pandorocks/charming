@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../component"
-require_relative "list"
-require_relative "text_input"
-
 module Charming
   module Components
     class CommandPalette < Component

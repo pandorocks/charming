@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "generators"
-
 module Charming
   class CLI
     def initialize(out: $stdout, err: $stderr, pwd: Dir.pwd)

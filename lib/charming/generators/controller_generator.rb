@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "app_file_generator"
-
 module Charming
   module Generators
     class ControllerGenerator < AppFileGenerator
