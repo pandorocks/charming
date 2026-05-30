@@ -6,5 +6,6 @@ module DemoApp
     attribute :status, :string, default: "Idle"
     attribute :message, :string, default: "Press r to run an async task."
     attribute :progress, :integer, default: 0
+    attribute :activity_index, :integer, default: 0
   end
 end

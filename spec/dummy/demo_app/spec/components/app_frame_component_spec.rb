@@ -9,6 +9,7 @@ RSpec.describe DemoApp::AppFrameComponent do
         title: "DemoApp",
         status: "Idle",
         progress: 0,
+        activity_index: 0,
         message: "Ready"
       )
 
@@ -20,10 +21,13 @@ RSpec.describe DemoApp::AppFrameComponent do
         title: "DemoApp",
         status: "Loading",
         progress: 3,
+        activity_index: 0,
         message: "Working"
       )
 
-      expect(component.render).to include("[===       ] Working")
+      output = Charming::UI::Width.strip_ansi(component.render)
+      expect(output).to include("[===                                     ] Working")
+      expect(output).to include("f27^_E#cB4A&8F0d$5C+b=3@&AF89*@3=b6De%$5 Working.")
     end
   end
 end

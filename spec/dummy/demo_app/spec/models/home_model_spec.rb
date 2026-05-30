@@ -14,4 +14,12 @@ RSpec.describe DemoApp::HomeModel do
       expect(instance.title).to eq("Alternative")
     end
   end
+
+  describe "#activity_index" do
+    it "defaults to zero" do
+      instance = described_class.new
+
+      expect(instance.activity_index).to eq(0)
+    end
+  end
 end

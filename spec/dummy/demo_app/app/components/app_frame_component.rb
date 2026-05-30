@@ -4,7 +4,7 @@ module DemoApp
   class AppFrameComponent < Charming::Component
     def render
       lines = [title_line, status_line, message_line, help_line]
-      lines.insert(2, progress_bar_line) if status == "Loading"
+      lines.insert(2, *loading_lines) if status == "Loading"
       column(*lines, gap: 1)
     end
 
@@ -23,7 +23,20 @@ module DemoApp
     end
 
     def progress_bar_line
-      render_component(Charming::Components::Progressbar.new(total: 10, label: "Working").update(progress))
+      render_component(Charming::Components::Progressbar.new(total: 40, label: "Working").update(progress))
+    end
+
+    def activity_indicator_line
+      render_component(Charming::Components::ActivityIndicator.new(
+        width: 40,
+        label: "Working",
+        index: activity_index,
+        seed: "demo-loading"
+      ))
+    end
+
+    def loading_lines
+      [progress_bar_line, activity_indicator_line]
     end
 
     def message_line

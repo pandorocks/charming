@@ -4,6 +4,7 @@ module DemoApp
   class HomeController < ApplicationController
     key "r", :refresh
     timer :loading_progress, every: 0.2, action: :advance_loading_progress
+    timer :loading_activity, every: 0.05, action: :advance_loading_activity
     on_task :refresh_home, action: :refresh_loaded
 
     def show
@@ -13,6 +14,7 @@ module DemoApp
     def refresh
       home.status = "Loading"
       home.progress = 1
+      home.activity_index = 0
       home.message = "Async task running. Press q to quit while it works."
       run_task(:refresh_home) do
         sleep 2
@@ -23,6 +25,11 @@ module DemoApp
 
     def advance_loading_progress
       home.progress = [home.progress + 1, 9].min if home.status == "Loading"
+      render_home
+    end
+
+    def advance_loading_activity
+      home.activity_index += 1 if home.status == "Loading"
       render_home
     end
 

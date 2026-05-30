@@ -13,6 +13,7 @@ module DemoApp
         title: home.title,
         status: home.status,
         progress: home.progress,
+        activity_index: home.activity_index,
         message: home.message
       )
     end

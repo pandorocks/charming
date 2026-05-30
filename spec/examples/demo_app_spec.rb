@@ -38,7 +38,7 @@ RSpec.describe "demo app example" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [Charming::KeyEvent.new(key: "r", char: "r"), Charming::KeyEvent.new(key: :q)]
     )
-    times = [0.0, 0.0, 0.2, 0.2, 0.3]
+    times = [0.0, 0.0, 0.05, 0.05, 0.2, 0.2, 0.3]
 
     Charming::Runtime.new(
       DemoApp::Application.new,
@@ -48,8 +48,10 @@ RSpec.describe "demo app example" do
     ).run
 
     frames = backend.frames.join("\n")
-    expect(frames).to include("[=         ] Working")
-    expect(frames).to include("[==        ] Working")
+    stripped = Charming::UI::Width.strip_ansi(frames)
+    expect(stripped).to include("[=                                       ] Working")
+    expect(stripped).to include("[==                                      ] Working")
+    expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~%eB49*_E Working.")
   end
 
   it "uses backend dimensions when rendering the demo app" do
