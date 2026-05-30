@@ -170,6 +170,16 @@ bundle install
 bundle exec rake
 ```
 
+Common development binstubs:
+
+```bash
+bin/rspec              # run specs
+bin/format             # run Standard Ruby auto-formatting
+bin/lint               # run Standard Ruby checks
+bin/check              # run the full default rake task
+bin/run-dummy          # run the dummy demo app
+```
+
 ## License
 
 The gem is available as open source under the terms of the MIT License.
