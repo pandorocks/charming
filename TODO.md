@@ -12,7 +12,7 @@ Ruby TUI framework for Ruby 4+. Track of work to make this a proper production-r
 
 - [x] Add Table component — most requested widget in TUI frameworks
 - [ ] Add missing common widgets: progress bar, checkbox, tabs, status bar
-- [ ] Add formal backend interface module instead of duck-typing
+- [x] Add formal backend interface module instead of duck-typing
 - [ ] Add route parameters (`/users/:id`) for dynamic routing
 - [ ] Separate view state from application state (don't store Viewport/Spinner in session)
 

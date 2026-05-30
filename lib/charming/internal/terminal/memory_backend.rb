@@ -4,6 +4,8 @@ module Charming
   module Internal
     module Terminal
       class MemoryBackend
+        include Adapter
+
         attr_reader :frames, :operations
 
         def initialize(events: [], width: 80, height: 24)

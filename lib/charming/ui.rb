@@ -116,6 +116,21 @@ module Charming
       slice_visible_text(line.to_s, start_column, start_column + width)
     end
 
+    # Slices a string by visible terminal columns while preserving ANSI style state.
+    def slice_visible_text(line, start_column, end_column)
+      state = {column: 0, output: +"", active: [], started: false, styled: false}
+
+      each_ansi_or_char(line) do |token, ansi|
+        if ansi
+          slice_ansi(token, state, start_column, end_column)
+        else
+          slice_char(token, state, start_column, end_column)
+        end
+      end
+
+      terminate_slice(state)
+    end
+
     # Splits a *line* into token-range pieces bounded by *start_column* and *end_column*, preserving ANSI escapes
     # that fall within the visible range. Yields each character or escape sequence along with whether it is ANSI.
     def each_ansi_or_char(line)
@@ -141,7 +156,10 @@ module Charming
       return unless state[:column].between?(start_column, end_column - 1)
 
       start_slice(state)
-      state[:output] << token if started
+      if started
+        state[:output] << token
+        state[:styled] = true unless token.include?("[0m")
+      end
     end
 
     # Slices a plain *char* into *state*, advancing the column tracker by the character's visual width. If the
@@ -162,13 +180,14 @@ module Charming
       return if state[:started]
 
       state[:output] << state[:active].join
+      state[:styled] = true unless state[:active].empty?
       state[:started] = true
     end
 
     # Closes the slice by appending a final `[0m` reset escape to the output unless no active styling exists or
     # nothing was written. Returns the fully constructed output string with trailing reset applied.
     def terminate_slice(state)
-      return state[:output] if state[:active].empty? || state[:output].empty?
+      return state[:output] if !state[:styled] || state[:output].empty?
 
       "#{state[:output]}\e[0m"
     end

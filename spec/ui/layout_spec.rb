@@ -37,4 +37,10 @@ RSpec.describe Charming::UI do
 
     expect(described_class.overlay(base, "X", left: 2)).to eq("\e[2m..\e[0mX\e[2m..\e[0m")
   end
+
+  it "slices visible text while preserving active ansi styling" do
+    line = described_class.style.faint.render("hello")
+
+    expect(described_class.visible_slice(line, 1, 3)).to eq("\e[2mell\e[0m")
+  end
 end

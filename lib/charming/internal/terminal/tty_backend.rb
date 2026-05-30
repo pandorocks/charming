@@ -8,6 +8,8 @@ module Charming
   module Internal
     module Terminal
       class TTYBackend
+        include Adapter
+
         ALT_SCREEN_ON = "\e[?1049h"
         ALT_SCREEN_OFF = "\e[?1049l"
         CTRL_KEY_PATTERN = /\Actrl_(?<key>.+)\z/
