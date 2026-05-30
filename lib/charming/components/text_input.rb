@@ -4,6 +4,7 @@ module Charming
   module Components
     class TextInput < Component
       include KeyboardHandler
+
       KEY_ACTIONS = {
         left: :move_left,
         right: :move_right,

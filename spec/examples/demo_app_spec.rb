@@ -80,6 +80,27 @@ RSpec.describe "demo app example" do
     expect(backend.frames.join("\n")).to include("Command palette")
   end
 
+  it "switches themes from the command palette" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :p, char: "p"),
+        Charming::KeyEvent.new(key: "t", char: "t"),
+        Charming::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::KeyEvent.new(key: "t", char: "t"),
+        Charming::KeyEvent.new(key: "o", char: "o"),
+        Charming::KeyEvent.new(key: "k", char: "k"),
+        Charming::KeyEvent.new(key: "y", char: "y"),
+        Charming::KeyEvent.new(key: "o", char: "o"),
+        Charming::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::KeyEvent.new(key: :q, char: "q")
+      ]
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+
+    expect(backend.frames.last).to include("\e[38;2;122;162;247m")
+  end
+
   it "switches focus between sidebar and content when Tab cycles focus" do
     initial = Charming::Internal::Terminal::MemoryBackend.new(
       events: [Charming::KeyEvent.new(key: :q)]

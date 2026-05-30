@@ -11,11 +11,11 @@ module DemoApp
     private
 
     def title_line
-      text title, style: style.bold.foreground(:bright_cyan)
+      text title, style: theme.primary.bold
     end
 
     def help_line
-      text "Press r to run async task, p for commands, q to quit.", style: style.foreground(:bright_black)
+      text "Press r to run async task, p for commands, q to quit.", style: theme.muted
     end
 
     def status_line
@@ -44,11 +44,11 @@ module DemoApp
     end
 
     def status_style
-      return style.foreground(:yellow) if status == "Loading"
-      return style.foreground(:red) if status == "Error"
-      return style.foreground(:green) if status == "Loaded"
+      return theme.warning if status == "Loading"
+      return theme.danger if status == "Error"
+      return theme.success if status == "Loaded"
 
-      style.foreground(:bright_black)
+      theme.muted
     end
   end
 end

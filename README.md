@@ -137,6 +137,41 @@ class HomeView < Charming::View
 end
 ```
 
+## Themes
+
+Applications can register named themes from bundled opencode-compatible JSON themes:
+
+```ruby
+class Application < Charming::Application
+  Charming::UI::Theme.built_in_names.each do |theme_name|
+    theme theme_name.to_sym, built_in: theme_name
+  end
+
+  default_theme :opencode
+end
+```
+
+Controllers can expose a nested theme picker in the command palette:
+
+```ruby
+command "Theme", :open_theme_palette
+```
+
+Themes can also be loaded from an opencode-format JSON file:
+
+```ruby
+theme :custom, from: "config/themes/custom.json"
+```
+
+Views and components use semantic tokens instead of hardcoded colors:
+
+```ruby
+text "Title", style: theme.primary.bold
+text "Help", style: theme.muted
+```
+
+Bundled theme JSON files are vendored from opencode under the MIT license.
+
 ## Example App
 
 The canonical example lives at `examples/demo_app`. It was created with
@@ -167,7 +202,7 @@ After checking out the repo, run:
 
 ```bash
 bundle install
-bundle exec rake
+bin/check
 ```
 
 Common development binstubs:
@@ -176,7 +211,7 @@ Common development binstubs:
 bin/rspec              # run specs
 bin/format             # run Standard Ruby auto-formatting
 bin/lint               # run Standard Ruby checks
-bin/check              # run the full default rake task
+bin/check              # run specs and Standard Ruby checks
 bin/run-dummy          # run the dummy demo app
 ```
 

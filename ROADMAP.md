@@ -19,7 +19,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
 
 - Generated a conventional Bundler gem structure.
 - Switched testing to RSpec.
-- Added RuboCop and a default `rake` task.
+- Added Standard Ruby formatting/linting and a default `rake` task.
 - Set Ruby floor to `>= 4.0.0`.
 - Added ActiveModel-backed application models:
   - `Charming::ApplicationModel`
@@ -141,7 +141,7 @@ end
 Run the full project check with:
 
 ```sh
-bundle exec rake
+bin/check
 ```
 
 Run the interactive counter with:

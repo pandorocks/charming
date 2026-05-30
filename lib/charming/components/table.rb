@@ -57,8 +57,8 @@ module Charming
 
         normalized = @rows.map { |row| normalize_row(row) }
         lines = TTY::Table.new(header: @header, rows: normalized)
-                          .render(:unicode)
-                          .lines(chomp: true)
+          .render(:unicode)
+          .lines(chomp: true)
         compact_layout(lines)
       end
 
@@ -66,10 +66,10 @@ module Charming
 
       def normalize_row(row)
         cells = case row
-                when Hash then row.values
-                when String then [row]
-                else Array(row)
-                end
+        when Hash then row.values
+        when String then [row]
+        else Array(row)
+        end
         return cells if @header.length <= 1 || cells.length <= @header.length
 
         kept = cells.first(@header.length - 1)

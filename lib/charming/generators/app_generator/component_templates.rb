@@ -23,11 +23,11 @@ end
     private
 
     def title_line
-      text title, style: style.bold.foreground(:bright_cyan)
+      text title, style: theme.primary.bold
     end
 
     def help_line
-      text "Press p for commands, q to quit.", style: style.foreground(:bright_black)
+      text "Press p for commands, q to quit.", style: theme.muted
     end)
         end
       end

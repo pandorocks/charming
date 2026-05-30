@@ -206,7 +206,7 @@ RSpec.describe Charming::Components::Table do
     end
 
     it "renders mixed row types (arrays and hashes)" do
-      row = { name: "Alice", age: 30 }
+      row = {name: "Alice", age: 30}
       table = described_class.new(
         header: %w[Name Age],
         rows: [row]
@@ -341,7 +341,7 @@ RSpec.describe Charming::Components::Table do
     end
 
     it "returns array row when stored as arrays" do
-# Test array rows stored as arrays
+      # Test array rows stored as arrays
       table = described_class.new(
         header: %w[Name Age],
         rows: [%w[Alice 30]],

@@ -24,7 +24,6 @@ module CharmingTestApp
         box(yield_content, style: main_content_style)
       end
 
-
       def app_title
         text "CharmingTestApp", style: style.bold.align(:center).width(sidebar_width)
       end
@@ -40,7 +39,7 @@ module CharmingTestApp
       end
 
       def nav_label(route, index)
-        cursor = sidebar_focused? && index == sidebar_index ? ">" : " "
+        cursor = (sidebar_focused? && index == sidebar_index) ? ">" : " "
         active = current_route?(route) ? "●" : " "
         "#{cursor} #{active} #{route.title}"
       end
@@ -68,7 +67,6 @@ module CharmingTestApp
         route.controller_class == controller.class && route.action == :show
       end
 
-
       def command_palette_modal
         render_component Charming::Components::Modal.new(
           content: palette,
@@ -77,7 +75,6 @@ module CharmingTestApp
           width: 52
         )
       end
-
 
       def sidebar_style
         base = style.border(:rounded).padding(1, 2).width(sidebar_width).height(panel_height)
@@ -89,7 +86,6 @@ module CharmingTestApp
         base = style.border(:rounded).padding(1, 2).width(main_content_width).height(panel_height)
         palette ? base.faint : base
       end
-
 
       def narrow?
         screen.width < 72 && screen.height >= 20

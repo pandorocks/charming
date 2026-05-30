@@ -19,6 +19,7 @@ module #{name.class_name}
       navigate_to "/"
     end
 
+    command "Theme", :open_theme_palette
     command "Close palette", :close_command_palette
     command "Quit app", :quit
   end
@@ -55,7 +56,7 @@ end
         def render_helpers
           %(
     def render_home
-      render HomeView.new(home: home, palette: command_palette, screen: screen)
+      render HomeView.new(home: home, palette: command_palette, screen: screen, theme: theme)
     end
 
     def home

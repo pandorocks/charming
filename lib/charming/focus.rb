@@ -5,7 +5,7 @@ module Charming
     def self.for(session, controller_class)
       session[:focus_state] ||= {}
       key = controller_class.name
-      session[:focus_state][key] ||= { scopes: [] }
+      session[:focus_state][key] ||= {scopes: []}
       new(session[:focus_state][key])
     end
 
@@ -59,7 +59,7 @@ module Charming
     end
 
     def build_scope(slots, origin)
-      { ring: slots.dup.freeze, current: slots.first, origin: origin }
+      {ring: slots.dup.freeze, current: slots.first, origin: origin}
     end
   end
 end

@@ -28,6 +28,7 @@ RSpec.describe Charming::CLI do
       expect(root_file).to include('loader.push_dir(File.expand_path("../app/models", __dir__), namespace: WeatherTui)')
       expect(root_file).not_to include("Dir[File.expand_path")
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
+      expect(File).not_to exist(File.join(app_root, "config/themes/default.yml"))
       expect(File).to exist(File.join(app_root, "app/models/application_model.rb"))
       expect(File).to exist(File.join(app_root, "app/models/home_model.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/application_controller.rb"))
@@ -66,7 +67,13 @@ RSpec.describe Charming::CLI do
         "def content_focused?"
       )
       expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
-        "base = base.foreground(:bright_cyan) if content_focused?"
+        "base = content_focused? ? theme.primary : style"
+      )
+      expect(File.read(File.join(app_root, "lib/weather_tui/application.rb"))).to include(
+        "Charming::UI::Theme.built_in_names.each do |theme_name|"
+      )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        'command "Theme", :open_theme_palette'
       )
 
       require File.join(app_root, "lib/weather_tui")
@@ -89,6 +96,25 @@ RSpec.describe Charming::CLI do
       expect(backend.frames.first).to include("q quit")
       expect(backend.frames.join("\n")).to include("Command palette")
       expect(backend.frames.first.lines.count).to eq(12)
+
+      theme_backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::KeyEvent.new(key: :p, char: "p"),
+          Charming::KeyEvent.new(key: "t", char: "t"),
+          Charming::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::KeyEvent.new(key: "t", char: "t"),
+          Charming::KeyEvent.new(key: "o", char: "o"),
+          Charming::KeyEvent.new(key: "k", char: "k"),
+          Charming::KeyEvent.new(key: "y", char: "y"),
+          Charming::KeyEvent.new(key: "o", char: "o"),
+          Charming::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::KeyEvent.new(key: :q, char: "q")
+        ],
+        width: 60,
+        height: 12
+      )
+      Charming::Runtime.new(WeatherTui::Application.new, backend: theme_backend).run
+      expect(theme_backend.frames.last).to include("\e[38;2;122;162;247m")
     end
   end
 

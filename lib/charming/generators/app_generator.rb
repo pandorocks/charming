@@ -50,7 +50,7 @@ module Charming
       private
 
       attr_reader :name
-      alias app_name name
+      alias_method :app_name, :name
 
       def file_path(path)
         format(path, name: name.snake_name)

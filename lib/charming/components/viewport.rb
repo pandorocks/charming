@@ -6,6 +6,7 @@ module Charming
   module Components
     class Viewport < Component
       include KeyboardHandler
+
       ANSI_PATTERN = /\e\[[0-9;]*m/
       KEY_ACTIONS = {
         up: :scroll_up,
@@ -38,7 +39,7 @@ module Charming
         return nil unless height
 
         if event.scroll?
-          scroll_delta = event.button_name == :scroll_up ? -1 : 1
+          scroll_delta = (event.button_name == :scroll_up) ? -1 : 1
           @offset += scroll_delta
           clamp_position
           return :handled
@@ -122,8 +123,8 @@ module Charming
       end
 
       def clip_tokens(line)
-        state = { cursor: 0, output: +"" }
-        line.scan(/#{ANSI_PATTERN}|./m) do |token|
+        state = {cursor: 0, output: +""}
+        line.scan(/#{ANSI_PATTERN}|./mo) do |token|
           ansi?(token) ? append_ansi(state, token) : append_character(state, token)
         end
         state.fetch(:output)

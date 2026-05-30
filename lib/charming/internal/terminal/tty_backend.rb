@@ -212,9 +212,9 @@ module Charming
         def normalize_key_name(key_name)
           name = key_name.to_s
           return ctrl_key(name) if name.match?(CTRL_KEY_PATTERN)
-          return { key: :tab, shift: true } if name == "back_tab"
+          return {key: :tab, shift: true} if name == "back_tab"
 
-          { key: normalized_key(name), char: printable_char(name) }
+          {key: normalized_key(name), char: printable_char(name)}
         end
 
         def normalized_key(name)
@@ -225,7 +225,7 @@ module Charming
 
         def ctrl_key(name)
           match = name.match(CTRL_KEY_PATTERN)
-          { key: match[:key].to_sym, ctrl: true }
+          {key: match[:key].to_sym, ctrl: true}
         end
 
         def printable_char(name)

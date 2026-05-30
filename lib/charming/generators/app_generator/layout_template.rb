@@ -71,14 +71,14 @@ end
       end
 
       def nav_style(route, index)
-        return style.foreground(:bright_cyan).bold if sidebar_focused? && index == sidebar_index
-        return style.foreground(:bright_cyan) if current_route?(route)
+        return theme.primary.bold if sidebar_focused? && index == sidebar_index
+        return theme.primary if current_route?(route)
 
-        style.foreground(:bright_black)
+        theme.muted
       end
 
       def shortcuts
-        text "tab focus\\np commands\\nq quit", style: style.foreground(:bright_black)
+        text "tab focus\\np commands\\nq quit", style: theme.muted
       end
 
       def sidebar_focused?
@@ -106,7 +106,8 @@ end
           content: palette,
           title: "Command palette",
           help: "Type to filter. Enter selects. Escape closes.",
-          width: 52
+          width: 52,
+          theme: theme
         )
       end)
         end
@@ -120,14 +121,14 @@ end
         def layout_frame_style_helpers
           %(
       def sidebar_style
-        base = style.border(:rounded).padding(1, 2).width(sidebar_width).height(panel_height)
-        base = base.foreground(:bright_cyan) if sidebar_focused?
+        base = sidebar_focused? ? theme.primary : style
+        base = base.border(:rounded).padding(1, 2).width(sidebar_width).height(panel_height)
         palette ? base.faint : base
       end
 
       def main_content_style
-        base = style.border(:rounded).padding(1, 2).width(main_content_width).height(panel_height)
-        base = base.foreground(:bright_cyan) if content_focused?
+        base = content_focused? ? theme.primary : style
+        base = base.border(:rounded).padding(1, 2).width(main_content_width).height(panel_height)
         palette ? base.faint : base
       end)
         end

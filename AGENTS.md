@@ -10,9 +10,10 @@
 
 ```bash
 bundle install          # after checkout or gemspec changes
-bundle exec rake        # run everything: RSpec + RuboCop
-bundle exec rspec       # tests only
-bundle exec rubocop     # linter only
+bin/check               # run everything: RSpec + Standard Ruby
+bin/rspec               # tests only
+bin/lint                # style checks only
+bin/format              # auto-format with Standard Ruby
 ```
 
 Demo app:
@@ -143,16 +144,13 @@ Components currently inherit from `View` and use `render` to produce the display
 
 ---
 
-## Code Style (RuboCop Config)
+## Code Style (Standard Ruby)
 
 - **Ruby 4.0+** target
 - `frozen_string_literal: true` on every file
-- **Double quotes** for all strings
-- `Style/Documentation` disabled
-- `Metrics/MethodLength` max: **15**
-- `Metrics/ClassLength` max: **180**
-- `Metrics/BlockLength` excluded from specs
-- `Style/OneClassPerFile` excluded from `examples/`
+- Use `bin/format` for auto-formatting
+- Use `bin/lint` for style checks
+- Follow Standard Ruby formatting rather than invoking RuboCop directly
 
 ---
 

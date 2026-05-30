@@ -12,6 +12,7 @@ module DemoApp
       navigate_to "/"
     end
 
+    command "Theme", :open_theme_palette
     command "Close palette", :close_command_palette
     command "Quit app", :quit
   end

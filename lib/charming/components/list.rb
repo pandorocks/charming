@@ -4,6 +4,7 @@ module Charming
   module Components
     class List < Component
       include KeyboardHandler
+
       KEY_ACTIONS = {
         up: :move_up,
         down: :move_down,
@@ -91,9 +92,9 @@ module Charming
       end
 
       def render_item(item, index)
-        prefix = index == selected_index ? "> " : "  "
+        prefix = (index == selected_index) ? "> " : "  "
         rendered = "#{prefix}#{@label.call(item)}"
-        index == selected_index ? style.reverse.render(rendered) : rendered
+        (index == selected_index) ? style.reverse.render(rendered) : rendered
       end
 
       def clamp_position

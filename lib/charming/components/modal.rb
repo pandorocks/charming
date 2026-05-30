@@ -3,8 +3,8 @@
 module Charming
   module Components
     class Modal < Component
-      def initialize(content:, title: nil, help: nil, width: 52, style: nil)
-        super()
+      def initialize(content:, title: nil, help: nil, width: 52, style: nil, theme: nil)
+        super(theme: theme)
         @content = content
         @title = title
         @help = help
@@ -30,7 +30,7 @@ module Charming
       end
 
       def help_line
-        text(help, style: style.foreground(:bright_black)) if help
+        text(help, style: theme.muted) if help
       end
 
       def render_content
@@ -62,7 +62,7 @@ module Charming
       end
 
       def border_style
-        style.foreground(:bright_magenta)
+        theme.border
       end
     end
   end

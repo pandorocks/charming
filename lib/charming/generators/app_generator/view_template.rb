@@ -43,6 +43,11 @@ require_relative "../config/routes"
 
 module #{name.class_name}
   class Application < Charming::Application
+    Charming::UI::Theme.built_in_names.each do |theme_name|
+      theme theme_name.to_sym, built_in: theme_name
+    end
+
+    default_theme :opencode
   end
 end
 )
@@ -76,7 +81,7 @@ end
     private
 
     def app_frame
-      render_component AppFrameComponent.new(title: home.title)
+      render_component AppFrameComponent.new(title: home.title, theme: theme)
     end)
         end
       end

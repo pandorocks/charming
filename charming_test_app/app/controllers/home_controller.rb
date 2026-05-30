@@ -2,11 +2,9 @@
 
 module CharmingTestApp
   class HomeController < ApplicationController
-
     def show
       render_home
     end
-
 
     private
 

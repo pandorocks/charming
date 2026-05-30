@@ -42,12 +42,12 @@ module Charming
       def foreground(color)
         with(foreground: color)
       end
-      alias fg foreground
+      alias_method :fg, :foreground
 
       def background(color)
         with(background: color)
       end
-      alias bg background
+      alias_method :bg, :background
 
       ATTRIBUTES.each_key do |attribute|
         define_method(attribute) do
