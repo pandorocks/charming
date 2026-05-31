@@ -2,44 +2,6 @@
 
 A Rails-inspired terminal user interface framework for **Ruby 4+**.
 
-```ruby
-class MyApp < Charming::Application
-  routes do
-    root "counter#show"
-  end
-end
-
-class CounterController < Charming::Controller
-  key "up", :increment
-  key "down", :decrement
-  key "q", :quit, scope: :global
-
-  def show
-    render "Count: #{counter.count}"
-  end
-
-  def increment
-    counter.count += 1
-    show
-  end
-
-  def decrement
-    counter.count -= 1
-    show
-  end
-
-  private
-
-  def counter
-    model(:counter, CounterModel)
-  end
-end
-
-class CounterModel < Charming::ApplicationModel
-  attribute :count, :integer, default: 0
-end
-```
-
 ## Installation
 
 Add this line to your application's Gemfile:
