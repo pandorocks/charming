@@ -4,6 +4,10 @@ A Rails-inspired terminal user interface framework for **Ruby 4+**.
 
 Charming gives terminal apps familiar application structure: routes, controllers, models, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, and testable terminal backends.
 
+## Project Status
+
+Charming is still in its infancy and is under constant development. APIs, behavior, and generated app structure may change until the project reaches a stable `1.0` release.
+
 ## Quick Start
 
 Install the Charming CLI gem on your machine:
