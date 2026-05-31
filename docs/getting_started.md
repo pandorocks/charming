@@ -66,8 +66,8 @@ module WeatherTui
   class HomeController < ApplicationController
     key "up", :increment
     key "down", :decrement
-    key "p", :open_command_palette
-    key "q", :quit
+    key "p", :open_command_palette, scope: :global
+    key "q", :quit, scope: :global
 
     command "Refresh", :refresh
     command "Quit app", :quit
@@ -97,7 +97,7 @@ end
 
 Useful controller APIs:
 
-- `key "q", :quit` dispatches a key to an action.
+- `key "q", :quit` dispatches a content-pane key to an action. Add `scope: :global` for shortcuts that should work from any focused pane.
 - `command "Label", :action` adds a command palette item.
 - `render value` renders a string, view, or component.
 - `navigate_to "/path"` changes routes.

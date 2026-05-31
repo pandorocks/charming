@@ -74,7 +74,7 @@ Inherit from `Charming::Controller` or your app's `ApplicationController`.
 
 Class APIs:
 
-- `key name, action` binds a key to an action.
+- `key name, action, scope: :content` binds a content-pane key to an action. Use `scope: :global` for app-level shortcuts that should work from any focused pane.
 - `command label, action = nil, &block` adds a command palette item.
 - `timer name, every:, action:` dispatches a periodic timer while the route is active.
 - `on_task name, action:` handles async task completion.
