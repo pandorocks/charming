@@ -26,7 +26,7 @@ module Charming
         end
 
         def render_changes(frame)
-          changes = changed_suffix(@previous_frame, frame)
+          changes = changed_lines(@previous_frame, frame)
           return @previous_frame = frame if changes.empty?
 
           if @output.respond_to?(:write_lines)
@@ -37,14 +37,12 @@ module Charming
           @previous_frame = frame
         end
 
-        def changed_suffix(previous_frame, frame)
+        def changed_lines(previous_frame, frame)
           previous_lines = previous_frame.lines(chomp: true)
           lines = frame.lines(chomp: true)
           line_count = [previous_lines.length, lines.length].max
-          first_changed_index = line_count.times.find { |index| previous_lines[index] != lines[index] }
-          return [] unless first_changed_index
 
-          first_changed_index.upto(line_count - 1).map do |index|
+          line_count.times.map do |index|
             [index + 1, lines[index] || ""]
           end
         end
