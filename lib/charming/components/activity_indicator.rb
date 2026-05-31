@@ -12,7 +12,10 @@ module Charming
       # Default character pool used for generating each position's character via stable hashing.
       DEFAULT_CHARS = "0123456789abcdefABCDEF~!@#$%^&*+=_".chars.freeze
 
-      # The default two-color gradient applied across the bar width (red to blue).
+      # The default two-color gradient applied across the bar width (red to cyan).
+      # The cyan endpoint mirrors the Phosphor theme palette's "cyan" token so the bar
+      # remains legible on Phosphor's dark navy background; gradient: accepts raw hex,
+      # so callers using a different theme should pass their own endpoints.
       DEFAULT_GRADIENT = ["#ff0000", "#6FD0E3"].freeze
 
       # The default label color for ellipsis and text portions when no custom
