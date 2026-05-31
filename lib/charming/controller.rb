@@ -21,7 +21,7 @@ module Charming
       # Registers a command palette entry — visible in fuzzy search when Ctrl+K is pressed.
       # Accepts either a method symbol or an inline callable block.
       def command(label, action = nil, &block)
-        command_bindings << Components::CommandPalette::Command.new(label: label, value: block || action)
+        command_bindings << Presentation::Components::CommandPalette::Command.new(label: label, value: block || action)
       end
 
       # Registers a periodic timer that fires at `every`-second intervals.
@@ -344,11 +344,11 @@ module Charming
     end
 
     def template_body(name, **assigns)
-      TemplateView.new(template: resolve_template(name), namespace: template_namespace, **template_assigns(assigns))
+      Presentation::TemplateView.new(template: resolve_template(name), namespace: template_namespace, **template_assigns(assigns))
     end
 
     def resolve_template(name)
-      Templates.resolve(name, root: application.class.root)
+      Presentation::Templates.resolve(name, root: application.class.root)
     end
 
     def template_assigns(assigns)
@@ -483,7 +483,7 @@ module Charming
     end
 
     def build_command_palette_with_state(commands, state, placeholder: "Search commands", height: nil)
-      Components::CommandPalette.new(
+      Presentation::Components::CommandPalette.new(
         commands: commands,
         placeholder: placeholder,
         height: height,
@@ -521,7 +521,7 @@ module Charming
 
     def theme_commands
       application.class.themes.keys.map do |name|
-        Components::CommandPalette::Command.new(label: theme_label(name), value: -> { use_theme(name) })
+        Presentation::Components::CommandPalette::Command.new(label: theme_label(name), value: -> { use_theme(name) })
       end
     end
 

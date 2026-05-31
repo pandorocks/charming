@@ -52,7 +52,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Added examples:
   - `examples/counter.rb`
   - `examples/counter_memory.rb`
-- Added `Charming::UI` styling and layout foundation:
+- Added `Charming::Presentation::UI` styling and layout foundation:
   - ANSI foreground/background colors
   - 16-color, 256-color, and truecolor support
   - text attributes
@@ -65,30 +65,30 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - horizontal and vertical joins
   - centering and overlay helpers
 - Added Rails-like view foundation:
-  - `Charming::View`
+  - `Charming::Presentation::View`
   - keyword assigns exposed as reader methods
   - view helpers for `style`, `text`, `box`, `row`, and `column`
   - controller rendering of view objects
 - Added component foundation:
-  - `Charming::Component`
+  - `Charming::Presentation::Component`
   - component rendering from views
 - Added first stateful component foundation:
-  - `Charming::Components::TextInput`
+  - `Charming::Presentation::Components::TextInput`
   - mutable value and cursor state
   - key handling for insertion, cursor movement, backspace, and delete
 - Added selectable list component foundation:
-  - `Charming::Components::List`
+  - `Charming::Presentation::Components::List`
   - selection movement and enter activation
   - custom item labels
   - fixed-height viewport rendering
 - Added modal and command palette foundations:
-  - `Charming::Components::Modal`
-  - `Charming::Components::CommandPalette`
+  - `Charming::Presentation::Components::Modal`
+  - `Charming::Presentation::Components::CommandPalette`
   - command filtering and selection
   - command palette controller helpers
   - command palette included in generated apps by default
 - Added viewport and screen-aware rendering foundations:
-  - `Charming::Components::Viewport`
+  - `Charming::Presentation::Components::Viewport`
   - `Charming::Screen`
   - backend screen dimensions passed through runtime to controllers and views
   - runtime re-rendering for `Charming::ResizeEvent`
@@ -96,8 +96,8 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - viewport key handling for scrolling
 - Added larger-screen interaction and async foundations:
   - timer-driven spinner and activity indicator rendering
-  - `Charming::Components::Progressbar`
-  - `Charming::Components::Table`
+  - `Charming::Presentation::Components::Progressbar`
+  - `Charming::Presentation::Components::Table`
   - `Charming::TaskExecutor`
   - mouse event parsing and dispatch
 - Added layout, partial, and theme support:

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::View do
+RSpec.describe Charming::Presentation::View do
   it "exposes keyword assigns as reader methods" do
     view = Class.new(described_class) do
       def render
@@ -65,7 +65,7 @@ RSpec.describe Charming::View do
   end
 
   it "renders components" do
-    component = Class.new(Charming::Component) do
+    component = Class.new(Charming::Presentation::Component) do
       def render
         "Hello #{name}"
       end

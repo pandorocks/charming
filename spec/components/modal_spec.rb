@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::Modal do
+RSpec.describe Charming::Presentation::Components::Modal do
   it "renders a framed modal around string content" do
     modal = described_class.new(content: "Body", title: "Title", help: "Help", width: 20)
 
@@ -18,7 +18,7 @@ RSpec.describe Charming::Components::Modal do
   end
 
   it "renders component content" do
-    content = Class.new(Charming::Component) do
+    content = Class.new(Charming::Presentation::Component) do
       def render = "Component body"
     end
 

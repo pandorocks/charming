@@ -154,7 +154,7 @@ Task results arrive as `Charming::TaskEvent` with `value`, `error`, and `error?`
 Generated apps use templates by default, but class-based views still work:
 
 ```ruby
-class HomeView < Charming::View
+class HomeView < Charming::Presentation::View
   def render
     text title, style: theme.title
   end

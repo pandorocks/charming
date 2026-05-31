@@ -55,11 +55,11 @@ expect(controller.dispatch(:show).body).to include("123")
 Resolve and render templates directly when testing template output:
 
 ```ruby
-template = Charming::Templates.resolve("home/show", root: app_root)
-view = Charming::TemplateView.new(
+template = Charming::Presentation::Templates.resolve("home/show", root: app_root)
+view = Charming::Presentation::TemplateView.new(
   template: template,
   home: double(title: "Home"),
-  theme: Charming::UI::Theme.default
+  theme: Charming::Presentation::UI::Theme.default
 )
 
 expect(view.render).to include("Home")
@@ -68,7 +68,7 @@ expect(view.render).to include("Home")
 Templates can use normal view helpers. Strip ANSI codes when assertions do not need styling:
 
 ```ruby
-body = Charming::UI::Width.strip_ansi(view.render)
+body = Charming::Presentation::UI::Width.strip_ansi(view.render)
 expect(body).to include("Home")
 ```
 
@@ -87,7 +87,7 @@ Class-based views are plain objects. Pass assigns to `new` and call `render`:
 ```ruby
 view = MyApp::HomeView.new(
   home: double(title: "Home"),
-  theme: Charming::UI::Theme.default
+  theme: Charming::Presentation::UI::Theme.default
 )
 
 expect(view.render).to include("Home")
@@ -98,7 +98,7 @@ expect(view.render).to include("Home")
 Render components directly:
 
 ```ruby
-component = Charming::Components::List.new(items: %w[One Two])
+component = Charming::Presentation::Components::List.new(items: %w[One Two])
 
 expect(component.render).to include("One")
 ```
@@ -106,7 +106,7 @@ expect(component.render).to include("One")
 For interactive components, assert return values and state changes:
 
 ```ruby
-input = Charming::Components::TextInput.new
+input = Charming::Presentation::Components::TextInput.new
 
 expect(input.handle_key(Charming::KeyEvent.new(key: :a, char: "a"))).to eq(:handled)
 expect(input.value).to eq("a")
@@ -190,7 +190,7 @@ For rendered terminal output, prefer small, stable assertions first. Use full-fr
 Good:
 
 ```ruby
-body = Charming::UI::Width.strip_ansi(response.body)
+body = Charming::Presentation::UI::Width.strip_ansi(response.body)
 expect(body).to include("Status: Loaded")
 ```
 

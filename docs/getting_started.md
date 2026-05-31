@@ -129,7 +129,7 @@ Layouts use `yield_content` to place the current screen inside shared UI:
 sidebar = box("Home\nSettings", style: theme.border.border(:rounded).padding(1, 2).width(20))
 main = box(yield_content, style: theme.border.border(:rounded).padding(1, 2).width(60))
 frame = row(sidebar, main, gap: 1)
-%><%= Charming::UI.place(frame, width: screen.width, height: screen.height) %>
+%><%= Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height) %>
 ```
 
 Read more in [Layouts](layouts.md).
@@ -169,7 +169,7 @@ Generated apps register built-in themes and default to `:phosphor`:
 
 ```ruby
 class MyApp::Application < Charming::Application
-  Charming::UI::Theme.built_in_names.each do |theme_name|
+  Charming::Presentation::UI::Theme.built_in_names.each do |theme_name|
     theme theme_name.to_sym, built_in: theme_name
   end
 

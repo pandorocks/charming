@@ -147,13 +147,13 @@ Common attribute types include `:string`, `:integer`, `:float`, `:boolean`, `:da
 
 ## Templates
 
-`Charming::Templates` resolves and renders templates under `app/views`.
+`Charming::Presentation::Templates` resolves and renders templates under `app/views`.
 
 Template APIs:
 
-- `Charming::Templates.register(extension, handler)` registers a template handler.
-- `Charming::Templates.resolve(name, root:)` resolves a template from an app root.
-- `Charming::Templates::MissingTemplateError` is raised when no candidate file exists.
+- `Charming::Presentation::Templates.register(extension, handler)` registers a template handler.
+- `Charming::Presentation::Templates.resolve(name, root:)` resolves a template from an app root.
+- `Charming::Presentation::Templates::MissingTemplateError` is raised when no candidate file exists.
 
 Registered extensions:
 
@@ -179,11 +179,11 @@ end
 
 ## TemplateView
 
-`Charming::TemplateView` renders resolved templates with normal view helpers and assigns:
+`Charming::Presentation::TemplateView` renders resolved templates with normal view helpers and assigns:
 
 ```ruby
-template = Charming::Templates.resolve("home/show", root: app_root)
-view = Charming::TemplateView.new(template: template, home: home, theme: theme)
+template = Charming::Presentation::Templates.resolve("home/show", root: app_root)
+view = Charming::Presentation::TemplateView.new(template: template, home: home, theme: theme)
 view.render
 ```
 
@@ -202,10 +202,10 @@ Generated controllers usually do not instantiate `TemplateView` directly. Use `r
 
 ## View
 
-Class-based views remain supported. Inherit from `Charming::View` and implement `render`:
+Class-based views remain supported. Inherit from `Charming::Presentation::View` and implement `render`:
 
 ```ruby
-class HomeView < Charming::View
+class HomeView < Charming::Presentation::View
   def render
     text title, style: theme.title
   end
@@ -225,7 +225,7 @@ View and template helpers:
 - `box(style: style) { ... }` captures nested helper output into a styled block.
 - `row(*items, gap: 0)` joins rendered items horizontally.
 - `column(*items, gap: 0)` joins rendered items vertically.
-- `style` returns a new `Charming::UI::Style`.
+- `style` returns a new `Charming::Presentation::UI::Style`.
 - `theme` returns the assigned theme or default theme.
 - `render_component(component)` renders a component.
 - `render_partial(view)` renders another view.
@@ -235,10 +235,10 @@ View and template helpers:
 
 ## Component
 
-Inherit from `Charming::Component` for reusable UI objects. Components inherit view helpers and assign readers.
+Inherit from `Charming::Presentation::Component` for reusable UI objects. Components inherit view helpers and assign readers.
 
 ```ruby
-class BadgeComponent < Charming::Component
+class BadgeComponent < Charming::Presentation::Component
   def render
     text label, style: theme.title
   end
@@ -259,40 +259,40 @@ Return conventions:
 
 Bundled components:
 
-- `Charming::Components::TextInput`
-- `Charming::Components::List`
-- `Charming::Components::CommandPalette`
-- `Charming::Components::Modal`
-- `Charming::Components::Markdown`
-- `Charming::Components::Viewport`
-- `Charming::Components::Spinner`
-- `Charming::Components::Progressbar`
-- `Charming::Components::ActivityIndicator`
-- `Charming::Components::Table`
-- `Charming::Components::KeyboardHandler`
+- `Charming::Presentation::Components::TextInput`
+- `Charming::Presentation::Components::List`
+- `Charming::Presentation::Components::CommandPalette`
+- `Charming::Presentation::Components::Modal`
+- `Charming::Presentation::Components::Markdown`
+- `Charming::Presentation::Components::Viewport`
+- `Charming::Presentation::Components::Spinner`
+- `Charming::Presentation::Components::Progressbar`
+- `Charming::Presentation::Components::ActivityIndicator`
+- `Charming::Presentation::Components::Table`
+- `Charming::Presentation::Components::KeyboardHandler`
 
 Markdown component constructor:
 
 - `content:` Markdown source string.
 - `width:` optional terminal width used for paragraph wrapping.
-- `theme:` optional `Charming::UI::Theme`.
+- `theme:` optional `Charming::Presentation::UI::Theme`.
 - `syntax_highlighting:` controls Rouge-backed code block highlighting, defaulting to `true`.
 
-Markdown parsing uses Kramdown. Syntax highlighting uses Rouge. Charming maps parsed nodes and Rouge tokens to terminal text through `Charming::UI::Style` and theme tokens.
+Markdown parsing uses Kramdown. Syntax highlighting uses Rouge. Charming maps parsed nodes and Rouge tokens to terminal text through `Charming::Presentation::UI::Style` and theme tokens.
 
 ## UI
 
-`Charming::UI` provides ANSI-aware layout helpers:
+`Charming::Presentation::UI` provides ANSI-aware layout helpers:
 
-- `Charming::UI.style`
-- `Charming::UI.join_horizontal(*blocks, gap: 0)`
-- `Charming::UI.join_vertical(*blocks, gap: 0)`
-- `Charming::UI.center(block, width:, height:)`
-- `Charming::UI.place(block, width:, height:, top: 0, left: 0, background: nil)`
-- `Charming::UI.overlay(base, overlay, top: :center, left: :center)`
-- `Charming::UI.visible_slice(line, start_column, width)`
-- `Charming::UI::Width.measure(value)`
-- `Charming::UI::Width.strip_ansi(value)`
+- `Charming::Presentation::UI.style`
+- `Charming::Presentation::UI.join_horizontal(*blocks, gap: 0)`
+- `Charming::Presentation::UI.join_vertical(*blocks, gap: 0)`
+- `Charming::Presentation::UI.center(block, width:, height:)`
+- `Charming::Presentation::UI.place(block, width:, height:, top: 0, left: 0, background: nil)`
+- `Charming::Presentation::UI.overlay(base, overlay, top: :center, left: :center)`
+- `Charming::Presentation::UI.visible_slice(line, start_column, width)`
+- `Charming::Presentation::UI::Width.measure(value)`
+- `Charming::Presentation::UI::Width.strip_ansi(value)`
 
 Styles are immutable builders:
 
@@ -314,7 +314,7 @@ Common style methods:
 
 ## Themes
 
-Theme tokens return `Charming::UI::Style` objects:
+Theme tokens return `Charming::Presentation::UI::Style` objects:
 
 - `text`
 - `title`

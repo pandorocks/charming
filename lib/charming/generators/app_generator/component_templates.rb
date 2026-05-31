@@ -8,7 +8,7 @@ module Charming
           %(# frozen_string_literal: true
 
 module #{name.class_name}
-  class AppFrameComponent < Charming::Component
+  class AppFrameComponent < Charming::Presentation::Component
     def render
       column(title_line, help_line, gap: 1)
     end

@@ -64,7 +64,7 @@ RSpec.describe Charming::Controller do
   end
 
   it "renders view objects" do
-    view = Class.new(Charming::View) do
+    view = Class.new(Charming::Presentation::View) do
       def render
         "Rendered from view"
       end
@@ -112,7 +112,7 @@ RSpec.describe Charming::Controller do
   end
 
   it "wraps rendered bodies with a configured layout" do
-    layout = Class.new(Charming::View) do
+    layout = Class.new(Charming::Presentation::View) do
       def render
         "Layout(#{yield_content})"
       end
@@ -131,12 +131,12 @@ RSpec.describe Charming::Controller do
   end
 
   it "passes view assigns to layouts" do
-    view = Class.new(Charming::View) do
+    view = Class.new(Charming::Presentation::View) do
       def render
         title
       end
     end
-    layout = Class.new(Charming::View) do
+    layout = Class.new(Charming::Presentation::View) do
       def render
         "#{title}: #{yield_content}"
       end
@@ -155,7 +155,7 @@ RSpec.describe Charming::Controller do
   end
 
   it "passes screen and controller to layouts" do
-    layout = Class.new(Charming::View) do
+    layout = Class.new(Charming::Presentation::View) do
       def render
         "#{screen.width}x#{screen.height} #{controller.class.name}: #{yield_content}"
       end
@@ -178,7 +178,7 @@ RSpec.describe Charming::Controller do
   end
 
   it "inherits layouts from parent controllers" do
-    layout = Class.new(Charming::View) do
+    layout = Class.new(Charming::Presentation::View) do
       def render
         "Parent(#{yield_content})"
       end
@@ -196,12 +196,12 @@ RSpec.describe Charming::Controller do
   end
 
   it "allows child controllers to override inherited layouts" do
-    parent_layout = Class.new(Charming::View) do
+    parent_layout = Class.new(Charming::Presentation::View) do
       def render
         "Parent(#{yield_content})"
       end
     end
-    child_layout = Class.new(Charming::View) do
+    child_layout = Class.new(Charming::Presentation::View) do
       def render
         "Child(#{yield_content})"
       end
@@ -221,7 +221,7 @@ RSpec.describe Charming::Controller do
   end
 
   it "allows child controllers to disable inherited layouts" do
-    parent_layout = Class.new(Charming::View) do
+    parent_layout = Class.new(Charming::Presentation::View) do
       def render
         "Parent(#{yield_content})"
       end
@@ -382,7 +382,7 @@ RSpec.describe Charming::Controller do
     controller.new(application: application).open_command_palette
 
     expect(application.session[:command_palette]).to eq(type: :commands, value: "", cursor: 0, selected_index: 0)
-    expect(application.session[:command_palette]).not_to be_a(Charming::Components::CommandPalette)
+    expect(application.session[:command_palette]).not_to be_a(Charming::Presentation::Components::CommandPalette)
   end
 
   it "preserves command palette input across fresh controller instances" do

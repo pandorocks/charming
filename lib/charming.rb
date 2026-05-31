@@ -24,5 +24,5 @@ module Charming
   end
 end
 
-Charming::Templates.register ".tui.erb", Charming::Templates::ErbHandler
-Charming::Templates.register ".txt.erb", Charming::Templates::ErbHandler
+Charming::Presentation::Templates.register ".tui.erb", Charming::Presentation::Templates::ErbHandler
+Charming::Presentation::Templates.register ".txt.erb", Charming::Presentation::Templates::ErbHandler

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 module Charming
-  module Markdown
+  module Presentation
   end
 end

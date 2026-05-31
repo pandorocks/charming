@@ -54,8 +54,8 @@ require "#{app_name.snake_name}"
 RSpec.describe "home/show template" do
   describe "#render" do
     it "renders the model title" do
-      template = Charming::Templates.resolve("home/show", root: #{app_name.class_name}::Application.root)
-      view = Charming::TemplateView.new(
+      template = Charming::Presentation::Templates.resolve("home/show", root: #{app_name.class_name}::Application.root)
+      view = Charming::Presentation::TemplateView.new(
         template: template,
         namespace: #{app_name.class_name},
         home: double(title: "#{app_name.class_name}"),

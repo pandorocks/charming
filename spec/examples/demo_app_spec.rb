@@ -57,7 +57,7 @@ RSpec.describe "demo app example" do
     ).run
 
     frames = backend.frames.join("\n")
-    stripped = Charming::UI::Width.strip_ansi(frames)
+    stripped = Charming::Presentation::UI::Width.strip_ansi(frames)
     expect(stripped).to include("[=                               ] Working")
     expect(stripped).to include("[==                              ] Working")
     expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~ Working.")

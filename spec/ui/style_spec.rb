@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::UI::Style do
+RSpec.describe Charming::Presentation::UI::Style do
   it "applies ANSI foreground color and attributes" do
     output = described_class.new.foreground(:cyan).bold.render("Hello")
 

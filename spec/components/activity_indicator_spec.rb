@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::ActivityIndicator do
+RSpec.describe Charming::Presentation::Components::ActivityIndicator do
   def plain(value)
-    Charming::UI::Width.strip_ansi(value)
+    Charming::Presentation::UI::Width.strip_ansi(value)
   end
 
   it "renders the requested indicator width" do

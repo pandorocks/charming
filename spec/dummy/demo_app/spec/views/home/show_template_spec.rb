@@ -5,8 +5,8 @@ require_relative "../../spec_helper"
 RSpec.describe "home/show template" do
   describe "#render" do
     it "renders the model title" do
-      template = Charming::Templates.resolve("home/show", root: DemoApp::Application.root)
-      view = Charming::TemplateView.new(
+      template = Charming::Presentation::Templates.resolve("home/show", root: DemoApp::Application.root)
+      view = Charming::Presentation::TemplateView.new(
         template: template,
         namespace: DemoApp,
         home: double(title: "DemoApp", status: "Idle", progress: 0, activity_index: 0, message: "Ready"),
@@ -15,7 +15,7 @@ RSpec.describe "home/show template" do
 
       expect(view.render).to include("DemoApp")
       expect(view.render).to include("Status: Idle")
-      expect(Charming::UI::Width.strip_ansi(view.render)).to include("Markdown Preview")
+      expect(Charming::Presentation::UI::Width.strip_ansi(view.render)).to include("Markdown Preview")
     end
   end
 end

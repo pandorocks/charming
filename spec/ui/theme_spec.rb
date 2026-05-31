@@ -2,7 +2,7 @@
 
 require "tmpdir"
 
-RSpec.describe Charming::UI::Theme do
+RSpec.describe Charming::Presentation::UI::Theme do
   it "turns color shorthand into foreground styles" do
     theme = described_class.new({title: "#112233"})
 

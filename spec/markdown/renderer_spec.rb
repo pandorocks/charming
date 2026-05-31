@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Markdown::Renderer do
+RSpec.describe Charming::Presentation::Markdown::Renderer do
   def render_markdown(content, **options)
     described_class.new(content: content, **options).render
   end
 
   def strip_ansi(value)
-    Charming::UI::Width.strip_ansi(value)
+    Charming::Presentation::UI::Width.strip_ansi(value)
   end
 
   it "renders common block elements through Kramdown" do

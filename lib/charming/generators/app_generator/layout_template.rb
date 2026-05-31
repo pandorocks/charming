@@ -44,17 +44,17 @@ main_content_style = main_content_style.faint if palette_component
 sidebar = box(column(app_title, navigation, shortcuts, gap: 1), style: sidebar_style)
 main_content = box(yield_content, style: main_content_style)
 app_frame = narrow ? column(sidebar, main_content, gap: 1) : row(sidebar, main_content, gap: 1)
-body = Charming::UI.place(app_frame, width: screen.width, height: screen.height)
+body = Charming::Presentation::UI.place(app_frame, width: screen.width, height: screen.height)
 
 if palette_component
-  command_palette_modal = render_component Charming::Components::Modal.new(
+  command_palette_modal = render_component Charming::Presentation::Components::Modal.new(
     content: palette_component,
     title: "Command palette",
     help: "Type to filter. Enter selects. Escape closes.",
     width: 52,
     theme: theme
   )
-  body = Charming::UI.overlay(body, command_palette_modal)
+  body = Charming::Presentation::UI.overlay(body, command_palette_modal)
 end
 %><%= body %>
 )

@@ -40,14 +40,14 @@ Use `yield_content` to place the current screen inside the layout:
 
 ## Basic Frame
 
-Use `row` for side-by-side panels and `Charming::UI.place` to fill the terminal canvas:
+Use `row` for side-by-side panels and `Charming::Presentation::UI.place` to fill the terminal canvas:
 
 ```erb
 <%
 sidebar = box("Home\nSettings", style: theme.border.border(:rounded).padding(1, 2).width(20))
 main = box(yield_content, style: theme.border.border(:rounded).padding(1, 2).width(60))
 frame = row(sidebar, main, gap: 1)
-%><%= Charming::UI.place(frame, width: screen.width, height: screen.height) %>
+%><%= Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height) %>
 ```
 
 ## Layout Tool Layers
@@ -57,7 +57,7 @@ Charming has two layers of layout tools:
 | Layer | Use For | APIs |
 |-------|---------|------|
 | View composition | Building blocks relative to each other | `row`, `column`, `box`, `text` |
-| Spatial placement | Placing blocks on fixed terminal canvases | `Charming::UI.center`, `place`, `overlay` |
+| Spatial placement | Placing blocks on fixed terminal canvases | `Charming::Presentation::UI.center`, `place`, `overlay` |
 
 All layout helpers are ANSI-aware and account for terminal display width.
 
@@ -106,12 +106,12 @@ Branch on `screen.width` and `screen.height`:
 <%
 narrow = screen.width < 72 && screen.height >= 20
 body = narrow ? column(sidebar, main_content, gap: 1) : row(sidebar, main_content, gap: 1)
-%><%= Charming::UI.place(body, width: screen.width, height: screen.height) %>
+%><%= Charming::Presentation::UI.place(body, width: screen.width, height: screen.height) %>
 ```
 
 ## Centered Dialogs
 
-Use `Charming::UI.center` to put a block in the middle of a fixed-size canvas:
+Use `Charming::Presentation::UI.center` to put a block in the middle of a fixed-size canvas:
 
 ```erb
 <%
@@ -124,38 +124,38 @@ dialog = box(
   ),
   style: theme.border.border(:rounded).padding(1, 2).width(42)
 )
-%><%= Charming::UI.center(dialog, width: screen.width, height: screen.height) %>
+%><%= Charming::Presentation::UI.center(dialog, width: screen.width, height: screen.height) %>
 ```
 
 ## Fixed Placement
 
-Use `Charming::UI.place` when the final output must fill the terminal:
+Use `Charming::Presentation::UI.place` when the final output must fill the terminal:
 
 ```erb
 <%
 body = column(header, content, footer, gap: 1)
-%><%= Charming::UI.place(body, width: screen.width, height: screen.height, top: 0, left: 0) %>
+%><%= Charming::Presentation::UI.place(body, width: screen.width, height: screen.height, top: 0, left: 0) %>
 ```
 
 `top:` and `left:` accept integers or `:center`.
 
 ## Modal Overlays
 
-Use `Charming::UI.overlay` to draw a modal, palette, tooltip, or toast over an existing frame:
+Use `Charming::Presentation::UI.overlay` to draw a modal, palette, tooltip, or toast over an existing frame:
 
 ```erb
 <%
-body = Charming::UI.place(frame, width: screen.width, height: screen.height)
+body = Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height)
 
 if palette
-  modal = render_component Charming::Components::Modal.new(
+  modal = render_component Charming::Presentation::Components::Modal.new(
     title: "Command palette",
     content: palette,
     help: "Type to filter. Enter selects. Escape closes.",
     width: 52,
     theme: theme
   )
-  body = Charming::UI.overlay(body, modal)
+  body = Charming::Presentation::UI.overlay(body, modal)
 end
 %><%= body %>
 ```
@@ -185,11 +185,11 @@ end
 
 ## Style Chaining
 
-`Charming::UI::Style` objects are immutable and chainable:
+`Charming::Presentation::UI::Style` objects are immutable and chainable:
 
 ```erb
 <%
-panel_style = Charming::UI.style
+panel_style = Charming::Presentation::UI.style
   .foreground(:bright_cyan)
   .background("#101820")
   .bold

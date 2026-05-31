@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::Viewport do
+RSpec.describe Charming::Presentation::Components::Viewport do
   def key(name)
     Charming::KeyEvent.new(key: name)
   end
@@ -60,7 +60,7 @@ RSpec.describe Charming::Components::Viewport do
   end
 
   it "renders component content" do
-    component = Class.new(Charming::Component) do
+    component = Class.new(Charming::Presentation::Component) do
       def render = "Component body"
     end
 

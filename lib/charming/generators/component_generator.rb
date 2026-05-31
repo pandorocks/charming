@@ -17,7 +17,7 @@ module Charming
         %(# frozen_string_literal: true
 
 module #{app_name.class_name}
-  class #{name.component_class_name} < Charming::Component
+  class #{name.component_class_name} < Charming::Presentation::Component
     def render
       text "#{name.class_name}"
     end

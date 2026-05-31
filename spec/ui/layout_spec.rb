@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::UI do
+RSpec.describe Charming::Presentation::UI do
   it "joins blocks horizontally and pads shorter blocks" do
     left = "A\nBB"
     right = "1"

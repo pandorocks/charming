@@ -79,7 +79,7 @@ RSpec.describe Charming::CLI do
         'root File.expand_path("../..", __dir__)'
       )
       expect(File.read(File.join(app_root, "lib/weather_tui/application.rb"))).to include(
-        "Charming::UI::Theme.built_in_names.each do |theme_name|"
+        "Charming::Presentation::UI::Theme.built_in_names.each do |theme_name|"
       )
       expect(File.read(File.join(app_root, "lib/weather_tui/application.rb"))).to include(
         "default_theme :phosphor"

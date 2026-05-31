@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DemoApp
-  class AppFrameComponent < Charming::Component
+  class AppFrameComponent < Charming::Presentation::Component
     def render
       lines = [title_line, status_line, message_line, markdown_line, help_line]
       lines.insert(2, *loading_lines) if status == "Loading"
@@ -23,11 +23,11 @@ module DemoApp
     end
 
     def progress_bar_line
-      render_component(Charming::Components::Progressbar.new(total: 32, label: "Working").update(progress))
+      render_component(Charming::Presentation::Components::Progressbar.new(total: 32, label: "Working").update(progress))
     end
 
     def activity_indicator_line
-      render_component(Charming::Components::ActivityIndicator.new(
+      render_component(Charming::Presentation::Components::ActivityIndicator.new(
         width: 32,
         label: "Working",
         index: activity_index,
@@ -44,7 +44,7 @@ module DemoApp
     end
 
     def markdown_line
-      render_component(Charming::Components::Markdown.new(
+      render_component(Charming::Presentation::Components::Markdown.new(
         content: markdown_content,
         width: 48,
         theme: theme
@@ -58,7 +58,7 @@ module DemoApp
         Charming renders **Markdown** with `Kramdown` and Rouge:
 
         ~~~ ruby
-        render_component Charming::Components::Markdown.new(content: readme)
+        render_component Charming::Presentation::Components::Markdown.new(content: readme)
         ~~~
       MARKDOWN
     end

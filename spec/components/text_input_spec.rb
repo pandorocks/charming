@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::TextInput do
+RSpec.describe Charming::Presentation::Components::TextInput do
   def key(name, char: nil)
     Charming::KeyEvent.new(key: name, char: char)
   end

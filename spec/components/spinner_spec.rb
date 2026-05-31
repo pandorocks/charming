@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::Spinner do
+RSpec.describe Charming::Presentation::Components::Spinner do
   it "renders the current frame" do
     spinner = described_class.new(frames: %w[a b], index: 1)
 

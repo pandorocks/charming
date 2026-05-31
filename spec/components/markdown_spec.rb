@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Components::Markdown do
+RSpec.describe Charming::Presentation::Components::Markdown do
   def strip_ansi(value)
-    Charming::UI::Width.strip_ansi(value)
+    Charming::Presentation::UI::Width.strip_ansi(value)
   end
 
   it "renders markdown content as a component" do
@@ -13,7 +13,7 @@ RSpec.describe Charming::Components::Markdown do
 
   it "can be used as viewport content" do
     component = described_class.new(content: "One\n\nTwo\n\nThree")
-    viewport = Charming::Components::Viewport.new(content: component, height: 3)
+    viewport = Charming::Presentation::Components::Viewport.new(content: component, height: 3)
 
     expect(strip_ansi(viewport.render)).to eq("One\n\nTwo")
   end
