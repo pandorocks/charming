@@ -31,6 +31,8 @@ RSpec.describe Charming::CLI do
       expect(root_file).not_to include("Dir[File.expand_path")
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
       expect(File).not_to exist(File.join(app_root, "config/themes/default.yml"))
+      expect(File).not_to exist(File.join(app_root, "config/database.rb"))
+      expect(File).not_to exist(File.join(app_root, "app/models"))
       expect(File).to exist(File.join(app_root, "app/state/application_state.rb"))
       expect(File).to exist(File.join(app_root, "app/state/home_state.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/application_controller.rb"))
@@ -149,6 +151,136 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "app/views/forecast/index.tui.erb"))).to include(
         '"Forecast"'
       )
+    end
+  end
+
+  it "generates a sqlite-backed app when requested" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+
+      status = described_class.new(out: output, pwd: dir).call(%w[new db_tui --database sqlite3])
+
+      app_root = File.join(dir, "db_tui")
+      expect(status).to eq(0)
+      expect(output.string).to include("create config/database.rb")
+      expect(output.string).to include("create app/models/application_record.rb")
+      expect(File).to exist(File.join(app_root, "db/migrate/.keep"))
+      expect(File).to exist(File.join(app_root, "db/seeds.rb"))
+      expect(File.read(File.join(app_root, "db_tui.gemspec"))).to include(
+        'spec.add_dependency "activerecord", "~> 8.1"'
+      )
+      expect(File.read(File.join(app_root, "db_tui.gemspec"))).to include(
+        'spec.add_dependency "sqlite3", "~> 2.0"'
+      )
+
+      root_file = File.read(File.join(app_root, "lib/db_tui.rb"))
+      expect(root_file).to include('require_relative "../config/database"')
+      expect(root_file).to include('loader.push_dir(File.expand_path("../app/models", __dir__), namespace: DbTui)')
+
+      require File.join(app_root, "lib/db_tui")
+
+      expect(DbTui::ApplicationRecord.abstract_class?).to be(true)
+      expect(ActiveRecord::Base.connection.adapter_name).to eq("SQLite")
+    end
+  end
+
+  it "installs sqlite support into an existing app" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new install_tui])
+      app_root = File.join(dir, "install_tui")
+
+      status = described_class.new(out: output, pwd: app_root).call(%w[db:install sqlite3])
+
+      expect(status).to eq(0)
+      expect(output.string).to include("create config/database.rb")
+      expect(output.string).to include("create app/models/application_record.rb")
+      expect(output.string).to include("update install_tui.gemspec")
+      expect(output.string).to include("update lib/install_tui.rb")
+      expect(File).to exist(File.join(app_root, "db/migrate/.keep"))
+      expect(File).to exist(File.join(app_root, "db/seeds.rb"))
+
+      gemspec = File.read(File.join(app_root, "install_tui.gemspec"))
+      expect(gemspec).to include('spec.files = Dir.glob("{app,config,db,exe,lib}/**/*") + %w[README.md]')
+      expect(gemspec).to include('spec.add_dependency "activerecord", "~> 8.1"')
+      expect(gemspec).to include('spec.add_dependency "sqlite3", "~> 2.0"')
+
+      root_file = File.read(File.join(app_root, "lib/install_tui.rb"))
+      expect(root_file).to include('require_relative "../config/database"')
+      expect(root_file).to include('loader.push_dir(File.expand_path("../app/models", __dir__), namespace: InstallTui)')
+
+      described_class.new(out: output, pwd: app_root).call(%w[g model note body:text])
+      described_class.new(out: output, pwd: app_root).call(%w[db:migrate])
+      require File.join(app_root, "lib/install_tui")
+
+      note = InstallTui::Note.create!(body: "Persisted")
+      expect(note).to be_persisted
+      expect(InstallTui::Note.first.body).to eq("Persisted")
+    end
+  end
+
+  it "generates an Active Record model and migration for sqlite-backed apps" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new records_tui --database sqlite3])
+      app_root = File.join(dir, "records_tui")
+
+      status = described_class.new(out: output, pwd: app_root).call(%w[g model task title:string done:boolean])
+
+      expect(status).to eq(0)
+      expect(output.string).to include("create app/models/task.rb")
+      expect(output.string).to include("create spec/models/task_spec.rb")
+
+      migration = Dir.glob(File.join(app_root, "db/migrate/*_create_tasks.rb")).first
+      expect(migration).not_to be_nil
+      expect(File.read(migration)).to include("create_table :tasks")
+      expect(File.read(migration)).to include("t.string :title")
+      expect(File.read(migration)).to include("t.boolean :done")
+
+      migrate_output = StringIO.new
+      migrate_status = described_class.new(out: migrate_output, pwd: app_root).call(%w[db:migrate])
+      expect(migrate_status).to eq(0)
+      expect(migrate_output.string).to include("migrate db/migrate")
+
+      require File.join(app_root, "lib/records_tui")
+      record = RecordsTui::Task.create!(title: "Ship persistence", done: false)
+
+      expect(record).to be_persisted
+      expect(RecordsTui::Task.first.title).to eq("Ship persistence")
+    end
+  end
+
+  it "creates and drops sqlite databases for database-backed apps" do
+    Dir.mktmpdir do |dir|
+      output = StringIO.new
+      described_class.new(out: output, pwd: dir).call(%w[new db_ops_tui --database sqlite3])
+      app_root = File.join(dir, "db_ops_tui")
+      database_path = File.join(app_root, "db", "development.sqlite3")
+
+      create_output = StringIO.new
+      create_status = described_class.new(out: create_output, pwd: app_root).call(%w[db:create])
+      expect(create_status).to eq(0)
+      expect(create_output.string).to include("create db/development.sqlite3")
+      expect(File).to exist(database_path)
+
+      drop_output = StringIO.new
+      drop_status = described_class.new(out: drop_output, pwd: app_root).call(%w[db:drop])
+      expect(drop_status).to eq(0)
+      expect(drop_output.string).to include("drop db/development.sqlite3")
+      expect(File).not_to exist(database_path)
+    end
+  end
+
+  it "rejects model generation without database support" do
+    Dir.mktmpdir do |dir|
+      described_class.new(out: StringIO.new, pwd: dir).call(%w[new state_tui])
+      app_root = File.join(dir, "state_tui")
+
+      error = StringIO.new
+      status = described_class.new(out: StringIO.new, err: error, pwd: app_root).call(%w[g model task title:string])
+
+      expect(status).to eq(1)
+      expect(error.string).to include("Database support is not configured")
     end
   end
 

@@ -15,6 +15,7 @@ App builders:
 1. [Routing](routing.md)
 2. [Controllers & Templates](controllers_and_templates.md)
 3. [State](state.md)
+4. [Database](database.md)
 
 UI builders:
 
@@ -37,6 +38,7 @@ Maintainers:
 | [Controllers & Templates](controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
 | [Layouts](layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
 | [State](state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
+| [Database](database.md) | Optional SQLite persistence with Active Record models and migrations. |
 | [Components](components.md) | Built-in components, custom components, and interaction return values. |
 | [Themes](themes.md) | Theme registration, tokens, and runtime theme switching. |
 | [API Reference](api.md) | Compact public API reference. |

@@ -38,6 +38,7 @@ Charming can also be added to an existing Ruby project with Bundler, but the pri
 | [Controllers & Templates](docs/controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
 | [Layouts](docs/layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
 | [State](docs/state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
+| [Database](docs/database.md) | Optional SQLite persistence with Active Record models and migrations. |
 | [Components](docs/components.md) | Built-in components, custom components, and interaction return values. |
 | [Themes](docs/themes.md) | Theme registration, tokens, and runtime theme switching. |
 | [API Reference](docs/api.md) | Compact public API reference. |
@@ -50,6 +51,7 @@ The generator produces a Bundler gem with a Rails-like structure:
 ```text
 app/controllers/                         # controller actions and input bindings
 app/state/                               # session-backed TUI state
+app/models/                              # optional Active Record models
 app/views/home/show.tui.erb              # screen templates
 app/views/layouts/application.tui.erb    # layout template
 app/components/                          # reusable components

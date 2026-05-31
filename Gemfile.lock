@@ -3,8 +3,10 @@ PATH
   specs:
     charming (0.1.0)
       activemodel (~> 8.1, >= 8.1.2)
+      activerecord (~> 8.1, >= 8.1.2)
       kramdown (~> 2.5)
       rouge (~> 5.0)
+      sqlite3 (~> 2.0)
       tty-cursor (~> 0.7)
       tty-progressbar (~> 0.18)
       tty-reader (~> 0.9)
@@ -18,6 +20,10 @@ GEM
   specs:
     activemodel (8.1.3)
       activesupport (= 8.1.3)
+    activerecord (8.1.3)
+      activemodel (= 8.1.3)
+      activesupport (= 8.1.3)
+      timeout (>= 0.4.0)
     activesupport (8.1.3)
       base64
       bigdecimal
@@ -54,6 +60,7 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
+    mini_portile2 (2.8.9)
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -124,6 +131,9 @@ GEM
       rbs (>= 3, < 5)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    sqlite3 (2.9.4)
+      mini_portile2 (~> 2.8.0)
+    sqlite3 (2.9.4-arm64-darwin)
     standard (1.54.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -143,6 +153,7 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     strscan (3.1.8)
+    timeout (0.6.1)
     tsort (0.2.0)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
@@ -182,6 +193,7 @@ DEPENDENCIES
 
 CHECKSUMS
   activemodel (8.1.3) sha256=90c05cbe4cef3649b8f79f13016191ea94c4525ce4a5c0fb7ef909c4b91c8219
+  activerecord (8.1.3) sha256=8003be7b2466ba0a2a670e603eeb0a61dd66058fccecfc49901e775260ac70ab
   activesupport (8.1.3) sha256=21a5e0dfbd4c3ddd9e1317ec6a4d782fa226e7867dc70b0743acda81a1dca20e
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
@@ -201,6 +213,7 @@ CHECKSUMS
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
   parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
   parser (3.3.11.1) sha256=d17ace7aabe3e72c3cc94043714be27cc6f852f104d81aa284c2281aecc65d54
@@ -229,6 +242,8 @@ CHECKSUMS
   ruby-lsp (0.26.9) sha256=33a01c001c00a76b4e821efc04ed7572983430f31ca5d6f3e343d0b6ccab4129
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
+  sqlite3 (2.9.4) sha256=6161c5b9c17886b289558e6c8082b28a22a814736d2433c9a67f4c6bfcde5c97
+  sqlite3 (2.9.4-arm64-darwin) sha256=1d5aad413a815d236e96d43f05a1acc600b6cd086800770342a3f9c2877499ff
   standard (1.54.0) sha256=7a4b08f83d9893083c8f03bc486f0feeb6a84d48233b40829c03ef4767ea0100
   standard-custom (1.0.2) sha256=424adc84179a074f1a2a309bb9cf7cd6bfdb2b6541f20c6bf9436c0ba22a652b
   standard-performance (1.9.0) sha256=49483d31be448292951d80e5e67cdcb576c2502103c7b40aec6f1b6e9c88e3f2
@@ -236,6 +251,7 @@ CHECKSUMS
   strings (0.2.1) sha256=933293b3c95cf85b81eb44b3cf673e3087661ba739bbadfeadf442083158d6fb
   strings-ansi (0.2.0) sha256=90262d760ea4a94cc2ae8d58205277a343409c288cbe7c29416b1826bd511c88
   strscan (3.1.8) sha256=aae2db611a225559f21ffbb71765c9a4e60fd262534a9ea84f4f11c7f32f679e
+  timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   tty-color (0.6.0) sha256=6f9c37ca3a4e2367fb2e6d09722762647d6f455c111f05b59f35730eeb24332a
   tty-cursor (0.7.1) sha256=79534185e6a777888d88628b14b6a1fdf5154a603f285f80b1753e1908e0bf48

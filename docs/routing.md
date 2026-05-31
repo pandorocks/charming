@@ -70,4 +70,4 @@ Inside a generated app, create a screen with:
 charming generate screen forecast
 ```
 
-That creates a model, controller, template, specs, inserts a route, and inserts a command palette entry.
+That creates a state object, controller, template, specs, inserts a route, and inserts a command palette entry.

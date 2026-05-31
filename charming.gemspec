@@ -25,8 +25,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activemodel", "~> 8.1", ">= 8.1.2"
+  spec.add_dependency "activerecord", "~> 8.1", ">= 8.1.2"
   spec.add_dependency "kramdown", "~> 2.5"
   spec.add_dependency "rouge", "~> 5.0"
+  spec.add_dependency "sqlite3", "~> 2.0"
   spec.add_dependency "tty-cursor", "~> 0.7"
   spec.add_dependency "zeitwerk", "~> 2.6"
   spec.add_dependency "tty-progressbar", "~> 0.18"

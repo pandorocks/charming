@@ -6,13 +6,14 @@ module Charming
       include BasicTemplates
       include ComponentTemplates
       include ControllerTemplate
+      include DatabaseTemplates
       include LayoutTemplate
       include StateTemplates
       include ScreenSpecTemplates
       include ViewTemplate
       include AppSpecTemplates
 
-      FILE_TEMPLATES = [
+      BASE_FILE_TEMPLATES = [
         ["Gemfile", :gemfile],
         ["Rakefile", :rakefile],
         ["README.md", :readme],
@@ -36,13 +37,21 @@ module Charming
         ["spec/components/app_frame_component_spec.rb", :spec_component]
       ].freeze
 
-      def initialize(name, out:, destination:, force: false)
+      DATABASE_FILE_TEMPLATES = [
+        ["config/database.rb", :database_config],
+        ["app/models/application_record.rb", :application_record],
+        ["db/migrate/.keep", :keep],
+        ["db/seeds.rb", :seeds]
+      ].freeze
+
+      def initialize(name, out:, destination:, force: false, database: nil)
         super(out: out, destination: File.join(destination, name), force: force)
         @name = Name.new(name)
+        @database = database
       end
 
       def generate
-        FILE_TEMPLATES.each do |path, template|
+        file_templates.each do |path, template|
           create_file(file_path(path), send(template), executable: template == :executable)
         end
         initialize_git_repository
@@ -50,8 +59,16 @@ module Charming
 
       private
 
-      attr_reader :name
+      attr_reader :name, :database
       alias_method :app_name, :name
+
+      def database?
+        !!database
+      end
+
+      def file_templates
+        database? ? BASE_FILE_TEMPLATES + DATABASE_FILE_TEMPLATES : BASE_FILE_TEMPLATES
+      end
 
       def file_path(path)
         format(path, name: name.snake_name)

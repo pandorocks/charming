@@ -51,7 +51,7 @@ end
   spec.summary = "A Charming terminal user interface."
   spec.authors = ["TODO: Your name"]
   spec.email = ["TODO: Your email"]
-  spec.files = Dir.glob("{app,config,exe,lib}/**/*") + %w[README.md]
+  spec.files = Dir.glob("#{gemspec_file_glob}/**/*") + %w[README.md]
   spec.bindir = "exe"
   spec.executables = ["#{name.snake_name}"]
   spec.require_paths = ["lib"]
@@ -61,7 +61,19 @@ end
 
         def gemspec_dependencies
           %(
-  spec.add_dependency "charming")
+  spec.add_dependency "charming"#{database_dependencies})
+        end
+
+        def gemspec_file_glob
+          database? ? "{app,config,db,exe,lib}" : "{app,config,exe,lib}"
+        end
+
+        def database_dependencies
+          return "" unless database?
+
+          %(
+  spec.add_dependency "activerecord", "~> 8.1"
+  spec.add_dependency "sqlite3", "~> 2.0")
         end
       end
     end

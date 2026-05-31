@@ -47,7 +47,7 @@ end
 
 ## Initial Attributes
 
-Pass initial attributes through `model`:
+Pass initial attributes through `state`:
 
 ```ruby
 def counter

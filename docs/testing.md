@@ -6,7 +6,7 @@ For app structure and rendering concepts, see [Core Concepts](core_concepts.md),
 
 ## Generated Specs
 
-Generated apps include specs for the default model, controller, template, and component. Run them from the generated app with:
+Generated apps include specs for the default state object, controller, template, and component. Run them from the generated app with:
 
 ```sh
 bundle exec rspec
