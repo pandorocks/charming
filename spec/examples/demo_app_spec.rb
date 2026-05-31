@@ -14,7 +14,7 @@ RSpec.describe "demo app example" do
 
     expect(backend.frames.first).to include("DemoApp")
     expect(backend.frames.first).to include("Status: Idle")
-    expect(backend.frames.first).to include("Tab to content, then press r to run an async task.")
+    expect(backend.frames.first).to include("Tab content, then press r for async task.")
   end
 
   it "renders async loading and completed states" do
@@ -58,9 +58,9 @@ RSpec.describe "demo app example" do
 
     frames = backend.frames.join("\n")
     stripped = Charming::UI::Width.strip_ansi(frames)
-    expect(stripped).to include("[=                                       ] Working")
-    expect(stripped).to include("[==                                      ] Working")
-    expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~%eB49*_E Working.")
+    expect(stripped).to include("[=                               ] Working")
+    expect(stripped).to include("[==                              ] Working")
+    expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~ Working.")
   end
 
   it "does not run the async task when r is pressed while the sidebar is focused" do

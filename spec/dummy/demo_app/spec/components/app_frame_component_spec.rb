@@ -26,8 +26,8 @@ RSpec.describe DemoApp::AppFrameComponent do
       )
 
       output = Charming::UI::Width.strip_ansi(component.render)
-      expect(output).to include("[===                                     ] Working")
-      expect(output).to include("f27^_E#cB4A&8F0d$5C+b=3@&AF89*@3=b6De%$5 Working.")
+      expect(output).to include("[===                             ] Working")
+      expect(output).to include("f27^_E#cB4A&8F0d$5C+b=3@&AF89*@3 Working.")
     end
   end
 end

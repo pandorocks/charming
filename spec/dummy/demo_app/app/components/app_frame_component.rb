@@ -15,7 +15,7 @@ module DemoApp
     end
 
     def help_line
-      text "Tab to content, then press r to run async task. p commands, q quit.", style: theme.muted
+      text "Tab content, r async task. p commands, q quit.", style: theme.muted
     end
 
     def status_line
@@ -23,12 +23,12 @@ module DemoApp
     end
 
     def progress_bar_line
-      render_component(Charming::Components::Progressbar.new(total: 40, label: "Working").update(progress))
+      render_component(Charming::Components::Progressbar.new(total: 32, label: "Working").update(progress))
     end
 
     def activity_indicator_line
       render_component(Charming::Components::ActivityIndicator.new(
-        width: 40,
+        width: 32,
         label: "Working",
         index: activity_index,
         seed: "demo-loading"

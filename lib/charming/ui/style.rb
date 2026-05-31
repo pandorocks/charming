@@ -90,21 +90,28 @@ module Charming
 
       def apply_dimensions(lines)
         content_width = target_content_width(lines)
-        dimensioned = lines.map { |line| align_line(line, content_width) }
+        dimensioned = lines.map { |line| align_line(fit_line(line, content_width), content_width) }
         apply_height(dimensioned, content_width)
       end
 
       def target_content_width(lines)
         explicit_width = @options[:width]
         natural_width = lines.map { |line| Width.measure(line) }.max || 0
-        [explicit_width || natural_width, natural_width].max
+        explicit_width || natural_width
+      end
+
+      def fit_line(line, width)
+        return line if Width.measure(line) <= width
+
+        UI.visible_slice(line, 0, width)
       end
 
       def apply_height(lines, width)
         height = @options[:height]
         return lines unless height
 
-        lines + Array.new([height - lines.length, 0].max) { " " * width }
+        visible = lines.first(height)
+        visible + Array.new([height - visible.length, 0].max) { " " * width }
       end
 
       def apply_padding(lines)

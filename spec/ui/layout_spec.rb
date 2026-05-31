@@ -69,4 +69,28 @@ RSpec.describe Charming::UI do
   it "leaves place output unchanged when no background is given" do
     expect(described_class.place("X", width: 3, height: 2)).to eq("X  \n   ")
   end
+
+  it "clips placed content to the canvas height" do
+    placed = described_class.place("A\nB\nC", width: 3, height: 2)
+
+    expect(placed).to eq("A  \nB  ")
+  end
+
+  it "clips placed content to the canvas width" do
+    placed = described_class.place("ABCDE", width: 3, height: 1)
+
+    expect(placed).to eq("ABC")
+  end
+
+  it "clips oversized centered content to the canvas" do
+    placed = described_class.place("ABCDE\nFGHIJ", width: 3, height: 1, top: :center, left: :center)
+
+    expect(placed).to eq("ABC")
+  end
+
+  it "clips overlays outside the canvas bounds" do
+    base = "...\n..."
+
+    expect(described_class.overlay(base, "ABCDE\nFGHIJ", top: 1, left: 1)).to eq("...\n.AB")
+  end
 end

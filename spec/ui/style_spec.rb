@@ -33,6 +33,24 @@ RSpec.describe Charming::UI::Style do
     expect(output).to eq("  界  ")
   end
 
+  it "clips content beyond a fixed width" do
+    output = described_class.new.width(3).render("ABCDE")
+
+    expect(output).to eq("ABC")
+  end
+
+  it "pads content to a fixed height" do
+    output = described_class.new.width(2).height(3).render("A")
+
+    expect(output).to eq("A \n  \n  ")
+  end
+
+  it "clips content beyond a fixed height" do
+    output = described_class.new.height(2).render("A\nB\nC")
+
+    expect(output).to eq("A\nB")
+  end
+
   it "combines layout and ANSI styling" do
     output = described_class.new.foreground(:red).padding(0, 1).border(:normal).render("Hi")
 

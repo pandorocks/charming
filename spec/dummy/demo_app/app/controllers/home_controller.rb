@@ -15,7 +15,7 @@ module DemoApp
       home.status = "Loading"
       home.progress = 1
       home.activity_index = 0
-      home.message = "Async task running. Press q to quit while it works."
+      home.message = "Async task running. Press q to quit."
       run_task(:refresh_home) do
         sleep 2
         "Async task finished."

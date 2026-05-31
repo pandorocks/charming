@@ -104,11 +104,19 @@ module Charming
     # Merges an *overlay_line* into a *base_line* at the given *column*, returning the combined string. The
     # overlay replaces (covers) underlying characters; anything to the right that exceeds *width* is truncated.
     def composed_overlay_line(base_line, overlay_line, column, width)
-      overlay_width = Width.measure(overlay_line)
-      right_column = column + overlay_width
+      return visible_slice(base_line, 0, width) if column >= width
+      return visible_slice(base_line, 0, width) if column + Width.measure(overlay_line) <= 0
 
-      visible_slice(base_line, 0, column) +
-        overlay_line +
+      target_column = [column, 0].max
+      overlay_start = [0 - column, 0].max
+      overlay = visible_slice(overlay_line, overlay_start, width - target_column)
+      overlay_width = Width.measure(overlay)
+      return visible_slice(base_line, 0, width) if overlay_width.zero?
+
+      right_column = target_column + overlay_width
+
+      visible_slice(base_line, 0, target_column) +
+        overlay +
         visible_slice(base_line, right_column, [width - right_column, 0].max)
     end
 
@@ -162,7 +170,7 @@ module Charming
       start_slice(state)
       if started
         state[:output] << token
-        state[:styled] = true unless token.include?("[0m")
+        state[:styled] = !token.include?("[0m")
       end
     end
 
@@ -211,6 +219,8 @@ module Charming
     def draw_lines(canvas, lines, row:, column:, width:)
       lines.each_with_index do |line, index|
         line_index = row + index
+        next if line_index.negative? || line_index >= canvas.length
+
         canvas[line_index] = composed_overlay_line(canvas[line_index], line, column, width)
       end
 
