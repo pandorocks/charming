@@ -1,6 +1,7 @@
 {
   "name": "Phosphor",
   "id": "phosphor",
+  "background": "background",
   "palette": {
     "bright": "#9FE8B0",
     "muted": "#5A8A68",

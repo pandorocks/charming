@@ -32,8 +32,8 @@ module Charming
     end
 
     # Centers a *block* within a canvas of the given *width* and *height*, then returns the result.
-    def center(block, width:, height:)
-      place(block, width: width, height: height, top: :center, left: :center)
+    def center(block, width:, height:, background: nil)
+      place(block, width: width, height: height, top: :center, left: :center, background: background)
     end
 
     # Draws *overlay* on top of a base at the specified *top* (row) and *left* (column) coordinates,
@@ -49,14 +49,18 @@ module Charming
     end
 
     # Places a *block* onto a blank canvas of *width* × *height* at an offset determined by *top* (row)
-    # and *left* (column). Non-:center values are treated as absolute positions.
-    def place(block, width:, height:, top: 0, left: 0)
+    # and *left* (column). Non-:center values are treated as absolute positions. When *background* is
+    # given, the assembled frame is wrapped so the theme bg paints the entire canvas — overlay content
+    # with its own bg overrides per-cell; resets re-apply the canvas bg.
+    def place(block, width:, height:, top: 0, left: 0, background: nil)
       lines = block.to_s.lines(chomp: true)
       row = offset(top, height, lines.length)
       column = offset(left, width, block_width(lines))
       canvas = Array.new(height) { " " * width }
+      composed = draw_lines(canvas, lines, row: row, column: column, width: width)
+      return composed unless background
 
-      draw_lines(canvas, lines, row: row, column: column, width: width)
+      Style.new.background(background).render(composed)
     end
 
     # Normalizes an array of mixed objects into arrays of lines by calling `#to_s` on each element.

@@ -43,4 +43,30 @@ RSpec.describe Charming::UI do
 
     expect(described_class.visible_slice(line, 1, 3)).to eq("\e[2mell\e[0m")
   end
+
+  it "paints the place canvas with a background color when provided" do
+    filled = described_class.place("X", width: 3, height: 2, background: "#ff0000")
+    bg = "\e[48;2;255;0;0m"
+
+    expect(filled).to eq("#{bg}X  \e[0m\n#{bg}   \e[0m")
+  end
+
+  it "wraps every overlay position consistently with the canvas background" do
+    filled = described_class.place("X", width: 3, height: 1, top: 0, left: 1, background: "#ff0000")
+    bg = "\e[48;2;255;0;0m"
+
+    expect(filled).to eq("#{bg} X \e[0m")
+  end
+
+  it "lets styled overlay content keep its own colors while restoring the canvas background after each reset" do
+    styled = described_class.style.foreground(:green).render("X")
+    filled = described_class.place(styled, width: 3, height: 1, top: 0, left: 1, background: "#ff0000")
+    bg = "\e[48;2;255;0;0m"
+
+    expect(filled).to eq("#{bg} \e[32mX\e[0m#{bg} \e[0m")
+  end
+
+  it "leaves place output unchanged when no background is given" do
+    expect(described_class.place("X", width: 3, height: 2)).to eq("X  \n   ")
+  end
 end
