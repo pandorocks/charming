@@ -97,6 +97,29 @@ The `generate` command can also be shortened to `g`.
 New apps include a command palette by default. Press `p` to open it, type to
 filter commands, press `enter` to select, and press `escape` to close it.
 
+## Routing And Params
+
+Routes map paths to controller actions. Dynamic segments use `:name` and are
+available in controllers through symbol-keyed `params`:
+
+```ruby
+class WeatherTui::Application < Charming::Application
+  routes do
+    root "home#show"
+    screen "/cities/:id", to: "cities#show"
+  end
+end
+
+class WeatherTui::CitiesController < Charming::Controller
+  def show
+    render "City #{params[:id]}"
+  end
+end
+```
+
+Dynamic params match a single path segment. Exact routes take precedence over
+dynamic routes, so `/cities/new` can be defined separately from `/cities/:id`.
+
 ## Layouts And Partials
 
 Generated apps include a Rails-style application layout at

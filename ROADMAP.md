@@ -39,11 +39,16 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Added normalized event types:
   - `Charming::KeyEvent`
   - `Charming::ResizeEvent`
+  - `Charming::MouseEvent`
+  - `Charming::TimerEvent`
+  - `Charming::TaskEvent`
 - Added internal terminal backends:
   - `Charming::Internal::Terminal::MemoryBackend`
   - `Charming::Internal::Terminal::TTYBackend`
 - Added full repaint renderer:
   - `Charming::Internal::Renderer::FullRepaint`
+- Added differential renderer:
+  - `Charming::Internal::Renderer::Differential`
 - Added examples:
   - `examples/counter.rb`
   - `examples/counter_memory.rb`
@@ -89,7 +94,21 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - runtime re-rendering for `Charming::ResizeEvent`
   - TTY resize signal integration through `SIGWINCH`
   - viewport key handling for scrolling
+- Added larger-screen interaction and async foundations:
+  - timer-driven spinner and activity indicator rendering
+  - `Charming::Components::Progressbar`
+  - `Charming::Components::Table`
+  - `Charming::TaskExecutor`
+  - mouse event parsing and dispatch
+- Added layout, partial, and theme support:
+  - controller layouts
+  - class-based partial rendering
+  - bundled opencode-compatible JSON themes
 - Added namespaced route resolution for generated apps.
+- Added dynamic route parameters:
+  - routes such as `/users/:id`
+  - symbol-keyed controller params
+  - exact route precedence over dynamic routes
 - Added Rails-like generators:
   - `charming new <name>`
   - `charming generate controller <name> [actions]`
@@ -103,30 +122,19 @@ The public API should feel familiar to Rails developers: applications, routes, c
 
 ## Current Milestone
 
-Build toward robust larger-screen interaction primitives.
+Build toward a stable documentation and generated-app baseline.
 
-The command palette, viewport, and screen-aware rendering foundations are now in place. The next milestone is proving larger-screen interaction patterns with a scrollable example and timer-driven components.
-
-Target direction:
-
-```ruby
-class ActivityView < Charming::View
-  def render
-    render_component Charming::Components::Viewport.new(content: log, height: 12)
-  end
-end
-```
+The larger-screen interaction primitives and dynamic route parameters are now in place. The next milestone is documenting the framework well enough for generated apps and hand-written apps to follow the same conventions.
 
 ## Next
 
-- Add an example that demonstrates a scrollable panel.
-- Add a spinner component.
-- Add a command/timer system for animation and polling.
+- Add API documentation and a getting-started guide.
+- Harden generated app conventions and app loading.
+- Add missing common widgets: checkbox, tabs, and status bar.
 
 ## Later
 
 - Harden runtime teardown for signals.
-- Improve renderer with diffing.
 - Expand layout features:
   - wrapping
   - clipping

@@ -136,6 +136,51 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(%w[Home Settings])
   end
 
+  it "passes dynamic route params to navigated controllers" do
+    home_controller = Class.new(Charming::Controller) do
+      key "u", :user
+
+      def show
+        render "Home"
+      end
+
+      def user
+        navigate_to "/users/123"
+      end
+    end
+    user_controller = Class.new(Charming::Controller) do
+      key "r", :refresh
+      key "q", :quit
+
+      def show
+        render "User: #{params[:id]}"
+      end
+
+      def refresh
+        render "Refresh: #{params[:id]}"
+      end
+    end
+    stub_const("ParamRuntimeSpecHomeController", home_controller)
+    stub_const("ParamRuntimeSpecUsersController", user_controller)
+    param_app = Class.new(Charming::Application) do
+      routes do
+        root "param_runtime_spec_home#show"
+        screen "/users/:id", to: "param_runtime_spec_users#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::KeyEvent.new(key: :u),
+        Charming::KeyEvent.new(key: :r),
+        Charming::KeyEvent.new(key: :q)
+      ]
+    )
+
+    described_class.new(param_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(["Home", "User: 123", "Refresh: 123"])
+  end
+
   it "re-renders the navigated route after resize events" do
     home_controller = Class.new(Charming::Controller) do
       key "s", :settings

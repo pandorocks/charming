@@ -52,27 +52,31 @@ module Charming
     # Dispatches an action on the current route's controller with an optional event.
     # Entry point from the event loop into controllers.
     def dispatch(action, event: nil)
-      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch(action)
+      controller(event: event).dispatch(action)
     end
 
     # Dispatches a key press to the current route's controller.
     def dispatch_key(event)
-      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_key
+      controller(event: event).dispatch_key
     end
 
     # Dispatches a timer tick to the current route's controller.
     def dispatch_timer(event)
-      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_timer
+      controller(event: event).dispatch_timer
     end
 
     # Dispatches an async task result to the current route's controller.
     def dispatch_task(event)
-      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_task
+      controller(event: event).dispatch_task
     end
 
     # Dispatches a mouse action (click, drag, scroll) to the current route's controller.
     def dispatch_mouse(event)
-      @route.controller_class.new(application: @application, event: event, screen: screen).dispatch_mouse
+      controller(event: event).dispatch_mouse
+    end
+
+    def controller(event: nil)
+      @route.controller_class.new(application: @application, event: event, params: @route.params, screen: screen)
     end
 
     # Type-based dispatcher: routes resize, task, timer, mouse, and key events
