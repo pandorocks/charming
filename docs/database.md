@@ -7,7 +7,7 @@ Charming can generate SQLite-backed apps with Active Record. Database support is
 Generate an app with SQLite support:
 
 ```bash
-charming new tasks_tui --database sqlite3
+charming new todos_tui --database sqlite3
 ```
 
 This adds:
@@ -47,7 +47,7 @@ Use Active Record models for persisted data:
 def show
   render :show,
     home: home,
-    tasks: Task.order(:created_at)
+    todos: Todo.order(:created_at)
 end
 ```
 
@@ -56,22 +56,22 @@ end
 Generate a persisted model and migration:
 
 ```bash
-charming generate model task title:string done:boolean
+charming generate model todo title:string done:boolean
 ```
 
 This creates:
 
 ```text
-app/models/task.rb
-db/migrate/20260531000000_create_tasks.rb
-spec/models/task_spec.rb
+app/models/todo.rb
+db/migrate/20260531000000_create_todos.rb
+spec/models/todo_spec.rb
 ```
 
 Generated models inherit from `ApplicationRecord`:
 
 ```ruby
-module TasksTui
-  class Task < ApplicationRecord
+module TodosTui
+  class Todo < ApplicationRecord
   end
 end
 ```
