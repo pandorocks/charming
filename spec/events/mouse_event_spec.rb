@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::MouseEvent do
+RSpec.describe Charming::Events::MouseEvent do
   it "creates a left click event" do
     event = described_class.new(button: 0, x: 10, y: 5)
 

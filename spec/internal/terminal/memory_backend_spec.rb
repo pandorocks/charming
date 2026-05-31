@@ -5,14 +5,14 @@ RSpec.describe Charming::Internal::Terminal::MemoryBackend do
   let(:height) { 24 }
 
   it "returns events from the queue" do
-    event = Charming::KeyEvent.new(key: :q)
+    event = Charming::Events::KeyEvent.new(key: :q)
     backend = described_class.new(events: [event])
 
     expect(backend.read_event).to eq(event)
   end
 
   it "returns mouse events from the queue" do
-    event = Charming::MouseEvent.new(button: 0, x: 10, y: 5)
+    event = Charming::Events::MouseEvent.new(button: 0, x: 10, y: 5)
     backend = described_class.new(events: [event])
 
     expect(backend.read_event).to eq(event)

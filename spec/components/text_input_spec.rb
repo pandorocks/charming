@@ -2,7 +2,7 @@
 
 RSpec.describe Charming::Presentation::Components::TextInput do
   def key(name, char: nil)
-    Charming::KeyEvent.new(key: name, char: char)
+    Charming::Events::KeyEvent.new(key: name, char: char)
   end
 
   it "renders the cursor before the placeholder when empty" do

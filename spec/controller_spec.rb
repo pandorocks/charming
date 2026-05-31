@@ -35,7 +35,7 @@ RSpec.describe Charming::Controller do
 
     response = ControllerSpecController.new(
       application: application,
-      event: Charming::KeyEvent.new(key: :up)
+      event: Charming::Events::KeyEvent.new(key: :up)
     ).dispatch_key
 
     expect(response.body).to eq("Count: 1")
@@ -44,7 +44,7 @@ RSpec.describe Charming::Controller do
   it "returns a quit response from controller actions" do
     response = ControllerSpecController.new(
       application: application,
-      event: Charming::KeyEvent.new(key: :q)
+      event: Charming::Events::KeyEvent.new(key: :q)
     ).dispatch_key
 
     expect(response).to be_quit
@@ -285,7 +285,7 @@ RSpec.describe Charming::Controller do
 
     response = controller.new(
       application: application,
-      event: Charming::TimerEvent.new(name: :refresh, now: 1.5)
+      event: Charming::Events::TimerEvent.new(name: :refresh, now: 1.5)
     ).dispatch_timer
 
     expect(response.body).to eq("refreshed at 1.5")
@@ -313,7 +313,7 @@ RSpec.describe Charming::Controller do
 
       response = controller.new(
         application: application,
-        event: Charming::TaskEvent.new(name: :fetch, value: "feed")
+        event: Charming::Events::TaskEvent.new(name: :fetch, value: "feed")
       ).dispatch_task
 
       expect(response.body).to eq("fetch: feed")
@@ -324,7 +324,7 @@ RSpec.describe Charming::Controller do
 
       response = controller.new(
         application: application,
-        event: Charming::TaskEvent.new(name: :missing, value: "feed")
+        event: Charming::Events::TaskEvent.new(name: :missing, value: "feed")
       ).dispatch_task
 
       expect(response).to be_nil
@@ -397,7 +397,7 @@ RSpec.describe Charming::Controller do
     controller.new(application: application).open_command_palette
     response = controller.new(
       application: application,
-      event: Charming::KeyEvent.new(key: :o, char: "o")
+      event: Charming::Events::KeyEvent.new(key: :o, char: "o")
     ).dispatch_key
 
     expect(application.session[:command_palette]).to include(value: "o", cursor: 1)
@@ -416,7 +416,7 @@ RSpec.describe Charming::Controller do
     end
 
     controller.new(application: application).open_command_palette
-    controller.new(application: application, event: Charming::KeyEvent.new(key: :down)).dispatch_key
+    controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :down)).dispatch_key
 
     expect(application.session[:command_palette]).to include(selected_index: 1)
     expect(controller.new(application: application).command_palette.selected_command.label).to eq("Run")
@@ -432,7 +432,7 @@ RSpec.describe Charming::Controller do
     end
 
     controller.new(application: application).open_command_palette
-    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :enter)).dispatch_key
 
     expect(application.session[:command_palette]).to include(type: :themes, value: "", cursor: 0, selected_index: 0)
     expect(response.body).to include("Search themes")
@@ -453,7 +453,7 @@ RSpec.describe Charming::Controller do
     end
 
     controller.new(application: application).open_command_palette
-    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :enter)).dispatch_key
 
     expect(response).to be_quit
   end
@@ -472,7 +472,7 @@ RSpec.describe Charming::Controller do
     end
 
     controller.new(application: application).open_command_palette
-    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :enter)).dispatch_key
 
     expect(response).to be_navigate
     expect(response.path).to eq("/settings")
@@ -491,7 +491,7 @@ RSpec.describe Charming::Controller do
     end
 
     controller.new(application: application).open_command_palette
-    response = controller.new(application: application, event: Charming::KeyEvent.new(key: :enter)).dispatch_key
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :enter)).dispatch_key
 
     expect(response).to be_navigate
     expect(response.path).to eq("/settings")
@@ -506,7 +506,7 @@ RSpec.describe Charming::Controller do
     controller.new(application: application).open_command_palette
     response = controller.new(
       application: application,
-      event: Charming::KeyEvent.new(key: :o, char: "o")
+      event: Charming::Events::KeyEvent.new(key: :o, char: "o")
     ).dispatch_key
 
     expect(response.body).to include("o|")
@@ -616,7 +616,7 @@ RSpec.describe Charming::Controller do
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :j)
+        event: Charming::Events::KeyEvent.new(key: :j)
       ).dispatch_key
 
       expect(application.session[:widget].received).to eq([:j])
@@ -628,7 +628,7 @@ RSpec.describe Charming::Controller do
 
       response = controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :j)
+        event: Charming::Events::KeyEvent.new(key: :j)
       ).dispatch_key
 
       expect(response).to be_nil
@@ -641,7 +641,7 @@ RSpec.describe Charming::Controller do
 
       response = controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab)
+        event: Charming::Events::KeyEvent.new(key: :tab)
       ).dispatch_key
 
       expect(response).to be_nil
@@ -658,7 +658,7 @@ RSpec.describe Charming::Controller do
 
       response = controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :q)
+        event: Charming::Events::KeyEvent.new(key: :q)
       ).dispatch_key
 
       expect(response).to be_quit
@@ -671,7 +671,7 @@ RSpec.describe Charming::Controller do
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab)
+        event: Charming::Events::KeyEvent.new(key: :tab)
       ).dispatch_key
 
       expect(controller_class.new(application: application).focus.current).to eq(:other)
@@ -683,7 +683,7 @@ RSpec.describe Charming::Controller do
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab, shift: true)
+        event: Charming::Events::KeyEvent.new(key: :tab, shift: true)
       ).dispatch_key
 
       expect(controller_class.new(application: application).focus.current).to eq(:other)
@@ -698,7 +698,7 @@ RSpec.describe Charming::Controller do
       controller_class.new(application: application).dispatch(:show)
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab)
+        event: Charming::Events::KeyEvent.new(key: :tab)
       ).dispatch_key
 
       controller_class.new(application: application).open_command_palette
@@ -718,13 +718,13 @@ RSpec.describe Charming::Controller do
       controller_class.new(application: application).dispatch(:show)
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab)
+        event: Charming::Events::KeyEvent.new(key: :tab)
       ).dispatch_key
       controller_class.new(application: application).open_command_palette
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :enter)
+        event: Charming::Events::KeyEvent.new(key: :enter)
       ).dispatch_key
 
       reborn = controller_class.new(application: application)
@@ -746,7 +746,7 @@ RSpec.describe Charming::Controller do
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :enter)
+        event: Charming::Events::KeyEvent.new(key: :enter)
       ).dispatch_key
 
       reborn = controller_class.new(application: application)
@@ -763,12 +763,12 @@ RSpec.describe Charming::Controller do
       controller_class.new(application: application).open_command_palette
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :enter)
+        event: Charming::Events::KeyEvent.new(key: :enter)
       ).dispatch_key
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :j)
+        event: Charming::Events::KeyEvent.new(key: :j)
       ).dispatch_key
 
       expect(application.session[:widget].received).to eq([:j])
@@ -799,7 +799,7 @@ RSpec.describe Charming::Controller do
 
       controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :tab)
+        event: Charming::Events::KeyEvent.new(key: :tab)
       ).dispatch_key
 
       expect(controller_class.new(application: application).focus.current).to eq(:content)
@@ -822,7 +822,7 @@ RSpec.describe Charming::Controller do
 
       response = controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :r)
+        event: Charming::Events::KeyEvent.new(key: :r)
       ).dispatch_key
 
       expect(response.body).to eq("current=sidebar")
@@ -839,7 +839,7 @@ RSpec.describe Charming::Controller do
 
       response = controller_class.new(
         application: application,
-        event: Charming::KeyEvent.new(key: :q)
+        event: Charming::Events::KeyEvent.new(key: :q)
       ).dispatch_key
 
       expect(response).to be_quit
@@ -857,7 +857,7 @@ RSpec.describe Charming::Controller do
       controller_class.new(application: app).dispatch(:show)
       response = controller_class.new(
         application: app,
-        event: Charming::KeyEvent.new(key: :enter)
+        event: Charming::Events::KeyEvent.new(key: :enter)
       ).dispatch_key
 
       expect(response).to be_navigate

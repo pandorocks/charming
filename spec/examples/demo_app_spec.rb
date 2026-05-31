@@ -7,7 +7,7 @@ RSpec.describe "demo app example" do
 
   it "renders the generated demo app" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::KeyEvent.new(key: :q)]
     )
 
     Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
@@ -20,9 +20,9 @@ RSpec.describe "demo app example" do
   it "renders async loading and completed states" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :tab),
-        Charming::KeyEvent.new(key: :r, char: "r"),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :tab),
+        Charming::Events::KeyEvent.new(key: :r, char: "r"),
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
 
@@ -41,10 +41,10 @@ RSpec.describe "demo app example" do
   it "advances the loading progress while the async task is running" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :tab),
-        Charming::KeyEvent.new(key: :r, char: "r"),
+        Charming::Events::KeyEvent.new(key: :tab),
+        Charming::Events::KeyEvent.new(key: :r, char: "r"),
         nil,
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
     times = [0.0, 0.0, 0.05, 0.05, 0.1, 0.1, 0.2, 0.2, 0.3]
@@ -65,7 +65,7 @@ RSpec.describe "demo app example" do
 
   it "does not run the async task when r is pressed while the sidebar is focused" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::KeyEvent.new(key: :r, char: "r"), Charming::Events::KeyEvent.new(key: :q)]
     )
 
     Charming::Runtime.new(
@@ -82,7 +82,7 @@ RSpec.describe "demo app example" do
 
   it "uses backend dimensions when rendering the demo app" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :q)],
+      events: [Charming::Events::KeyEvent.new(key: :q)],
       width: 60,
       height: 12
     )
@@ -95,9 +95,9 @@ RSpec.describe "demo app example" do
   it "renders the command palette modal" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: :escape),
-        Charming::KeyEvent.new(key: :q, char: "q")
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :escape),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
     )
 
@@ -109,10 +109,10 @@ RSpec.describe "demo app example" do
   it "preserves command palette input between generated demo app dispatches" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: :q, char: "q"),
-        Charming::KeyEvent.new(key: :escape),
-        Charming::KeyEvent.new(key: :q, char: "q")
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :q, char: "q"),
+        Charming::Events::KeyEvent.new(key: :escape),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
     )
 
@@ -125,11 +125,11 @@ RSpec.describe "demo app example" do
   it "opens the generated demo app theme palette from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: :t, char: "t"),
-        Charming::KeyEvent.new(key: :enter, char: "\n"),
-        Charming::KeyEvent.new(key: :escape),
-        Charming::KeyEvent.new(key: :q, char: "q")
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :t, char: "t"),
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::Events::KeyEvent.new(key: :escape),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
     )
 
@@ -141,11 +141,11 @@ RSpec.describe "demo app example" do
   it "selects the bundled Phosphor theme from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: :t, char: "t"),
-        Charming::KeyEvent.new(key: :enter, char: "\n"),
-        Charming::KeyEvent.new(key: :enter, char: "\n"),
-        Charming::KeyEvent.new(key: :q, char: "q")
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :t, char: "t"),
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
     )
 
@@ -156,10 +156,10 @@ RSpec.describe "demo app example" do
 
   it "switches focus between sidebar and content when Tab cycles focus" do
     initial = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::KeyEvent.new(key: :q)]
     )
     after_tab = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :tab), Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::KeyEvent.new(key: :tab), Charming::Events::KeyEvent.new(key: :q)]
     )
 
     Charming::Runtime.new(DemoApp::Application.new, backend: initial).run
@@ -172,9 +172,9 @@ RSpec.describe "demo app example" do
   it "selects a command from the palette with enter" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: :enter, char: "\n"),
-        Charming::KeyEvent.new(key: :q, char: "q")
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
     )
 
@@ -187,7 +187,7 @@ RSpec.describe "demo app example" do
     lambda do |queue|
       Class.new do
         define_method(:submit) do |name|
-          queue << Charming::TaskEvent.new(name: name, value: value)
+          queue << Charming::Events::TaskEvent.new(name: name, value: value)
           nil
         end
 

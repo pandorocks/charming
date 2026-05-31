@@ -37,11 +37,11 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - `Charming::Response`
   - `Charming::Runtime`
 - Added normalized event types:
-  - `Charming::KeyEvent`
-  - `Charming::ResizeEvent`
-  - `Charming::MouseEvent`
-  - `Charming::TimerEvent`
-  - `Charming::TaskEvent`
+  - `Charming::Events::KeyEvent`
+  - `Charming::Events::ResizeEvent`
+  - `Charming::Events::MouseEvent`
+  - `Charming::Events::TimerEvent`
+  - `Charming::Events::TaskEvent`
 - Added internal terminal backends:
   - `Charming::Internal::Terminal::MemoryBackend`
   - `Charming::Internal::Terminal::TTYBackend`
@@ -91,7 +91,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - `Charming::Presentation::Components::Viewport`
   - `Charming::Screen`
   - backend screen dimensions passed through runtime to controllers and views
-  - runtime re-rendering for `Charming::ResizeEvent`
+  - runtime re-rendering for `Charming::Events::ResizeEvent`
   - TTY resize signal integration through `SIGWINCH`
   - viewport key handling for scrolling
 - Added larger-screen interaction and async foundations:

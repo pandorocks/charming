@@ -56,35 +56,35 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     reader = TTYBackendSpecReader.new(keys: {"\e[A" => :up}, keypresses: ["\e[A"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :up))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::KeyEvent.new(key: :up))
   end
 
   it "normalizes return as enter" do
     reader = TTYBackendSpecReader.new(keys: {"\r" => :return}, keypresses: ["\r"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :enter, char: "\n"))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::KeyEvent.new(key: :enter, char: "\n"))
   end
 
   it "normalizes printable characters" do
     reader = TTYBackendSpecReader.new(keys: {}, keypresses: ["q"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :q, char: "q"))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::KeyEvent.new(key: :q, char: "q"))
   end
 
   it "preserves printable chars when tty-reader maps them as named keys" do
     reader = TTYBackendSpecReader.new(keys: {"q" => "q"}, keypresses: ["q"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :q, char: "q"))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::KeyEvent.new(key: :q, char: "q"))
   end
 
   it "normalizes control-modified keys" do
     reader = TTYBackendSpecReader.new(keys: {"\u0003" => :ctrl_c}, keypresses: ["\u0003"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :c, ctrl: true))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::KeyEvent.new(key: :c, ctrl: true))
   end
 
   it "writes terminal control sequences" do
@@ -141,7 +141,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     backend.notify_resize
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::ResizeEvent.new(width: 120, height: 40))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::Events::ResizeEvent.new(width: 120, height: 40))
   end
 
   it "parses SGR mouse click (left button)" do
@@ -151,7 +151,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     event = backend.read_event(timeout: 0.1)
 
-    expect(event).to be_a(Charming::MouseEvent)
+    expect(event).to be_a(Charming::Events::MouseEvent)
     expect(event.button).to eq(0)
     expect(event.x).to eq(9)
     expect(event.y).to eq(4)
@@ -164,7 +164,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     event = backend.read_event(timeout: 0.1)
 
-    expect(event).to be_a(Charming::MouseEvent)
+    expect(event).to be_a(Charming::Events::MouseEvent)
     expect(event.button).to eq(64)
     expect(event.x).to eq(9)
     expect(event.y).to eq(4)
@@ -177,7 +177,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     event = backend.read_event(timeout: 0.1)
 
-    expect(event).to be_a(Charming::MouseEvent)
+    expect(event).to be_a(Charming::Events::MouseEvent)
     expect(event.button).to eq(3)
   end
 
@@ -191,7 +191,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     event = backend.read_event(timeout: 0.1)
 
-    expect(event).to be_a(Charming::MouseEvent)
+    expect(event).to be_a(Charming::Events::MouseEvent)
     expect(event.button).to eq(0)
     expect(event.x).to eq(10)
     expect(event.y).to eq(5)

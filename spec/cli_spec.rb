@@ -96,9 +96,9 @@ RSpec.describe Charming::CLI do
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::KeyEvent.new(key: :p, char: "p"),
-          Charming::KeyEvent.new(key: :escape),
-          Charming::KeyEvent.new(key: :q, char: "q")
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :escape),
+          Charming::Events::KeyEvent.new(key: :q, char: "q")
         ],
         width: 60,
         height: 12
@@ -111,11 +111,11 @@ RSpec.describe Charming::CLI do
 
       theme_backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::KeyEvent.new(key: :p, char: "p"),
-          Charming::KeyEvent.new(key: :t, char: "t"),
-          Charming::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::KeyEvent.new(key: :q, char: "q")
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :t, char: "t"),
+          Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::Events::KeyEvent.new(key: :q, char: "q")
         ],
         width: 60,
         height: 12
@@ -167,9 +167,9 @@ RSpec.describe Charming::CLI do
       require File.join(app_root, "lib/nav_tui")
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::KeyEvent.new(key: :p, char: "p"),
-          Charming::KeyEvent.new(key: :escape),
-          Charming::KeyEvent.new(key: :q, char: "q")
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :escape),
+          Charming::Events::KeyEvent.new(key: :q, char: "q")
         ]
       )
 
@@ -229,19 +229,19 @@ RSpec.describe Charming::CLI do
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::KeyEvent.new(key: :p, char: "p"),
-          Charming::KeyEvent.new(key: :s, char: "s"),
-          Charming::KeyEvent.new(key: :e, char: "e"),
-          Charming::KeyEvent.new(key: :t, char: "t"),
-          Charming::KeyEvent.new(key: :t, char: "t"),
-          Charming::KeyEvent.new(key: :i, char: "i"),
-          Charming::KeyEvent.new(key: :n, char: "n"),
-          Charming::KeyEvent.new(key: :g, char: "g"),
-          Charming::KeyEvent.new(key: :s, char: "s"),
-          Charming::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::KeyEvent.new(key: :p, char: "p"),
-          Charming::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::KeyEvent.new(key: :q, char: "q")
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :s, char: "s"),
+          Charming::Events::KeyEvent.new(key: :e, char: "e"),
+          Charming::Events::KeyEvent.new(key: :t, char: "t"),
+          Charming::Events::KeyEvent.new(key: :t, char: "t"),
+          Charming::Events::KeyEvent.new(key: :i, char: "i"),
+          Charming::Events::KeyEvent.new(key: :n, char: "n"),
+          Charming::Events::KeyEvent.new(key: :g, char: "g"),
+          Charming::Events::KeyEvent.new(key: :s, char: "s"),
+          Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+          Charming::Events::KeyEvent.new(key: :q, char: "q")
         ]
       )
 

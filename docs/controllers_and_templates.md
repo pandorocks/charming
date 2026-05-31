@@ -147,7 +147,7 @@ def refresh_loaded
 end
 ```
 
-Task results arrive as `Charming::TaskEvent` with `value`, `error`, and `error?`.
+Task results arrive as `Charming::Events::TaskEvent` with `value`, `error`, and `error?`.
 
 ## Class-Based Views
 

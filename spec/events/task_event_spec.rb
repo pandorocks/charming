@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::TaskEvent do
+RSpec.describe Charming::Events::TaskEvent do
   it "defaults value and error to nil" do
     event = described_class.new(name: :fetch)
 

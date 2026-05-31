@@ -163,7 +163,7 @@ module Charming
           alt = raw.include?("\e[38;5;")
           shift = mode == "M"
 
-          MouseEvent.new(button: button_code, x: col, y: row, ctrl: ctrl, alt: alt, shift: shift)
+          Events::MouseEvent.new(button: button_code, x: col, y: row, ctrl: ctrl, alt: alt, shift: shift)
         end
 
         def parse_legacy_mouse(raw)
@@ -179,7 +179,7 @@ module Charming
           col = bytes[1] - 32
           row = bytes[2] - 32
 
-          MouseEvent.new(button: button_code, x: col, y: row)
+          Events::MouseEvent.new(button: button_code, x: col, y: row)
         end
 
         def resized?
@@ -189,7 +189,7 @@ module Charming
         def resize_event
           @resized = false
           width, height = size
-          ResizeEvent.new(width: width, height: height)
+          Events::ResizeEvent.new(width: width, height: height)
         end
 
         def normalize_keypress(keypress)
@@ -202,12 +202,12 @@ module Charming
         end
 
         def character_event(keypress)
-          KeyEvent.new(key: keypress.to_sym, char: keypress)
+          Events::KeyEvent.new(key: keypress.to_sym, char: keypress)
         end
 
         def named_event(key_name)
           normalized = normalize_key_name(key_name)
-          KeyEvent.new(
+          Events::KeyEvent.new(
             key: normalized.fetch(:key),
             char: normalized.fetch(:char, nil),
             ctrl: normalized.fetch(:ctrl, false),

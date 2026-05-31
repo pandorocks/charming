@@ -330,11 +330,11 @@ Themes can be loaded with `theme name, built_in:` or `theme name, from:` on the 
 
 Runtime events include:
 
-- `Charming::KeyEvent`
-- `Charming::ResizeEvent`
-- `Charming::MouseEvent`
-- `Charming::TimerEvent`
-- `Charming::TaskEvent`
+- `Charming::Events::KeyEvent`
+- `Charming::Events::ResizeEvent`
+- `Charming::Events::MouseEvent`
+- `Charming::Events::TimerEvent`
+- `Charming::Events::TaskEvent`
 
 Use `Charming.key_of(event)` when component code needs the normalized key symbol.
 

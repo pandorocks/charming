@@ -2,7 +2,7 @@
 
 RSpec.describe Charming::Presentation::Components::CommandPalette do
   def key(name, char: nil)
-    Charming::KeyEvent.new(key: name, char: char)
+    Charming::Events::KeyEvent.new(key: name, char: char)
   end
 
   def command(label, value = label.downcase.tr(" ", "_"))

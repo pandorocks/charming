@@ -34,7 +34,7 @@ RSpec.describe Charming::Internal::Terminal::Adapter do
     end
   end
 
-  let(:event) { Charming::KeyEvent.new(key: :q) }
+  let(:event) { Charming::Events::KeyEvent.new(key: :q) }
 
   context "with MemoryBackend" do
     let(:width) { 100 }
@@ -91,7 +91,7 @@ RSpec.describe Charming::Internal::Terminal::Adapter do
 
     let(:width) { 120 }
     let(:height) { 50 }
-    let(:event) { Charming::KeyEvent.new(key: :q, char: "q") }
+    let(:event) { Charming::Events::KeyEvent.new(key: :q, char: "q") }
     let(:adapter) do
       Charming::Internal::Terminal::TTYBackend.new(
         input: StringIO.new,

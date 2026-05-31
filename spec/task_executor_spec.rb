@@ -16,7 +16,7 @@ RSpec.describe Charming::TaskExecutor do
 
       expect(result).to be_nil
       event = queue.pop(true)
-      expect(event).to eq(Charming::TaskEvent.new(name: :fetch, value: "feed"))
+      expect(event).to eq(Charming::Events::TaskEvent.new(name: :fetch, value: "feed"))
     end
 
     it "captures task errors synchronously" do
@@ -39,7 +39,7 @@ RSpec.describe Charming::TaskExecutor do
       result = executor.submit(:fetch) { "feed" }
 
       expect(result).to be_nil
-      expect(pop_with_timeout(queue)).to eq(Charming::TaskEvent.new(name: :fetch, value: "feed"))
+      expect(pop_with_timeout(queue)).to eq(Charming::Events::TaskEvent.new(name: :fetch, value: "feed"))
     ensure
       executor&.shutdown
     end

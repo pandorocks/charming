@@ -2,7 +2,7 @@
 
 RSpec.describe Charming::Presentation::Components::List do
   def key(name)
-    Charming::KeyEvent.new(key: name)
+    Charming::Events::KeyEvent.new(key: name)
   end
 
   it "selects the first item by default" do
@@ -78,7 +78,7 @@ RSpec.describe Charming::Presentation::Components::List do
   it "handles mouse click selection within viewport" do
     list = described_class.new(items: %w[One Two Three Four Five], selected_index: 0, height: 3)
 
-    mouse = Charming::MouseEvent.new(button: 0, x: 5, y: 2)
+    mouse = Charming::Events::MouseEvent.new(button: 0, x: 5, y: 2)
     expect(list.handle_mouse(mouse)).to eq(:handled)
     expect(list.selected_index).to eq(2)
   end
@@ -86,7 +86,7 @@ RSpec.describe Charming::Presentation::Components::List do
   it "ignores mouse clicks outside viewport" do
     list = described_class.new(items: %w[One Two Three Four Five], selected_index: 0, height: 3)
 
-    mouse = Charming::MouseEvent.new(button: 0, x: 5, y: 10)
+    mouse = Charming::Events::MouseEvent.new(button: 0, x: 5, y: 10)
     expect(list.handle_mouse(mouse)).to be_nil
     expect(list.selected_index).to eq(0)
   end
@@ -94,14 +94,14 @@ RSpec.describe Charming::Presentation::Components::List do
   it "ignores mouse scroll events" do
     list = described_class.new(items: %w[One Two Three])
 
-    mouse = Charming::MouseEvent.new(button: 64, x: 0, y: 0)
+    mouse = Charming::Events::MouseEvent.new(button: 64, x: 0, y: 0)
     expect(list.handle_mouse(mouse)).to be_nil
   end
 
   it "ignores mouse when no height is set" do
     list = described_class.new(items: %w[One Two Three])
 
-    mouse = Charming::MouseEvent.new(button: 0, x: 0, y: 1)
+    mouse = Charming::Events::MouseEvent.new(button: 0, x: 0, y: 1)
     expect(list.handle_mouse(mouse)).to be_nil
   end
 end

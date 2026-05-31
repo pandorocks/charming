@@ -2,11 +2,11 @@
 
 RSpec.describe Charming::Presentation::Components::Table do
   def key(name)
-    Charming::KeyEvent.new(key: name)
+    Charming::Events::KeyEvent.new(key: name)
   end
 
   def mouse(x: 0, y: 0, button: 0)
-    Charming::MouseEvent.new(button: button, x: x, y: y)
+    Charming::Events::MouseEvent.new(button: button, x: x, y: y)
   end
 
   describe "#initialize" do
@@ -286,7 +286,7 @@ RSpec.describe Charming::Presentation::Components::Table do
         rows: %w[a b]
       )
 
-      scroll = Charming::MouseEvent.new(button: 64, x: 0, y: 2)
+      scroll = Charming::Events::MouseEvent.new(button: 64, x: 0, y: 2)
       expect(table.handle_mouse(scroll)).to be_nil
     end
 

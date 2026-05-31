@@ -2,7 +2,7 @@
 
 RSpec.describe Charming::Presentation::Components::Viewport do
   def key(name)
-    Charming::KeyEvent.new(key: name)
+    Charming::Events::KeyEvent.new(key: name)
   end
 
   it "renders content unchanged without dimensions" do

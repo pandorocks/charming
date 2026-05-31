@@ -39,7 +39,7 @@ end
 Pass events when testing key, timer, task, or mouse dispatch:
 
 ```ruby
-event = Charming::KeyEvent.new(key: :up)
+event = Charming::Events::KeyEvent.new(key: :up)
 response = described_class.new(application: application, event: event).dispatch_key
 ```
 
@@ -108,7 +108,7 @@ For interactive components, assert return values and state changes:
 ```ruby
 input = Charming::Presentation::Components::TextInput.new
 
-expect(input.handle_key(Charming::KeyEvent.new(key: :a, char: "a"))).to eq(:handled)
+expect(input.handle_key(Charming::Events::KeyEvent.new(key: :a, char: "a"))).to eq(:handled)
 expect(input.value).to eq("a")
 ```
 
@@ -119,8 +119,8 @@ Use `MemoryBackend` to script terminal events and capture rendered frames:
 ```ruby
 backend = Charming::Internal::Terminal::MemoryBackend.new(
   events: [
-    Charming::KeyEvent.new(key: :up),
-    Charming::KeyEvent.new(key: :q)
+    Charming::Events::KeyEvent.new(key: :up),
+    Charming::Events::KeyEvent.new(key: :q)
   ],
   width: 80,
   height: 24

@@ -30,9 +30,9 @@ module Charming
       private
 
       def run(task)
-        TaskEvent.new(name: task.name, value: task.call)
+        Events::TaskEvent.new(name: task.name, value: task.call)
       rescue StandardError, ScriptError => e
-        TaskEvent.new(name: task.name, error: e)
+        Events::TaskEvent.new(name: task.name, error: e)
       end
     end
 
@@ -53,9 +53,9 @@ module Charming
       private
 
       def run(task)
-        TaskEvent.new(name: task.name, value: task.call)
+        Events::TaskEvent.new(name: task.name, value: task.call)
       rescue StandardError, ScriptError => e
-        TaskEvent.new(name: task.name, error: e)
+        Events::TaskEvent.new(name: task.name, error: e)
       end
     end
   end

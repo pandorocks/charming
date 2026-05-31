@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::KeyEvent do
+RSpec.describe Charming::Events::KeyEvent do
   it "normalizes key names to symbols" do
     event = described_class.new(key: "q", char: "q")
 

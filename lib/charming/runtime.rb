@@ -82,10 +82,10 @@ module Charming
     # Type-based dispatcher: routes resize, task, timer, mouse, and key events
     # to the appropriate handler. Falls back to key dispatch for unclassified events.
     def dispatch_event(event)
-      return dispatch_resize(event) if event.is_a?(ResizeEvent)
-      return dispatch_task(event) if event.is_a?(TaskEvent)
-      return dispatch_timer(event) if event.is_a?(TimerEvent)
-      return dispatch_mouse(event) if event.is_a?(MouseEvent)
+      return dispatch_resize(event) if event.is_a?(Events::ResizeEvent)
+      return dispatch_task(event) if event.is_a?(Events::TaskEvent)
+      return dispatch_timer(event) if event.is_a?(Events::TimerEvent)
+      return dispatch_mouse(event) if event.is_a?(Events::MouseEvent)
 
       dispatch_key(event)
     end
@@ -133,7 +133,7 @@ module Charming
 
       now = clock_now
       timer[:next_at] = now + timer.fetch(:binding).interval
-      TimerEvent.new(name: timer.fetch(:binding).name, now: now)
+      Events::TimerEvent.new(name: timer.fetch(:binding).name, now: now)
     end
 
     # Pops a task event from the thread-safe queue if one is available.

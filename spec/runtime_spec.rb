@@ -34,8 +34,8 @@ RSpec.describe Charming::Runtime do
   it "renders the root action and key-dispatched actions" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :up),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :up),
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
 
@@ -59,7 +59,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :q)],
+      events: [Charming::Events::KeyEvent.new(key: :q)],
       width: 100,
       height: 40
     )
@@ -85,8 +85,8 @@ RSpec.describe Charming::Runtime do
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::ResizeEvent.new(width: 100, height: 40),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::ResizeEvent.new(width: 100, height: 40),
+        Charming::Events::KeyEvent.new(key: :q)
       ],
       width: 80,
       height: 24
@@ -126,8 +126,8 @@ RSpec.describe Charming::Runtime do
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :s),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :s),
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
 
@@ -170,9 +170,9 @@ RSpec.describe Charming::Runtime do
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :u),
-        Charming::KeyEvent.new(key: :r),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :u),
+        Charming::Events::KeyEvent.new(key: :r),
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
 
@@ -210,9 +210,9 @@ RSpec.describe Charming::Runtime do
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :s),
-        Charming::ResizeEvent.new(width: 100, height: 40),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :s),
+        Charming::Events::ResizeEvent.new(width: 100, height: 40),
+        Charming::Events::KeyEvent.new(key: :q)
       ],
       width: 80,
       height: 24
@@ -245,7 +245,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [nil, Charming::KeyEvent.new(key: :q)]
+      events: [nil, Charming::Events::KeyEvent.new(key: :q)]
     )
     times = [0.0, 0.0, 0.0, 0.1, 0.2]
     clock = -> { times.shift || 0.2 }
@@ -275,7 +275,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [nil, Charming::KeyEvent.new(key: :q)]
+      events: [nil, Charming::Events::KeyEvent.new(key: :q)]
     )
     times = [0.0, 0.0, 0.0, 0.1, 0.2, 0.2, 0.2]
     clock = -> { times.shift || 0.2 }
@@ -305,7 +305,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::KeyEvent.new(key: :q)]
     )
     clock = -> { 0.0 }
 
@@ -338,7 +338,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [nil, Charming::KeyEvent.new(key: :q)]
+      events: [nil, Charming::Events::KeyEvent.new(key: :q)]
     )
 
     described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
@@ -375,7 +375,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [nil, Charming::KeyEvent.new(key: :up), Charming::KeyEvent.new(key: :q)]
+      events: [nil, Charming::Events::KeyEvent.new(key: :up), Charming::Events::KeyEvent.new(key: :q)]
     )
 
     described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
@@ -417,9 +417,9 @@ RSpec.describe Charming::Runtime do
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::KeyEvent.new(key: :s),
-        Charming::TaskEvent.new(name: :fetch, value: "feed"),
-        Charming::KeyEvent.new(key: :q)
+        Charming::Events::KeyEvent.new(key: :s),
+        Charming::Events::TaskEvent.new(name: :fetch, value: "feed"),
+        Charming::Events::KeyEvent.new(key: :q)
       ]
     )
 
@@ -448,7 +448,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::TaskEvent.new(name: :fetch, value: "feed"), Charming::KeyEvent.new(key: :q)]
+      events: [Charming::Events::TaskEvent.new(name: :fetch, value: "feed"), Charming::Events::KeyEvent.new(key: :q)]
     )
 
     described_class.new(task_app.new, backend: backend).run
@@ -486,7 +486,7 @@ RSpec.describe Charming::Runtime do
       end
     end
     backend = yielding_backend.new(
-      events: Array.new(20) + [Charming::KeyEvent.new(key: :q)]
+      events: Array.new(20) + [Charming::Events::KeyEvent.new(key: :q)]
     )
 
     described_class.new(task_app.new, backend: backend).run
