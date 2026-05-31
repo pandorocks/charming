@@ -512,6 +512,85 @@ RSpec.describe Charming::Controller do
     expect(response.body).to include("o|")
   end
 
+  it "builds forms with primitive session state" do
+    controller = Class.new(described_class) do
+      def show
+        render signup_form.render
+      end
+
+      private
+
+      def signup_form
+        form(:signup) do |f|
+          f.input :name
+        end
+      end
+    end
+
+    controller.new(application: application).dispatch(:show)
+
+    expect(application.session[:forms][:signup]).to eq(
+      values: {name: ""},
+      fields: {name: {cursor: 0}},
+      errors: {},
+      focus_index: 0
+    )
+    expect(application.session[:forms][:signup]).not_to be_a(Charming::Presentation::Components::Form)
+  end
+
+  it "dispatches submitted form results to focused component hooks" do
+    controller = Class.new(described_class) do
+      focus_ring :signup_form
+
+      def show
+        render signup_form.render
+      end
+
+      def signup_form_submitted(values)
+        render "submitted #{values[:name]}"
+      end
+
+      private
+
+      def signup_form
+        form(:signup) do |f|
+          f.input :name
+        end
+      end
+    end
+
+    controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :a, char: "a")).dispatch_key
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :enter)).dispatch_key
+
+    expect(response.body).to eq("submitted a")
+  end
+
+  it "dispatches cancelled form results to focused component hooks" do
+    controller = Class.new(described_class) do
+      focus_ring :signup_form
+
+      def show
+        render signup_form.render
+      end
+
+      def signup_form_cancelled
+        render "cancelled"
+      end
+
+      private
+
+      def signup_form
+        form(:signup) do |f|
+          f.input :name
+        end
+      end
+    end
+
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :escape)).dispatch_key
+
+    expect(response.body).to eq("cancelled")
+  end
+
   describe ".key_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { key "up", :foo }

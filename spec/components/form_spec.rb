@@ -1,0 +1,164 @@
+# frozen_string_literal: true
+
+RSpec.describe Charming::Presentation::Components::Form do
+  def key(name, char: nil, shift: false, ctrl: false)
+    Charming::Events::KeyEvent.new(key: name, char: char, shift: shift, ctrl: ctrl)
+  end
+
+  def plain(value)
+    value.gsub(/\e\[[0-9;]*m/, "")
+  end
+
+  it "renders input, select, confirm, and note fields" do
+    form = described_class.new(
+      fields: [
+        described_class::Input.new(:name, placeholder: "Ada"),
+        described_class::Textarea.new(:bio, placeholder: "Bio", height: 2),
+        described_class::Select.new(:plan, options: %w[Free Pro]),
+        described_class::Confirm.new(:terms, label: "Accept terms?"),
+        described_class::Note.new("Escape cancels")
+      ],
+      state: {}
+    )
+
+    rendered = plain(form.render)
+
+    expect(rendered).to include("> Name: |Ada")
+    expect(rendered).to include("  Bio:")
+    expect(rendered).to include("  |Bio")
+    expect(rendered).to include("  Plan: Free")
+    expect(rendered).to include("  [ ] Accept terms?")
+    expect(rendered).to include("Escape cancels")
+  end
+
+  it "stores input value and cursor in primitive state" do
+    state = {}
+    form = described_class.new(fields: [described_class::Input.new(:name)], state: state)
+
+    expect(form.handle_key(key(:a, char: "a"))).to eq(:handled)
+
+    expect(state[:values]).to eq(name: "a")
+    expect(state[:fields]).to eq(name: {cursor: 1})
+    expect(plain(described_class.new(fields: [described_class::Input.new(:name)], state: state).render)).to include("a|")
+  end
+
+  it "stores select choice and selected index in primitive state" do
+    state = {}
+    form = described_class.new(fields: [described_class::Select.new(:plan, options: %w[Free Pro Team])], state: state)
+
+    expect(form.handle_key(key(:down))).to eq(:handled)
+
+    expect(state[:values]).to eq(plan: "Pro")
+    expect(state[:fields]).to eq(plan: {selected_index: 1})
+    expect(plain(described_class.new(fields: [described_class::Select.new(:plan, options: %w[Free Pro Team])], state: state).render)).to include("Plan: Pro")
+  end
+
+  it "stores textarea value, cursor, and offset in primitive state" do
+    state = {}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio, height: 2)], state: state)
+
+    form.handle_key(key(:a, char: "a"))
+    form.handle_key(key(:enter, char: "\n", shift: true))
+    form.handle_key(key(:b, char: "b"))
+
+    expect(state[:values]).to eq(bio: "a\nb")
+    expect(state[:fields]).to eq(bio: {cursor: 3, offset: 0, preferred_column: 1})
+    expect(plain(described_class.new(fields: [described_class::Textarea.new(:bio, height: 2)], state: state).render)).to include("  b|")
+  end
+
+  it "advances instead of inserting a newline on plain enter in a textarea" do
+    state = {}
+    form = described_class.new(
+      fields: [described_class::Textarea.new(:bio), described_class::Input.new(:name)],
+      state: state
+    )
+
+    expect(form.handle_key(key(:enter, char: "\n"))).to eq(:handled)
+
+    expect(state[:focus_index]).to eq(1)
+    expect(state[:values][:bio]).to eq("")
+  end
+
+  it "inserts textarea newlines with shift-enter and ctrl-j" do
+    state = {}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio)], state: state)
+
+    expect(form.handle_key(key(:enter, char: "\n", shift: true))).to eq(:handled)
+    expect(form.handle_key(key(:j, ctrl: true))).to eq(:handled)
+
+    expect(state[:values][:bio]).to eq("\n\n")
+  end
+
+  it "submits with ctrl-s from a textarea" do
+    state = {values: {bio: "hello"}}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio)], state: state)
+
+    expect(form.handle_key(key(:s, ctrl: true))).to eq([:submitted, {bio: "hello"}])
+  end
+
+  it "toggles confirm fields with space and y/n keys" do
+    state = {}
+    form = described_class.new(fields: [described_class::Confirm.new(:terms)], state: state)
+
+    expect(form.handle_key(key(:space))).to eq(:handled)
+    expect(state[:values][:terms]).to eq(true)
+
+    form.handle_key(key(:n, char: "n"))
+    expect(state[:values][:terms]).to eq(false)
+
+    form.handle_key(key(:y, char: "y"))
+    expect(state[:values][:terms]).to eq(true)
+  end
+
+  it "moves focus with tab and shift-tab" do
+    state = {}
+    form = described_class.new(
+      fields: [described_class::Input.new(:name), described_class::Confirm.new(:terms)],
+      state: state
+    )
+
+    expect(form.handle_key(key(:tab))).to eq(:handled)
+    expect(state[:focus_index]).to eq(1)
+
+    form.handle_key(key(:tab, shift: true))
+    expect(state[:focus_index]).to eq(0)
+  end
+
+  it "advances on enter and submits from the last focusable field" do
+    state = {values: {name: "Ada"}}
+    form = described_class.new(
+      fields: [described_class::Input.new(:name), described_class::Confirm.new(:terms, value: true)],
+      state: state
+    )
+
+    expect(form.handle_key(key(:enter))).to eq(:handled)
+    expect(state[:focus_index]).to eq(1)
+
+    expect(form.handle_key(key(:enter))).to eq([:submitted, {name: "Ada", terms: true}])
+  end
+
+  it "renders validation errors instead of submitting invalid values" do
+    state = {}
+    form = described_class.new(fields: [described_class::Input.new(:name, required: true)], state: state)
+
+    expect(form.handle_key(key(:enter))).to eq(:handled)
+
+    expect(state[:errors]).to eq(name: ["is required"])
+    expect(plain(form.render)).to include("is required")
+  end
+
+  it "treats whitespace-only textarea values as invalid when required" do
+    state = {values: {bio: "  \n  "}}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio, required: true)], state: state)
+
+    expect(form.handle_key(key(:enter))).to eq(:handled)
+
+    expect(state[:errors]).to eq(bio: ["is required"])
+  end
+
+  it "returns cancelled on escape" do
+    form = described_class.new(fields: [described_class::Input.new(:name)], state: {})
+
+    expect(form.handle_key(key(:escape))).to eq(:cancelled)
+  end
+end

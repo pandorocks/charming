@@ -260,6 +260,8 @@ Return conventions:
 Bundled components:
 
 - `Charming::Presentation::Components::TextInput`
+- `Charming::Presentation::Components::TextArea`
+- `Charming::Presentation::Components::Form`
 - `Charming::Presentation::Components::List`
 - `Charming::Presentation::Components::CommandPalette`
 - `Charming::Presentation::Components::Modal`
@@ -270,6 +272,54 @@ Bundled components:
 - `Charming::Presentation::Components::ActivityIndicator`
 - `Charming::Presentation::Components::Table`
 - `Charming::Presentation::Components::KeyboardHandler`
+
+Form component constructor:
+
+- `fields:` array of form field objects.
+- `state:` mutable primitive state hash, usually from `session[:forms]`.
+- `theme:` optional `Charming::Presentation::UI::Theme`.
+
+Form field classes:
+
+- `Charming::Presentation::Components::Form::Input`
+- `Charming::Presentation::Components::Form::Textarea`
+- `Charming::Presentation::Components::Form::Select`
+- `Charming::Presentation::Components::Form::Confirm`
+- `Charming::Presentation::Components::Form::Note`
+
+Controller helper:
+
+```ruby
+form(:signup) do |f|
+  f.input :name, required: true
+  f.textarea :bio, height: 5
+  f.select :plan, options: ["Free", "Pro"]
+  f.confirm :terms, required: true
+end
+```
+
+TextArea component constructor:
+
+- `value:` current multiline string.
+- `placeholder:` rendered when value is empty.
+- `width:` optional visible columns per line.
+- `height:` optional visible rows.
+- `cursor:` absolute cursor offset into `value`.
+- `offset:` first visible row.
+- `preferred_column:` remembered column for up/down movement.
+
+Textarea keys:
+
+- Plain `Enter` is left for the form to advance or submit.
+- `Shift+Enter` inserts a newline when the terminal reports it distinctly.
+- `Ctrl+J` inserts a newline reliably.
+- `Ctrl+S` submits the form from any field.
+
+Focused component result hooks:
+
+- `[:submitted, values]` calls `<focus_slot>_submitted(values)` when defined.
+- `[:selected, value]` calls `<focus_slot>_selected(value)` when defined.
+- `:cancelled` calls `<focus_slot>_cancelled` when defined.
 
 Markdown component constructor:
 

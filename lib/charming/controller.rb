@@ -206,6 +206,14 @@ module Charming
       session[:states][name.to_sym] ||= state_class.new(**attributes)
     end
 
+    def form(name, &block)
+      session[:forms] ||= {}
+      form_state = session[:forms][name.to_sym] ||= {}
+      builder = Presentation::Components::Form::Builder.new(theme: theme)
+      block.arity.zero? ? builder.instance_eval(&block) : block.call(builder)
+      builder.build(state: form_state, theme: theme)
+    end
+
     # Submits an async task to the application's task executor (threaded or inline).
     # The task runs in a background thread; results arrive as TaskEvents in `dispatch_task`.
     def run_task(name, &block)
@@ -396,8 +404,38 @@ module Charming
       result = component.handle_key(event)
       return nil if result.nil?
 
-      render_default_action
+      dispatch_component_result(slot, result)
       :handled
+    end
+
+    def dispatch_component_result(slot, result)
+      action, arguments = component_result_action(slot, result)
+      action ? send(action, *arguments) : render_default_action
+      render_default_action unless response
+    end
+
+    def component_result_action(slot, result)
+      case result
+      when :cancelled
+        component_action(slot, :cancelled)
+      when Array
+        component_array_action(slot, result)
+      end
+    end
+
+    def component_array_action(slot, result)
+      event_name, value = result
+      return component_action(slot, :submitted, value) if event_name == :submitted
+      return component_action(slot, :selected, value) if event_name == :selected
+
+      nil
+    end
+
+    def component_action(slot, suffix, *arguments)
+      action = :"#{slot}_#{suffix}"
+      return unless respond_to?(action, true)
+
+      [action, arguments]
     end
 
     # Handles Tab/Shift-Tab traversal: moves focus forward or backward through the focus ring.

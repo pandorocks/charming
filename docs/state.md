@@ -85,6 +85,43 @@ def save
 end
 ```
 
+## Form State
+
+Use `Controller#form` for session-backed terminal forms. Charming stores only primitive form data under `session[:forms]`, then rebuilds form components on each dispatch.
+
+```ruby
+def signup_form
+  form(:signup) do |f|
+    f.input :name, required: true
+    f.textarea :bio, height: 5
+    f.select :plan, options: ["Free", "Pro"]
+    f.confirm :terms, required: true
+  end
+end
+```
+
+Textarea fields store their editing state alongside the value:
+
+```ruby
+session[:forms][:signup] = {
+  values: {bio: "Line one\nLine two"},
+  fields: {bio: {cursor: 18, offset: 0, preferred_column: 8}},
+  errors: {},
+  focus_index: 0
+}
+```
+
+On submit, the focused form returns `[:submitted, values]` and dispatches to a hook matching the focus slot:
+
+```ruby
+focus_ring :signup_form
+
+def signup_form_submitted(values)
+  profile.assign_attributes(values)
+  profile.valid? ? navigate_to("/") : show
+end
+```
+
 ## What Not To Store In Controllers
 
 Avoid this for durable state:
