@@ -10,9 +10,12 @@ module Charming
 
     class << self
       # Registers a key binding (string or symbol key name → method symbol).
-      # When the event loop reads this key, it calls the corresponding controller action.
-      def key(name, action)
-        key_bindings[name.to_sym] = action
+      # Content-scoped bindings run from the main content pane; global bindings run from any pane.
+      def key(name, action, scope: :content)
+        normalized_scope = validate_key_scope(scope)
+        key_name = name.to_sym
+        key_bindings[key_name] = action
+        key_binding_scopes[key_name] = normalized_scope
       end
 
       # Registers a command palette entry — visible in fuzzy search when Ctrl+K is pressed.
@@ -46,6 +49,12 @@ module Charming
         @key_bindings ||= superclass.respond_to?(:key_bindings) ? superclass.key_bindings.dup : {}
       end
 
+      # Returns inherited key binding scopes merged from the class hierarchy.
+      # Each subclass gets a fresh copy of its parent's scopes to match key binding inheritance.
+      def key_binding_scopes
+        @key_binding_scopes ||= superclass.respond_to?(:key_binding_scopes) ? superclass.key_binding_scopes.dup : {}
+      end
+
       # Registers a focus ring slot for this controller — slots participate in Tab/Shift+Tab traversal.
       # Example: `focus_ring :sidebar, :content` makes sidebar and content tabbable.
       def focus_ring(*slots)
@@ -73,6 +82,13 @@ module Charming
       end
 
       private
+
+      def validate_key_scope(scope)
+        normalized_scope = scope.to_sym
+        return normalized_scope if %i[content global].include?(normalized_scope)
+
+        raise ArgumentError, "unknown key scope: #{scope.inspect}"
+      end
 
       # Returns the layout class for this controller, walking up the inheritance chain until one is found or nil.
       # Used internally by `layout` when called without args (getter mode).
@@ -104,14 +120,14 @@ module Charming
     end
 
     # Key event dispatch pipeline for controllers: checks command palette first (if open),
-    # then sidebar (if focused), then registered key bindings, then tab traversal,
-    # then focused component handling. Returns nil if no handler consumed the event.
+    # then global key bindings, then sidebar (if focused), then content-scoped key bindings,
+    # then tab traversal, then focused component handling. Returns nil if no handler consumed the event.
     def dispatch_key
       return dispatch_command_palette_key if command_palette_open?
+      return dispatch(global_key_action) if global_key_action
       return dispatch_sidebar_key if sidebar_focused?
 
-      action = self.class.key_bindings[key_name]
-      return dispatch(action) if action
+      return dispatch(content_key_action) if content_key_action
       return response if dispatch_tab_traversal == :handled
       return response if dispatch_to_focused_component == :handled
 
@@ -372,23 +388,16 @@ module Charming
     end
 
     # Dispatches keys within sidebar navigation: j/k or down/up move selection, Enter selects and navigates,
-    # Escape/Tab shifts focus to content. Binds other keys to controller-specific key bindings when defined.
+    # Escape/Tab shifts focus to content. Other keys are ignored while sidebar owns focus.
     def dispatch_sidebar_key
       case key_name
       when :j, :down then sidebar_move(+1)
       when :k, :up then sidebar_move(-1)
       when :enter then sidebar_select
       when :escape, :tab then focus_content
-      else dispatch_sidebar_bound_key
+      else render_default_action
       end
       response
-    end
-
-    # Dispatches a sidebar key to a registered controller key binding (e.g., custom hotkeys in sidebar mode).
-    # Falls back to default action render if no binding exists for the key.
-    def dispatch_sidebar_bound_key
-      action = self.class.key_bindings[key_name]
-      action ? dispatch(action) : render_default_action
     end
 
     # Mouse event handler for the base controller. No-op — mouse events bubble through to focused components instead.
@@ -485,6 +494,30 @@ module Charming
     # or key handling when no explicit response was produced — ensures the view stays rendered.
     def render_default_action
       show if respond_to?(:show)
+    end
+
+    def global_key_action
+      key_action_for_scope(:global)
+    end
+
+    def content_key_action
+      return nil unless content_key_scope_active?
+
+      key_action_for_scope(:content)
+    end
+
+    def content_key_scope_active?
+      return content_focused? if focus_ring_slot?(:content)
+
+      true
+    end
+
+    def key_action_for_scope(scope)
+      action = self.class.key_bindings[key_name]
+      return nil unless action
+      return nil unless self.class.key_binding_scopes.fetch(key_name, :content) == scope
+
+      action
     end
   end
 end

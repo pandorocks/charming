@@ -14,8 +14,8 @@ end
 class CounterController < Charming::Controller
   key "up", :increment
   key "down", :decrement
-  key "p", :open_command_palette
-  key "q", :quit
+  key "p", :open_command_palette, scope: :global
+  key "q", :quit, scope: :global
 
   command "Increment counter", :increment
   command "Decrement counter", :decrement

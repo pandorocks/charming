@@ -551,6 +551,30 @@ RSpec.describe Charming::Controller do
       expect(parent.key_bindings).to include(q: :quit)
       expect(child.key_bindings).not_to have_key(:q)
     end
+
+    it "stores content scope by default and explicit global scope for key bindings" do
+      controller = Class.new(described_class) do
+        key "r", :refresh
+        key "q", :quit, scope: :global
+      end
+
+      expect(controller.key_binding_scopes).to eq(r: :content, q: :global)
+    end
+
+    it "inherits key binding scopes as a copy, not a live reference" do
+      parent = Class.new(described_class) { key "q", :quit, scope: :global }
+      child = Class.new(parent) { key "r", :refresh }
+
+      expect(child.key_binding_scopes).to eq(q: :global, r: :content)
+      expect(parent.key_binding_scopes).to eq(q: :global)
+      expect(child.key_binding_scopes).not_to equal(parent.key_binding_scopes)
+    end
+
+    it "rejects unknown key binding scopes" do
+      expect {
+        Class.new(described_class) { key "x", :unknown, scope: :sidebar }
+      }.to raise_error(ArgumentError, "unknown key scope: :sidebar")
+    end
   end
 
   describe "focus_ring" do
@@ -781,11 +805,35 @@ RSpec.describe Charming::Controller do
       expect(controller_class.new(application: application).focus.current).to eq(:content)
     end
 
-    it "preserves global key bindings while the sidebar is focused" do
+    it "does not dispatch content-scoped key bindings while the sidebar is focused" do
       controller_class = focus_controller(
         component_class,
         ring: %i[sidebar content],
-        extra: -> { key "q", :quit }
+        extra: -> {
+          key "r", :refresh
+
+          def refresh
+            session[:refreshed] = true
+            render "refreshed"
+          end
+        }
+      )
+      controller_class.new(application: application).dispatch(:show)
+
+      response = controller_class.new(
+        application: application,
+        event: Charming::KeyEvent.new(key: :r)
+      ).dispatch_key
+
+      expect(response.body).to eq("current=sidebar")
+      expect(application.session[:refreshed]).to be_nil
+    end
+
+    it "dispatches global key bindings while the sidebar is focused" do
+      controller_class = focus_controller(
+        component_class,
+        ring: %i[sidebar content],
+        extra: -> { key "q", :quit, scope: :global }
       )
       controller_class.new(application: application).dispatch(:show)
 

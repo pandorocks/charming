@@ -14,12 +14,16 @@ RSpec.describe "demo app example" do
 
     expect(backend.frames.first).to include("DemoApp")
     expect(backend.frames.first).to include("Status: Idle")
-    expect(backend.frames.first).to include("Press r to run an async task.")
+    expect(backend.frames.first).to include("Tab to content, then press r to run an async task.")
   end
 
   it "renders async loading and completed states" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
+      events: [
+        Charming::KeyEvent.new(key: :tab),
+        Charming::KeyEvent.new(key: :r, char: "r"),
+        Charming::KeyEvent.new(key: :q)
+      ]
     )
 
     Charming::Runtime.new(
@@ -36,9 +40,14 @@ RSpec.describe "demo app example" do
 
   it "advances the loading progress while the async task is running" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
+      events: [
+        Charming::KeyEvent.new(key: :tab),
+        Charming::KeyEvent.new(key: :r, char: "r"),
+        nil,
+        Charming::KeyEvent.new(key: :q)
+      ]
     )
-    times = [0.0, 0.0, 0.05, 0.05, 0.2, 0.2, 0.3]
+    times = [0.0, 0.0, 0.05, 0.05, 0.1, 0.1, 0.2, 0.2, 0.3]
 
     Charming::Runtime.new(
       DemoApp::Application.new,
@@ -52,6 +61,23 @@ RSpec.describe "demo app example" do
     expect(stripped).to include("[=                                       ] Working")
     expect(stripped).to include("[==                                      ] Working")
     expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~%eB49*_E Working.")
+  end
+
+  it "does not run the async task when r is pressed while the sidebar is focused" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
+    )
+
+    Charming::Runtime.new(
+      DemoApp::Application.new,
+      backend: backend,
+      task_executor: completed_task_executor("Async task finished.")
+    ).run
+
+    frames = backend.frames.join("\n")
+    expect(frames).not_to include("Status: Loading")
+    expect(frames).not_to include("Status: Loaded")
+    expect(frames).not_to include("Async task finished.")
   end
 
   it "uses backend dimensions when rendering the demo app" do

@@ -2,7 +2,7 @@
 
 module DemoApp
   class HomeController < ApplicationController
-    key "r", :refresh
+    key "r", :refresh, scope: :content
     timer :loading_progress, every: 0.2, action: :advance_loading_progress
     timer :loading_activity, every: 0.05, action: :advance_loading_activity
     on_task :refresh_home, action: :refresh_loaded

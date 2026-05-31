@@ -51,6 +51,12 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
         "focus_ring :sidebar, :content"
       )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        'key "p", :open_command_palette, scope: :global'
+      )
+      expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
+        'key "q", :quit, scope: :global'
+      )
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).not_to include(
         'key "tab", :focus_sidebar'
       )

@@ -12,8 +12,8 @@ module #{name.class_name}
     layout Layouts::Application
     focus_ring :sidebar, :content
 
-    key "p", :open_command_palette
-    key "q", :quit
+    key "p", :open_command_palette, scope: :global
+    key "q", :quit, scope: :global
 
     command "Home" do
       navigate_to "/"
