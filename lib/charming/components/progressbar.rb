@@ -5,13 +5,7 @@ module Charming
     class Progressbar < Component
       attr_accessor :total, :current, :label, :complete, :incomplete, :bar_format
 
-      def initialize(
-        total:,
-        complete: "=",
-        incomplete: " ",
-        bar_format: :classic,
-        label: nil
-      )
+      def initialize(total:, complete: "=", incomplete: " ", bar_format: :classic, label: nil)
         super()
         @total = [total.to_i, 0].max
         @complete = complete.to_s

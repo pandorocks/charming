@@ -5,6 +5,9 @@ module Charming
     class List < Component
       include KeyboardHandler
 
+      # Maps navigation key symbols to instance methods consumed by the KeyboardHandler
+      # mixin: :up moves selection up, :down moves down, :home jumps to first item,
+      # :end jumps to last. See Viewport#KEY_ACTIONS and Table#KEY_ACTIONS for identical pattern.
       KEY_ACTIONS = {
         up: :move_up,
         down: :move_down,
@@ -23,30 +26,26 @@ module Charming
         clamp_position
       end
 
-      def selected_item
-        items[selected_index]
-      end
-
       def handle_key(event)
-        key = Charming.key_of(event)
-        return [:selected, selected_item] if key.to_sym == :enter && selected_item
+        return [:selected, selected_item] if Charming.key_of(event) == :enter && selected_item
 
         super
       end
 
       def handle_mouse(event)
-        return nil unless event.click?
         return nil unless @height
+        return nil unless event.respond_to?(:click?) && event.click?
 
-        visible_start = viewport_start
-        visible_end = visible_start + viewport_height
+        clicked = event.y
+        return nil if clicked.negative? || clicked >= visible_items.length
 
-        return nil unless (visible_start...visible_end).cover?(event.y)
-
-        clicked_index = event.y
-        @selected_index = clicked_index
+        @selected_index = viewport_start + clicked
         clamp_position
         :handled
+      end
+
+      def selected_item
+        items[selected_index]
       end
 
       def render

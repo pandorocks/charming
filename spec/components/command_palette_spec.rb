@@ -18,7 +18,7 @@ RSpec.describe Charming::Components::CommandPalette do
   it "filters commands as the user types" do
     palette = described_class.new(commands: [command("Open File"), command("Quit")])
 
-    expect(palette.handle_key(key("q", char: "q"))).to eq(:handled)
+    expect(palette.handle_key(key(:q, char: "q"))).to eq(:handled)
 
     expect(palette.render).to eq("q|\n\e[7m> Quit\e[0m")
     expect(palette.selected_command.label).to eq("Quit")
@@ -64,7 +64,7 @@ RSpec.describe Charming::Components::CommandPalette do
   it "exposes primitive state after input and selection changes" do
     palette = described_class.new(commands: [command("Open"), command("Run"), command("Read")])
 
-    palette.handle_key(key("r", char: "r"))
+    palette.handle_key(key(:r, char: "r"))
     palette.handle_key(key(:down))
 
     expect(palette.state).to eq(value: "r", cursor: 1, selected_index: 1)
@@ -73,7 +73,7 @@ RSpec.describe Charming::Components::CommandPalette do
   it "renders an empty state when no commands match" do
     palette = described_class.new(commands: [command("Open")])
 
-    palette.handle_key(key("z", char: "z"))
+    palette.handle_key(key(:z, char: "z"))
 
     expect(palette.render).to eq("z|\nNo commands found")
     expect(palette.selected_command).to be_nil

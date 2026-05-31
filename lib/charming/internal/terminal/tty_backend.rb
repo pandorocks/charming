@@ -197,7 +197,7 @@ module Charming
         end
 
         def character_event(keypress)
-          KeyEvent.new(key: keypress, char: keypress)
+          KeyEvent.new(key: keypress.to_sym, char: keypress)
         end
 
         def named_event(key_name)

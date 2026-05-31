@@ -70,7 +70,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     reader = TTYBackendSpecReader.new(keys: {}, keypresses: ["q"])
     backend = described_class.new(input: StringIO.new, output: StringIO.new, reader: reader)
 
-    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: "q", char: "q"))
+    expect(backend.read_event(timeout: 0.1)).to eq(Charming::KeyEvent.new(key: :q, char: "q"))
   end
 
   it "preserves printable chars when tty-reader maps them as named keys" do

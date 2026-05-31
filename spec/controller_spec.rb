@@ -397,7 +397,7 @@ RSpec.describe Charming::Controller do
     controller.new(application: application).open_command_palette
     response = controller.new(
       application: application,
-      event: Charming::KeyEvent.new(key: "o", char: "o")
+      event: Charming::KeyEvent.new(key: :o, char: "o")
     ).dispatch_key
 
     expect(application.session[:command_palette]).to include(value: "o", cursor: 1)
@@ -506,7 +506,7 @@ RSpec.describe Charming::Controller do
     controller.new(application: application).open_command_palette
     response = controller.new(
       application: application,
-      event: Charming::KeyEvent.new(key: "o", char: "o")
+      event: Charming::KeyEvent.new(key: :o, char: "o")
     ).dispatch_key
 
     expect(response.body).to include("o|")
@@ -517,8 +517,8 @@ RSpec.describe Charming::Controller do
       parent = Class.new(described_class) { key "up", :foo }
       child = Class.new(parent) { key "down", :bar }
 
-      expect(child.key_bindings).to eq("up" => :foo, "down" => :bar)
-      expect(parent.key_bindings).to eq("up" => :foo)
+      expect(child.key_bindings).to eq(up: :foo, down: :bar)
+      expect(parent.key_bindings).to eq(up: :foo)
       expect(child.key_bindings).not_to equal(parent.key_bindings)
     end
 
@@ -527,8 +527,8 @@ RSpec.describe Charming::Controller do
       sibling1 = Class.new(parent) { key "one", :one_action }
       sibling2 = Class.new(parent) { key "two", :two_action }
 
-      expect(sibling1.key_bindings).to eq("shared" => :shared_action, "one" => :one_action)
-      expect(sibling2.key_bindings).to eq("shared" => :shared_action, "two" => :two_action)
+      expect(sibling1.key_bindings).to eq(shared: :shared_action, one: :one_action)
+      expect(sibling2.key_bindings).to eq(shared: :shared_action, two: :two_action)
     end
 
     it "cumulates bindings across a three-level chain" do
@@ -536,7 +536,7 @@ RSpec.describe Charming::Controller do
       parent = Class.new(grandparent) { key "p", :parent }
       child = Class.new(parent) { key "c", :child }
 
-      expect(child.key_bindings).to eq("g" => :grand, "p" => :parent, "c" => :child)
+      expect(child.key_bindings).to eq(g: :grand, p: :parent, c: :child)
     end
 
     # Snapshot is taken on first read of #key_bindings (which the `key` class
@@ -548,8 +548,8 @@ RSpec.describe Charming::Controller do
 
       parent.key "q", :quit
 
-      expect(parent.key_bindings).to include("q" => :quit)
-      expect(child.key_bindings).not_to have_key("q")
+      expect(parent.key_bindings).to include(q: :quit)
+      expect(child.key_bindings).not_to have_key(:q)
     end
   end
 

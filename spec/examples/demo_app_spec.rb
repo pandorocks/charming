@@ -19,7 +19,7 @@ RSpec.describe "demo app example" do
 
   it "renders async loading and completed states" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: "r", char: "r"), Charming::KeyEvent.new(key: :q)]
+      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
     )
 
     Charming::Runtime.new(
@@ -36,7 +36,7 @@ RSpec.describe "demo app example" do
 
   it "advances the loading progress while the async task is running" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
-      events: [Charming::KeyEvent.new(key: "r", char: "r"), Charming::KeyEvent.new(key: :q)]
+      events: [Charming::KeyEvent.new(key: :r, char: "r"), Charming::KeyEvent.new(key: :q)]
     )
     times = [0.0, 0.0, 0.05, 0.05, 0.2, 0.2, 0.3]
 
@@ -84,7 +84,7 @@ RSpec.describe "demo app example" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
         Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: "q", char: "q"),
+        Charming::KeyEvent.new(key: :q, char: "q"),
         Charming::KeyEvent.new(key: :escape),
         Charming::KeyEvent.new(key: :q, char: "q")
       ]
@@ -100,7 +100,7 @@ RSpec.describe "demo app example" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
         Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: "t", char: "t"),
+        Charming::KeyEvent.new(key: :t, char: "t"),
         Charming::KeyEvent.new(key: :enter, char: "\n"),
         Charming::KeyEvent.new(key: :escape),
         Charming::KeyEvent.new(key: :q, char: "q")
@@ -116,13 +116,13 @@ RSpec.describe "demo app example" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
         Charming::KeyEvent.new(key: :p, char: "p"),
-        Charming::KeyEvent.new(key: "t", char: "t"),
+        Charming::KeyEvent.new(key: :t, char: "t"),
         Charming::KeyEvent.new(key: :enter, char: "\n"),
-        Charming::KeyEvent.new(key: "t", char: "t"),
-        Charming::KeyEvent.new(key: "o", char: "o"),
-        Charming::KeyEvent.new(key: "k", char: "k"),
-        Charming::KeyEvent.new(key: "y", char: "y"),
-        Charming::KeyEvent.new(key: "o", char: "o"),
+        Charming::KeyEvent.new(key: :t, char: "t"),
+        Charming::KeyEvent.new(key: :o, char: "o"),
+        Charming::KeyEvent.new(key: :k, char: "k"),
+        Charming::KeyEvent.new(key: :y, char: "y"),
+        Charming::KeyEvent.new(key: :o, char: "o"),
         Charming::KeyEvent.new(key: :enter, char: "\n"),
         Charming::KeyEvent.new(key: :q, char: "q")
       ]

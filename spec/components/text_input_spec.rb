@@ -14,7 +14,7 @@ RSpec.describe Charming::Components::TextInput do
   it "inserts printable characters at the cursor" do
     input = described_class.new(value: "ac", cursor: 1)
 
-    handled = input.handle_key(key("b", char: "b"))
+    handled = input.handle_key(key(:b, char: "b"))
 
     expect(handled).to eq(:handled)
     expect(input.value).to eq("abc")

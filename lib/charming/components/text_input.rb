@@ -5,6 +5,9 @@ module Charming
     class TextInput < Component
       include KeyboardHandler
 
+      # Maps editing keys (left/right/home/end/backspace/delete) to the instance
+      # methods they dispatch via KeyboardHandler. Each symbol key (e.g., :left)
+      # maps to a method (e.g., :move_left) that adjusts cursor position or text content.
       KEY_ACTIONS = {
         left: :move_left,
         right: :move_right,

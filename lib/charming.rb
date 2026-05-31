@@ -18,6 +18,7 @@ module Charming
   end
 
   def self.key_of(event)
-    event.respond_to?(:key) ? event.key : event
+    key = event.respond_to?(:key) ? event.key : event
+    key.to_sym
   end
 end

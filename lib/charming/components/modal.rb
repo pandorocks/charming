@@ -58,7 +58,7 @@ module Charming
       def color_vertical_borders(line)
         return line unless line.start_with?("║") && line.end_with?("║")
 
-        "#{border_style.render("║")}#{line[1...-1]}#{border_style.render("║")}"
+        border_style.render("║") + line[1...-1] + border_style.render("║")
       end
 
       def border_style

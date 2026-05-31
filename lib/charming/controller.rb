@@ -12,7 +12,7 @@ module Charming
       # Registers a key binding (string or symbol key name → method symbol).
       # When the event loop reads this key, it calls the corresponding controller action.
       def key(name, action)
-        key_bindings[name.to_s] = action
+        key_bindings[name.to_sym] = action
       end
 
       # Registers a command palette entry — visible in fuzzy search when Ctrl+K is pressed.
@@ -315,10 +315,10 @@ module Charming
       body.respond_to?(:layout_assigns) ? body.layout_assigns : {}
     end
 
-    # Extracts the key name from the current event, handling both KeyEvent objects and raw key strings.
+    # Extracts the normalized key from the current event, handling both KeyEvent objects and raw key strings.
     # Delegates to `Charming.key_of(event)` for event-to-key resolution.
     def key_name
-      Charming.key_of(event).to_s
+      Charming.key_of(event)
     end
 
     # Dispatches a key event to the currently focused component (e.g., text input, list) by calling `#handle_key` on it.
@@ -340,7 +340,7 @@ module Charming
     # Handles Tab/Shift-Tab traversal: moves focus forward or backward through the focus ring.
     # Only processes events that are actually Tab keypresses on an empty focus ring. Returns :handled when consumed.
     def dispatch_tab_traversal
-      return nil unless event.is_a?(KeyEvent) && event.key == :tab
+      return nil unless key_name == :tab
       return nil if focus.ring.empty?
 
       focus.cycle(event.shift ? -1 : +1)
@@ -375,10 +375,10 @@ module Charming
     # Escape/Tab shifts focus to content. Binds other keys to controller-specific key bindings when defined.
     def dispatch_sidebar_key
       case key_name
-      when "j", "down" then sidebar_move(+1)
-      when "k", "up" then sidebar_move(-1)
-      when "enter" then sidebar_select
-      when "escape", "tab" then focus_content
+      when :j, :down then sidebar_move(+1)
+      when :k, :up then sidebar_move(-1)
+      when :enter then sidebar_select
+      when :escape, :tab then focus_content
       else dispatch_sidebar_bound_key
       end
       response
