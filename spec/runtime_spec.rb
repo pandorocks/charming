@@ -341,7 +341,7 @@ RSpec.describe Charming::Runtime do
       events: [nil, Charming::Events::KeyEvent.new(key: :q)]
     )
 
-    described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
+    described_class.new(task_app.new, backend: backend, task_executor: Charming::Tasks::InlineExecutor).run
 
     expect(backend.frames).to eq(["Loading", "Loaded: feed"])
   end
@@ -378,7 +378,7 @@ RSpec.describe Charming::Runtime do
       events: [nil, Charming::Events::KeyEvent.new(key: :up), Charming::Events::KeyEvent.new(key: :q)]
     )
 
-    described_class.new(task_app.new, backend: backend, task_executor: Charming::TaskExecutor::Inline).run
+    described_class.new(task_app.new, backend: backend, task_executor: Charming::Tasks::InlineExecutor).run
 
     expect(backend.frames).to eq(["Loading", "Error: boom", "Key ok"])
   end

@@ -2,12 +2,12 @@
 
 require "timeout"
 
-RSpec.describe Charming::TaskExecutor do
+RSpec.describe Charming::Tasks do
   def pop_with_timeout(queue)
     Timeout.timeout(1) { queue.pop }
   end
 
-  describe Charming::TaskExecutor::Inline do
+  describe Charming::Tasks::InlineExecutor do
     it "enqueues successful task results synchronously" do
       queue = Thread::Queue.new
       executor = described_class.new(queue)
@@ -31,7 +31,7 @@ RSpec.describe Charming::TaskExecutor do
     end
   end
 
-  describe Charming::TaskExecutor::Threaded do
+  describe Charming::Tasks::ThreadedExecutor do
     it "returns nil and enqueues successful task results" do
       queue = Thread::Queue.new
       executor = described_class.new(queue)

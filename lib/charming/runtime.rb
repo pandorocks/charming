@@ -161,7 +161,7 @@ module Charming
 
     # Constructs a task executor: supports explicit instances, callable factories, or the default Threaded executor.
     def build_task_executor(task_executor)
-      return TaskExecutor::Threaded.new(@task_queue) unless task_executor
+      return Tasks::ThreadedExecutor.new(@task_queue) unless task_executor
       return task_executor if task_executor.respond_to?(:submit)
       return task_executor.call(@task_queue) if task_executor.respond_to?(:call) && !task_executor.respond_to?(:new)
 
