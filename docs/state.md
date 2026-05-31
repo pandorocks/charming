@@ -1,14 +1,14 @@
-# Models
+# State
 
-Application models hold durable app state. Controllers are created fresh per dispatch, so state that must survive key presses, timer ticks, task completions, and route renders belongs in models.
+Application state classes hold durable in-memory TUI state. Controllers are created fresh per dispatch, so state that must survive key presses, timer ticks, task completions, and route renders belongs in state objects.
 
-## ApplicationModel
+## ApplicationState
 
-Models inherit from `Charming::ApplicationModel`, which includes `ActiveModel::Model` and `ActiveModel::Attributes`:
+State classes inherit from `Charming::ApplicationState`, which includes `ActiveModel::Model` and `ActiveModel::Attributes`:
 
 ```ruby
 module MyApp
-  class HomeModel < ApplicationModel
+  class HomeState < ApplicationState
     attribute :title, :string, default: "Home"
     attribute :count, :integer, default: 0
     attribute :status, :string, default: "Ready"
@@ -28,15 +28,15 @@ Common attribute types include:
 
 ## Session-Backed State
 
-Use `Controller#model` to lazily create and cache models in the application session:
+Use `Controller#state` to lazily create and cache state objects in the application session:
 
 ```ruby
 def home
-  model(:home, HomeModel)
+  state(:home, HomeState)
 end
 ```
 
-Subsequent calls with the same name return the same model object.
+Subsequent calls with the same name return the same state object.
 
 ```ruby
 def increment
@@ -51,18 +51,18 @@ Pass initial attributes through `model`:
 
 ```ruby
 def counter
-  model(:counter, CounterModel, count: 10)
+  state(:counter, CounterState, count: 10)
 end
 ```
 
-Initial attributes are only used when the model is first created.
+Initial attributes are only used when the state object is first created.
 
 ## Validations
 
 Use normal ActiveModel validations:
 
 ```ruby
-class CounterModel < Charming::ApplicationModel
+class CounterState < Charming::ApplicationState
   attribute :count, :integer, default: 0
 
   validate :count_gte_zero

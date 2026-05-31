@@ -21,10 +21,10 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Switched testing to RSpec.
 - Added Standard Ruby formatting/linting and a default `rake` task.
 - Set Ruby floor to `>= 4.0.0`.
-- Added ActiveModel-backed application models:
-  - `Charming::ApplicationModel`
+- Added ActiveModel-backed application state:
+  - `Charming::ApplicationState`
   - typed attributes and validations via `activemodel`
-  - session-backed controller model lookup
+  - session-backed controller state lookup
 - Replaced broad `tty` dependency with explicit runtime dependencies:
   - `tty-reader`
   - `tty-cursor`
@@ -115,7 +115,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
   - `charming generate view <name>`
   - `charming generate component <name>`
 - Generated apps now include:
-  - namespaced application and home models
+  - namespaced application and home state
   - a centered home screen
   - a default command palette opened with `p`
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.

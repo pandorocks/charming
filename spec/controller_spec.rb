@@ -240,13 +240,13 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("Body")
   end
 
-  it "stores models in application session across controller instances" do
-    counter_model = Class.new(Charming::ApplicationModel) do
+  it "stores state in application session across controller instances" do
+    counter_state = Class.new(Charming::ApplicationState) do
       attribute :count, :integer, default: 0
     end
     controller = Class.new(described_class) do
       define_method(:show) do
-        counter = model(:counter, counter_model)
+        counter = state(:counter, counter_state)
         counter.count += 1
         render "Count: #{counter.count}"
       end
@@ -258,12 +258,12 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("Count: 2")
   end
 
-  it "stores separate model instances for separate keys" do
-    model_class = Class.new(Charming::ApplicationModel)
+  it "stores separate state instances for separate keys" do
+    state_class = Class.new(Charming::ApplicationState)
     controller = described_class.new(application: application)
 
-    first = controller.model(:first, model_class)
-    second = controller.model(:second, model_class)
+    first = controller.state(:first, state_class)
+    second = controller.state(:second, state_class)
 
     expect(first).not_to equal(second)
   end

@@ -199,11 +199,11 @@ module Charming
       application.session
     end
 
-    # Lazily instantiates a model class and caches it in the session under `:models`.
-    # Subsequent calls with the same name return the cached instance. Used like: model(:user, UserModel)
-    def model(name, model_class, **attributes)
-      session[:models] ||= {}
-      session[:models][name.to_sym] ||= model_class.new(**attributes)
+    # Lazily instantiates a state class and caches it in the session under `:states`.
+    # Subsequent calls with the same name return the cached instance. Used like: state(:home, HomeState)
+    def state(name, state_class, **attributes)
+      session[:states] ||= {}
+      session[:states][name.to_sym] ||= state_class.new(**attributes)
     end
 
     # Submits an async task to the application's task executor (threaded or inline).

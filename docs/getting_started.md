@@ -26,7 +26,7 @@ Generated apps use Rails-like folders:
 ```text
 app/components/
 app/controllers/
-app/models/
+app/state/
 app/views/home/show.tui.erb
 app/views/layouts/application.tui.erb
 config/routes.rb
@@ -82,7 +82,7 @@ module MyApp
     private
 
     def home
-      model(:home, HomeModel)
+      state(:home, HomeState)
     end
   end
 end
@@ -134,22 +134,22 @@ frame = row(sidebar, main, gap: 1)
 
 Read more in [Layouts](layouts.md).
 
-## Models
+## State
 
-Models store durable state:
+State classes store durable in-memory TUI state:
 
 ```ruby
 module MyApp
-  class HomeModel < ApplicationModel
+  class HomeState < ApplicationState
     attribute :title, :string, default: "Home"
     attribute :count, :integer, default: 0
   end
 end
 ```
 
-Controllers are ephemeral, so use `model(:home, HomeModel)` for state that must survive dispatches.
+Controllers are ephemeral, so use `state(:home, HomeState)` for state that must survive dispatches.
 
-Read more in [Models](models.md).
+Read more in [State](state.md).
 
 ## Components
 

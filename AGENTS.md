@@ -2,7 +2,7 @@
 
 ## Project
 
-**Charming** is a Rails-inspired terminal user interface (TUI) framework for **Ruby 4+**. It is a **bundler gem** (`charming.gemspec`) providing applications, routing, controller actions, application models, views, components, rendering, generators, and a command palette — with an internal terminal backend layered behind `MemoryBackend` and `TTYBackend`.
+**Charming** is a Rails-inspired terminal user interface (TUI) framework for **Ruby 4+**. It is a **bundler gem** (`charming.gemspec`) providing applications, routing, controller actions, application state, views, components, rendering, generators, and a command palette — with an internal terminal backend layered behind `MemoryBackend` and `TTYBackend`.
 
 ---
 
@@ -28,8 +28,8 @@ cd examples/demo_app && bundle install && bundle exec exe/demo_app
 ```
 lib/charming/             # framework source
   application.rb          # Rails-style Application class (routes, session)
-  application_model.rb    # ActiveModel::Model + Attributes
-  controller.rb           # dispatch, key/timer bindings, model(session), render/quit/navigate
+  application_state.rb    # ActiveModel::Model + Attributes
+  controller.rb           # dispatch, key/timer bindings, state(session), render/quit/navigate
   router.rb               # route drawing
   runtime.rb              # main event loop (TTY or MemoryBackend)
   screen.rb               # terminal dimensions (width, height)
@@ -66,13 +66,13 @@ examples/demo_app/        # canonical demo (generated-style, customized)
 ## Key Architecture
 
 ```
-Application → Router → Controller → ApplicationModel → View → Component → UI
+Application → Router → Controller → ApplicationState → View → Component → UI
                               Runtime → Renderer → TTY/Memory Backend
 ```
 
 - **Runtime** is the main loop: reads events from the backend, dispatches to controller (action keys, timer keys) or components, renders the response.
 - A fresh controller instance is created **per dispatch**. Never store state on the controller.
-- **Application models** are the only place for persistent state; they are stored in `session` via `Controller#model(name, klass, **attrs)`.
+- **Application state** is the only place for persistent TUI state; state objects are stored in `session` via `Controller#state(name, klass, **attrs)`.
 - **Components** inherit from `View` to reuse assign readers and helpers (`text`, `box`, `row`, `column`, `render_component`).
 
 ---
@@ -102,7 +102,7 @@ class HomeController < Charming::Controller
   timer :blink, every: 0.5, action: :toggle_spinner
 
   def show
-    render @model.name
+    render counter.name
   end
 
   def index
@@ -110,21 +110,21 @@ class HomeController < Charming::Controller
   end
 
   def increment
-    @model.value += 1
+    counter.value += 1
     show
   end
 
   private
-  def model
-    @model ||= model(:counter, CounterModel)
+  def counter
+    @counter ||= state(:counter, CounterState)
   end
 end
 ```
 
-### ApplicationModel
+### ApplicationState
 
 ```ruby
-class CounterModel < Charming::ApplicationModel
+class CounterState < Charming::ApplicationState
   attribute :value, :integer, default: 0
 end
 ```
@@ -169,7 +169,7 @@ When adding specs for a backend-dependent feature, prefer `MemoryBackend` for un
 
 ## Key Gotchas
 
-1. **Controllers are ephemeral** — the Runtime creates new instances per event. Application state must live in `ApplicationModel` objects stored in `session` via `Controller#model(...)`.
+1. **Controllers are ephemeral** — the Runtime creates new instances per event. Application state must live in `ApplicationState` objects stored in `session` via `Controller#state(...)`.
 2. **Components inherit View** — they get `assigns`, helper methods, and `render`. They do NOT have their own lifecycle separate from `View`.
 3. **`Charming.run(app)` is the entry point** — it instantiates `Runtime` with an optional backend. Tests pass `backend: MemoryBackend.new(...)` directly.
 4. **Command palette keys take priority** — an open palette intercepts key events before controller `key_bindings`.

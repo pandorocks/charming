@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-RSpec.describe DemoApp::HomeModel do
+RSpec.describe DemoApp::HomeState do
   describe "#title" do
     it "has the correct default string value" do
       instance = described_class.new

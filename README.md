@@ -2,7 +2,7 @@
 
 A Rails-inspired terminal user interface framework for **Ruby 4+**.
 
-Charming gives terminal apps familiar application structure: routes, controllers, models, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, and testable terminal backends.
+Charming gives terminal apps familiar application structure: routes, controllers, state objects, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, and testable terminal backends.
 
 ## Project Status
 
@@ -37,7 +37,7 @@ Charming can also be added to an existing Ruby project with Bundler, but the pri
 | [Routing](docs/routing.md) | `root`, `screen`, dynamic params, route titles, and route order. |
 | [Controllers & Templates](docs/controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
 | [Layouts](docs/layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
-| [Models](docs/models.md) | `ApplicationModel`, typed attributes, validations, and session-backed state. |
+| [State](docs/state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
 | [Components](docs/components.md) | Built-in components, custom components, and interaction return values. |
 | [Themes](docs/themes.md) | Theme registration, tokens, and runtime theme switching. |
 | [API Reference](docs/api.md) | Compact public API reference. |
@@ -49,7 +49,7 @@ The generator produces a Bundler gem with a Rails-like structure:
 
 ```text
 app/controllers/                         # controller actions and input bindings
-app/models/                              # persistent state models
+app/state/                               # session-backed TUI state
 app/views/home/show.tui.erb              # screen templates
 app/views/layouts/application.tui.erb    # layout template
 app/components/                          # reusable components

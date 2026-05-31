@@ -4,12 +4,12 @@ module Charming
   module Generators
     class AppGenerator
       module AppSpecTemplates
-        def spec_model
+        def spec_state
           %(# frozen_string_literal: true
 
 require "#{app_name.snake_name}"
 
-RSpec.describe #{app_name.class_name}::HomeModel do
+RSpec.describe #{app_name.class_name}::HomeState do
   describe "#title" do
     it "has the correct default string value" do
       instance = described_class.new
@@ -36,7 +36,7 @@ RSpec.describe #{app_name.class_name}::HomeController do
   subject(:controller) { described_class.new(application: application) }
 
   describe "#show" do
-    it "renders the view with the model" do
+    it "renders the view with the state" do
       response = controller.dispatch(:show)
 
       expect(response).to respond_to(:body)
@@ -53,7 +53,7 @@ require "#{app_name.snake_name}"
 
 RSpec.describe "home/show template" do
   describe "#render" do
-    it "renders the model title" do
+    it "renders the state title" do
       template = Charming::Presentation::Templates.resolve("home/show", root: #{app_name.class_name}::Application.root)
       view = Charming::Presentation::TemplateView.new(
         template: template,

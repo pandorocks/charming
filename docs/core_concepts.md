@@ -1,6 +1,6 @@
 # Core Concepts
 
-Charming is a Rails-inspired framework for terminal apps. Generated apps use routes, controllers, models, templates, layouts, components, themes, and a runtime that talks to a terminal backend.
+Charming is a Rails-inspired framework for terminal apps. Generated apps use routes, controllers, state objects, templates, layouts, components, themes, and a runtime that talks to a terminal backend.
 
 ## Architecture
 
@@ -57,7 +57,7 @@ def increment
 end
 ```
 
-Store durable state in an application model instead:
+Store durable state in an application state object instead:
 
 ```ruby
 def increment
@@ -68,11 +68,11 @@ end
 private
 
 def counter
-  model(:counter, CounterModel)
+  state(:counter, CounterState)
 end
 ```
 
-`Controller#model` stores the model in the application session and returns the same model object on later dispatches.
+`Controller#state` stores the state object in the application session and returns the same object on later dispatches.
 
 ## Templates And Layouts
 

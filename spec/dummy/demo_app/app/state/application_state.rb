@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 module DemoApp
-  class ApplicationModel < Charming::ApplicationModel
+  class ApplicationState < Charming::ApplicationState
   end
 end

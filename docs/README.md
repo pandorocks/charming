@@ -14,7 +14,7 @@ App builders:
 
 1. [Routing](routing.md)
 2. [Controllers & Templates](controllers_and_templates.md)
-3. [Models](models.md)
+3. [State](state.md)
 
 UI builders:
 
@@ -36,7 +36,7 @@ Maintainers:
 | [Routing](routing.md) | `root`, `screen`, dynamic params, route titles, and route order. |
 | [Controllers & Templates](controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
 | [Layouts](layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
-| [Models](models.md) | `ApplicationModel`, typed attributes, validations, and session-backed state. |
+| [State](state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
 | [Components](components.md) | Built-in components, custom components, and interaction return values. |
 | [Themes](themes.md) | Theme registration, tokens, and runtime theme switching. |
 | [API Reference](api.md) | Compact public API reference. |

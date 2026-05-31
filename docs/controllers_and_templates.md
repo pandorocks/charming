@@ -16,7 +16,7 @@ module MyApp
     private
 
     def home
-      model(:home, HomeModel)
+      state(:home, HomeState)
     end
   end
 end

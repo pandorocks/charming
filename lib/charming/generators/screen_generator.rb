@@ -11,10 +11,10 @@ module Charming
       end
 
       def generate
-        create_file(model_path, model)
+        create_file(state_path, state)
         create_file(controller_path, controller)
         create_file(view_path, view)
-        create_file(spec_model_path, spec_model)
+        create_file(spec_state_path, spec_state)
         create_file(spec_controller_path, spec_controller)
         create_file(spec_view_path, spec_view)
         insert_route
@@ -27,8 +27,8 @@ module Charming
         "screen"
       end
 
-      def model_path
-        File.join("app", "models", "#{name.snake_name}_model.rb")
+      def state_path
+        File.join("app", "state", "#{name.snake_name}_state.rb")
       end
 
       def controller_path
@@ -39,8 +39,8 @@ module Charming
         File.join("app", "views", name.snake_name, "show.tui.erb")
       end
 
-      def spec_model_path
-        File.join("spec", "models", "#{name.snake_name}_model_spec.rb")
+      def spec_state_path
+        File.join("spec", "state", "#{name.snake_name}_state_spec.rb")
       end
 
       def spec_controller_path
@@ -59,11 +59,11 @@ module Charming
         File.join(destination, "app", "controllers", "application_controller.rb")
       end
 
-      def model
+      def state
         %(# frozen_string_literal: true
 
 module #{app_name.class_name}
-  class #{name.class_name}Model < ApplicationModel
+  class #{name.class_name}State < ApplicationState
     attribute :title, :string, default: "#{name.class_name}"
   end
 end
@@ -91,7 +91,7 @@ end
     private
 
     def #{name.snake_name}
-      model(:#{name.snake_name}, #{name.class_name}Model)
+      state(:#{name.snake_name}, #{name.class_name}State)
     end)
       end
 

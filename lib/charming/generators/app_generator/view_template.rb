@@ -28,7 +28,7 @@ loader = Zeitwerk::Loader.new
 loader.tag = "#{name.snake_name}"
 loader.inflector.inflect("version" => "VERSION")
 loader.push_dir(File.expand_path("#{name.snake_name}", __dir__), namespace: #{name.class_name})
-loader.push_dir(File.expand_path("../app/models", __dir__), namespace: #{name.class_name})
+loader.push_dir(File.expand_path("../app/state", __dir__), namespace: #{name.class_name})
 loader.push_dir(File.expand_path("../app/components", __dir__), namespace: #{name.class_name})
 loader.push_dir(File.expand_path("../app/views", __dir__), namespace: #{name.class_name})
 loader.push_dir(File.expand_path("../app/controllers", __dir__), namespace: #{name.class_name})

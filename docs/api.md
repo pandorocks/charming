@@ -117,7 +117,7 @@ Instance APIs:
 - `navigate_to(path)` produces a navigation response.
 - `quit` produces a quit response.
 - `session` accesses the application session.
-- `model(name, model_class, **attributes)` stores or returns a session-backed model.
+- `state(name, state_class, **attributes)` stores or returns a session-backed state object.
 - `run_task(name) { ... }` submits async work.
 - `params` exposes current route params.
 - `event` exposes the current key, timer, task, resize, or mouse event.
@@ -129,14 +129,14 @@ Instance APIs:
 - `command_palette_open?` returns whether a command or theme palette is open.
 - `focus_sidebar`, `focus_content`, `sidebar_focused?`, and `content_focused?` support generated layouts.
 
-Controller instances are ephemeral. Store durable state in `ApplicationModel` objects through `model(...)`.
+Controller instances are ephemeral. Store durable state in `ApplicationState` objects through `state(...)`.
 
-## ApplicationModel
+## ApplicationState
 
-Inherit from `Charming::ApplicationModel`:
+Inherit from `Charming::ApplicationState`:
 
 ```ruby
-class CounterModel < Charming::ApplicationModel
+class CounterState < Charming::ApplicationState
   attribute :count, :integer, default: 0
 end
 ```

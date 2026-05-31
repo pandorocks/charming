@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DemoApp
-  class HomeModel < ApplicationModel
+  class HomeState < ApplicationState
     attribute :title, :string, default: "DemoApp"
     attribute :status, :string, default: "Idle"
     attribute :message, :string, default: "Tab content, then press r for async task."

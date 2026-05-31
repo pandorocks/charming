@@ -27,23 +27,23 @@ RSpec.describe Charming::CLI do
       root_file = File.read(File.join(app_root, "lib/weather_tui.rb"))
       expect(root_file).to include("loader = Zeitwerk::Loader.new")
       expect(root_file).to include('loader.inflector.inflect("version" => "VERSION")')
-      expect(root_file).to include('loader.push_dir(File.expand_path("../app/models", __dir__), namespace: WeatherTui)')
+      expect(root_file).to include('loader.push_dir(File.expand_path("../app/state", __dir__), namespace: WeatherTui)')
       expect(root_file).not_to include("Dir[File.expand_path")
       expect(File).to exist(File.join(app_root, "config/routes.rb"))
       expect(File).not_to exist(File.join(app_root, "config/themes/default.yml"))
-      expect(File).to exist(File.join(app_root, "app/models/application_model.rb"))
-      expect(File).to exist(File.join(app_root, "app/models/home_model.rb"))
+      expect(File).to exist(File.join(app_root, "app/state/application_state.rb"))
+      expect(File).to exist(File.join(app_root, "app/state/home_state.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/application_controller.rb"))
       expect(File).to exist(File.join(app_root, "app/controllers/home_controller.rb"))
       expect(File).to exist(File.join(app_root, "app/views/layouts/application.tui.erb"))
       expect(File).to exist(File.join(app_root, "app/views/home/show.tui.erb"))
-      expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('describe "#title"')
+      expect(File.read(File.join(app_root, "spec/state/home_state_spec.rb"))).to include('describe "#title"')
       expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('describe "#show"')
       expect(File.read(File.join(app_root, "spec/views/home/show_template_spec.rb"))).to include('describe "#render"')
       expect(File.read(File.join(app_root, "spec/views/home/show_template_spec.rb"))).to include(
         'expect(view.render).to include("WeatherTui")'
       )
-      expect(File.read(File.join(app_root, "spec/models/home_model_spec.rb"))).to include('require "weather_tui"')
+      expect(File.read(File.join(app_root, "spec/state/home_state_spec.rb"))).to include('require "weather_tui"')
       expect(File.read(File.join(app_root, "spec/controllers/home_controller_spec.rb"))).to include('require "weather_tui"')
       expect(File.read(File.join(app_root, "spec/views/home/show_template_spec.rb"))).to include('require "weather_tui"')
       expect(File).not_to exist(File.join(app_root, "app/components/command_palette_modal_component.rb"))
@@ -92,7 +92,7 @@ RSpec.describe Charming::CLI do
       route = WeatherTui::Application.routes.resolve("/")
       expect(route.controller_class).to eq(WeatherTui::HomeController)
       expect(route.action).to eq(:show)
-      expect(WeatherTui::HomeModel.new.title).to eq("WeatherTui")
+      expect(WeatherTui::HomeState.new.title).to eq("WeatherTui")
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
@@ -189,15 +189,15 @@ RSpec.describe Charming::CLI do
       status = described_class.new(out: output, pwd: app_root).call(%w[g screen settings])
 
       expect(status).to eq(0)
-      expect(output.string).to include("create app/models/settings_model.rb")
+      expect(output.string).to include("create app/state/settings_state.rb")
       expect(output.string).to include("create app/controllers/settings_controller.rb")
       expect(output.string).to include("create app/views/settings/show.tui.erb")
       expect(output.string).to include("insert route config/routes.rb")
       expect(output.string).to include("insert command app/controllers/application_controller.rb")
-      expect(File).to exist(File.join(app_root, "spec/models/settings_model_spec.rb"))
+      expect(File).to exist(File.join(app_root, "spec/state/settings_state_spec.rb"))
       expect(File).to exist(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))
       expect(File).to exist(File.join(app_root, "spec/views/settings/show_template_spec.rb"))
-      expect(File.read(File.join(app_root, "spec/models/settings_model_spec.rb"))).to include(
+      expect(File.read(File.join(app_root, "spec/state/settings_state_spec.rb"))).to include(
         'describe "#title"'
       )
       expect(File.read(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))).to include(
@@ -206,7 +206,7 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "spec/views/settings/show_template_spec.rb"))).to include(
         'describe "#render"'
       )
-      expect(File.read(File.join(app_root, "spec/models/settings_model_spec.rb"))).to include(
+      expect(File.read(File.join(app_root, "spec/state/settings_state_spec.rb"))).to include(
         'require "screen_tui"'
       )
       expect(File.read(File.join(app_root, "spec/controllers/settings_controller_spec.rb"))).to include(
