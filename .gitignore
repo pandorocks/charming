@@ -1,0 +1,9 @@
+/.bundle/
+/.claude/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/tmp/
+graphify-out/

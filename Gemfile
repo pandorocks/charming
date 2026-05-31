@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gemspec
+
+gem "irb"
+gem "rake", "~> 13.0"
+gem "rspec", "~> 3.13"
+gem "standard", ">= 1.35.1"
+gem "ruby-lsp"
