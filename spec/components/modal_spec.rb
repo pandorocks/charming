@@ -7,14 +7,14 @@ RSpec.describe Charming::Components::Modal do
     expect(modal.render).to include("Title")
     expect(modal.render).to include("Help")
     expect(modal.render).to include("Body")
-    expect(modal.render).to include("╔")
+    expect(modal.render).to include("╭")
   end
 
-  it "styles the default border without coloring plain content" do
+  it "styles the default border without coloring body content as border" do
     modal = described_class.new(content: "Body", width: 20)
 
-    expect(modal.render).to include("\e[95m╔")
-    expect(modal.render).not_to include("\e[95mBody")
+    expect(modal.render).to include("\e[38;2;255;179;71;48;2;17;26;44m╭")
+    expect(modal.render).not_to include("\e[38;2;255;179;71;48;2;17;26;44mBody")
   end
 
   it "renders component content" do

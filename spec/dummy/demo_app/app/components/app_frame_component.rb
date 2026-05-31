@@ -11,7 +11,7 @@ module DemoApp
     private
 
     def title_line
-      text title, style: theme.primary.bold
+      text title, style: theme.title
     end
 
     def help_line
@@ -44,9 +44,9 @@ module DemoApp
     end
 
     def status_style
-      return theme.warning if status == "Loading"
-      return theme.danger if status == "Error"
-      return theme.success if status == "Loaded"
+      return theme.warn if status == "Loading"
+      return theme.warn if status == "Error"
+      return theme.info if status == "Loaded"
 
       theme.muted
     end

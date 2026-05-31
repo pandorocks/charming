@@ -47,7 +47,7 @@ module #{name.class_name}
       theme theme_name.to_sym, built_in: theme_name
     end
 
-    default_theme :opencode
+    default_theme :phosphor
   end
 end
 )

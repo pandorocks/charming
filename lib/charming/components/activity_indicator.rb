@@ -13,7 +13,7 @@ module Charming
       DEFAULT_CHARS = "0123456789abcdefABCDEF~!@#$%^&*+=_".chars.freeze
 
       # The default two-color gradient applied across the bar width (red to blue).
-      DEFAULT_GRADIENT = ["#ff0000", "#0000ff"].freeze
+      DEFAULT_GRADIENT = ["#ff0000", "#6FD0E3"].freeze
 
       # The default label color for ellipsis and text portions when no custom
       # label_style is provided.

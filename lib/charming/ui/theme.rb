@@ -5,46 +5,42 @@ require "json"
 module Charming
   module UI
     class Theme
-      BUILT_IN_ROOT = File.expand_path("themes/opencode", __dir__)
+      BUILT_IN_ROOT = File.expand_path("themes", __dir__)
 
       DEFAULT_TOKENS = {
-        primary: {foreground: :bright_cyan},
+        text: {foreground: :bright_white},
+        title: {foreground: :bright_cyan, bold: true},
         muted: {foreground: :bright_black},
         border: {foreground: :bright_magenta},
-        selection: {reverse: true},
-        danger: {foreground: :red},
-        success: {foreground: :green},
-        warning: {foreground: :yellow}
+        selected: {reverse: true},
+        info: {foreground: :bright_cyan},
+        warn: {foreground: :yellow}
       }.freeze
 
       def self.default
-        @default ||= new(DEFAULT_TOKENS)
+        @default ||= load_builtin("phosphor")
       end
 
-      def self.load_file(path, variant: :dark)
-        from_opencode(JSON.parse(File.read(path)), variant: variant)
+      def self.load_file(path)
+        from_hash(JSON.parse(File.read(path)))
       end
 
-      def self.load_builtin(name, variant: :dark)
-        load_file(built_in_path(name), variant: variant)
+      def self.load_builtin(name)
+        load_file(built_in_path(name))
       end
 
       def self.built_in_names
         Dir.glob(File.join(BUILT_IN_ROOT, "*.json")).map { |path| File.basename(path, ".json") }.sort
       end
 
-      def self.from_opencode(value, variant: :dark)
+      def self.from_hash(value)
         raise ArgumentError, "theme file must contain an object" unless value.is_a?(Hash)
 
-        selected = value.fetch(variant.to_s) do
-          raise ArgumentError, "unknown theme variant: #{variant.inspect}"
+        styles = value.fetch("styles") do
+          raise ArgumentError, "theme file must contain styles"
         end
-        palette = selected.fetch("palette") do
-          raise ArgumentError, "theme variant must contain a palette"
-        end
-        overrides = selected.fetch("overrides", {})
 
-        new(opencode_tokens(palette, overrides))
+        new(resolve_palette_references(styles, value.fetch("palette", {})))
       end
 
       def self.built_in_path(name)
@@ -54,33 +50,22 @@ module Charming
         File.join(BUILT_IN_ROOT, "#{slug}.json")
       end
 
-      def self.opencode_tokens(palette, overrides)
+      def self.resolve_palette_references(styles, palette)
         palette = normalize_colors(palette)
-        overrides = normalize_colors(overrides)
-        primary = palette.fetch("primary")
-        neutral = palette.fetch("neutral")
-        ink = palette.fetch("ink")
-        success = palette.fetch("success")
-        warning = palette.fetch("warning")
-        error = palette.fetch("error")
-        info = palette.fetch("info")
+        deep_resolve_colors(styles, palette)
+      end
 
-        {
-          text: ink,
-          background: {background: neutral},
-          primary: primary,
-          muted: overrides["text-weak"] || overrides["syntax-comment"] || ink,
-          border: palette["accent"] || primary,
-          selection: {foreground: neutral, background: primary},
-          danger: error,
-          error: error,
-          success: success,
-          warning: warning,
-          info: info,
-          accent: palette["accent"] || primary,
-          diff_add: palette["diffAdd"] || success,
-          diff_delete: palette["diffDelete"] || error
-        }
+      def self.deep_resolve_colors(value, palette)
+        case value
+        when Hash
+          value.transform_values { |item| deep_resolve_colors(item, palette) }
+        when Array
+          value.map { |item| deep_resolve_colors(item, palette) }
+        when String
+          palette.fetch(value, normalize_color(value) || value)
+        else
+          value
+        end
       end
 
       def self.normalize_colors(values)
@@ -152,11 +137,22 @@ module Charming
       def apply_layout(base_style, spec)
         styled = base_style
         styled = styled.padding(*Array(spec[:padding])) if spec.key?(:padding)
-        styled = styled.border(spec[:border]) if spec.key?(:border)
+        styled = apply_border(styled, spec[:border]) if spec.key?(:border)
         styled = styled.width(spec[:width]) if spec.key?(:width)
         styled = styled.height(spec[:height]) if spec.key?(:height)
         styled = styled.align(spec[:align].to_sym) if spec.key?(:align)
         styled
+      end
+
+      def apply_border(base_style, border_spec)
+        return base_style.border(border_spec) unless border_spec.is_a?(Hash)
+
+        border_spec = symbolize_keys(border_spec)
+        base_style.border(
+          border_spec.fetch(:style, :normal),
+          sides: border_spec[:sides],
+          foreground: border_spec[:foreground] || border_spec[:fg]
+        )
       end
 
       def symbolize_keys(value)

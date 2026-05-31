@@ -67,10 +67,13 @@ RSpec.describe Charming::CLI do
         "def content_focused?"
       )
       expect(File.read(File.join(app_root, "app/views/layouts/application.rb"))).to include(
-        "base = content_focused? ? theme.primary : style"
+        "base = content_focused? ? theme.title : theme.border"
       )
       expect(File.read(File.join(app_root, "lib/weather_tui/application.rb"))).to include(
         "Charming::UI::Theme.built_in_names.each do |theme_name|"
+      )
+      expect(File.read(File.join(app_root, "lib/weather_tui/application.rb"))).to include(
+        "default_theme :phosphor"
       )
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
         'command "Theme", :open_theme_palette'
@@ -102,11 +105,6 @@ RSpec.describe Charming::CLI do
           Charming::KeyEvent.new(key: :p, char: "p"),
           Charming::KeyEvent.new(key: :t, char: "t"),
           Charming::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::KeyEvent.new(key: :t, char: "t"),
-          Charming::KeyEvent.new(key: :o, char: "o"),
-          Charming::KeyEvent.new(key: :k, char: "k"),
-          Charming::KeyEvent.new(key: :y, char: "y"),
-          Charming::KeyEvent.new(key: :o, char: "o"),
           Charming::KeyEvent.new(key: :enter, char: "\n"),
           Charming::KeyEvent.new(key: :q, char: "q")
         ],
@@ -115,7 +113,7 @@ RSpec.describe Charming::CLI do
       )
       Charming::Runtime.new(WeatherTui::Application.new, backend: theme_backend).run
       expect(theme_backend.frames.join("\n")).to include("Search themes")
-      expect(theme_backend.frames.last).to include("\e[38;2;122;162;247m")
+      expect(theme_backend.frames.last).to include("\e[1;38;2;255;179;71;48;2;17;26;44m")
     end
   end
 

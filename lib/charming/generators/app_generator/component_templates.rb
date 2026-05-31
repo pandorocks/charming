@@ -23,7 +23,7 @@ end
     private
 
     def title_line
-      text title, style: theme.primary.bold
+      text title, style: theme.title
     end
 
     def help_line

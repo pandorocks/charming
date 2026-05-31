@@ -9,10 +9,14 @@ RSpec.describe Charming::Components::CommandPalette do
     described_class::Command.new(label: label, value: value)
   end
 
+  def selected(value)
+    "\e[1;38;2;159;232;176;48;2;24;35;61m#{value}\e[0m"
+  end
+
   it "renders the search input and command list" do
     palette = described_class.new(commands: [command("Open File"), command("Quit")])
 
-    expect(palette.render).to eq("|Search commands\n\e[7m> Open File\e[0m\n  Quit")
+    expect(palette.render).to eq("|Search commands\n#{selected("> Open File")}\n  Quit")
   end
 
   it "filters commands as the user types" do
@@ -20,7 +24,7 @@ RSpec.describe Charming::Components::CommandPalette do
 
     expect(palette.handle_key(key(:q, char: "q"))).to eq(:handled)
 
-    expect(palette.render).to eq("q|\n\e[7m> Quit\e[0m")
+    expect(palette.render).to eq("q|\n#{selected("> Quit")}")
     expect(palette.selected_command.label).to eq("Quit")
   end
 
@@ -57,7 +61,7 @@ RSpec.describe Charming::Components::CommandPalette do
       selected_index: 0
     )
 
-    expect(palette.render).to eq("q|u\n\e[7m> Quit\e[0m")
+    expect(palette.render).to eq("q|u\n#{selected("> Quit")}")
     expect(palette.selected_command.label).to eq("Quit")
   end
 

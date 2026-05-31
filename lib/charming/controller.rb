@@ -429,7 +429,8 @@ module Charming
         height: height,
         value: state.fetch(:value),
         cursor: state.fetch(:cursor),
-        selected_index: state.fetch(:selected_index)
+        selected_index: state.fetch(:selected_index),
+        theme: theme
       )
     end
 

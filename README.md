@@ -162,7 +162,7 @@ end
 
 ## Themes
 
-Applications can register named themes from bundled opencode-compatible JSON themes:
+Applications can register named themes from bundled Charming JSON themes:
 
 ```ruby
 class Application < Charming::Application
@@ -170,7 +170,7 @@ class Application < Charming::Application
     theme theme_name.to_sym, built_in: theme_name
   end
 
-  default_theme :opencode
+  default_theme :phosphor
 end
 ```
 
@@ -180,7 +180,7 @@ Controllers can expose a nested theme picker in the command palette:
 command "Theme", :open_theme_palette
 ```
 
-Themes can also be loaded from an opencode-format JSON file:
+Themes can also be loaded from a Charming theme JSON file:
 
 ```ruby
 theme :custom, from: "config/themes/custom.json"
@@ -189,11 +189,11 @@ theme :custom, from: "config/themes/custom.json"
 Views and components use semantic tokens instead of hardcoded colors:
 
 ```ruby
-text "Title", style: theme.primary.bold
+text "Title", style: theme.title
 text "Help", style: theme.muted
 ```
 
-Bundled theme JSON files are vendored from opencode under the MIT license.
+Charming ships with the Phosphor TUI theme.
 
 ## Example App
 

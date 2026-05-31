@@ -1,0 +1,99 @@
+{
+  "name": "Phosphor",
+  "id": "phosphor",
+  "palette": {
+    "bright": "#9FE8B0",
+    "muted": "#5A8A68",
+    "subtle": "#788E80",
+    "background": "#111A2C",
+    "selected": "#18233D",
+    "divider": "#2A3752",
+    "amber": "#FFB347",
+    "cyan": "#6FD0E3"
+  },
+  "styles": {
+    "text": {
+      "foreground": "bright",
+      "background": "background"
+    },
+    "muted": {
+      "foreground": "muted",
+      "background": "background"
+    },
+    "title": {
+      "foreground": "amber",
+      "background": "background",
+      "bold": true
+    },
+    "selected": {
+      "foreground": "bright",
+      "background": "selected",
+      "bold": true
+    },
+    "header": {
+      "foreground": "bright",
+      "background": "background",
+      "border": {
+        "style": "normal",
+        "sides": ["bottom"],
+        "foreground": "divider"
+      },
+      "padding": [0, 1]
+    },
+    "header_accent": {
+      "foreground": "amber",
+      "background": "background",
+      "bold": true
+    },
+    "sidebar": {
+      "background": "background",
+      "border": {
+        "style": "normal",
+        "sides": ["right"],
+        "foreground": "divider"
+      },
+      "padding": [1, 1]
+    },
+    "main": {
+      "foreground": "bright",
+      "background": "background",
+      "padding": [1, 2]
+    },
+    "footer": {
+      "foreground": "subtle",
+      "background": "background",
+      "border": {
+        "style": "normal",
+        "sides": ["top"],
+        "foreground": "divider"
+      },
+      "padding": [0, 1]
+    },
+    "modal": {
+      "foreground": "bright",
+      "background": "background",
+      "border": {
+        "style": "rounded",
+        "foreground": "amber"
+      },
+      "padding": [1, 2]
+    },
+    "palette_accent": {
+      "foreground": "amber",
+      "background": "background",
+      "bold": true
+    },
+    "border": {
+      "foreground": "divider",
+      "background": "background"
+    },
+    "info": {
+      "foreground": "cyan",
+      "background": "background"
+    },
+    "warn": {
+      "foreground": "amber",
+      "background": "background"
+    }
+  }
+}

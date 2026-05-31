@@ -51,7 +51,7 @@ end
           %(
 
       def app_title
-        text "#{name.class_name}", style: style.bold.align(:center).width(sidebar_width)
+        text "#{name.class_name}", style: theme.header_accent.align(:center).width(sidebar_width)
       end
 
       def navigation
@@ -71,8 +71,8 @@ end
       end
 
       def nav_style(route, index)
-        return theme.primary.bold if sidebar_focused? && index == sidebar_index
-        return theme.primary if current_route?(route)
+        return theme.selected if sidebar_focused? && index == sidebar_index
+        return theme.title if current_route?(route)
 
         theme.muted
       end
@@ -121,13 +121,13 @@ end
         def layout_frame_style_helpers
           %(
       def sidebar_style
-        base = sidebar_focused? ? theme.primary : style
+        base = sidebar_focused? ? theme.title : theme.border
         base = base.border(:rounded).padding(1, 2).width(sidebar_width).height(panel_height)
         palette ? base.faint : base
       end
 
       def main_content_style
-        base = content_focused? ? theme.primary : style
+        base = content_focused? ? theme.title : theme.border
         base = base.border(:rounded).padding(1, 2).width(main_content_width).height(panel_height)
         palette ? base.faint : base
       end)

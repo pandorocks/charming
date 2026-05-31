@@ -59,8 +59,8 @@ module Charming
         with(padding: expand_box_values(values))
       end
 
-      def border(style = :normal)
-        with(border: style)
+      def border(style = :normal, sides: nil, foreground: nil)
+        with(border: style, border_sides: sides, border_foreground: foreground)
       end
 
       def width(value)
@@ -123,23 +123,48 @@ module Charming
         return lines unless border_name
 
         border = Border.fetch(border_name)
+        sides = Array(@options[:border_sides] || %i[top right bottom left]).map(&:to_sym)
         width = lines.map { |line| Width.measure(line) }.max || 0
         horizontal = border.horizontal * width
-        body = lines.map { |line| border_line(line, width, border) }
+        body = lines.map { |line| border_line(line, width, border, sides) }
 
-        [
-          "#{border.top_left}#{horizontal}#{border.top_right}",
-          *body,
-          "#{border.bottom_left}#{horizontal}#{border.bottom_right}"
-        ]
+        [top_border(border, horizontal, sides), *body, bottom_border(border, horizontal, sides)].compact
       end
 
       def pad_line(line, inner_width, left, right)
         (" " * left) + line + (" " * (inner_width - Width.measure(line) + right))
       end
 
-      def border_line(line, width, border)
-        "#{border.vertical}#{line}#{" " * (width - Width.measure(line))}#{border.vertical}"
+      def border_line(line, width, border, sides)
+        left = sides.include?(:left) ? render_border(border.vertical) : ""
+        right = sides.include?(:right) ? render_border(border.vertical) : ""
+
+        "#{left}#{line}#{" " * (width - Width.measure(line))}#{right}"
+      end
+
+      def top_border(border, horizontal, sides)
+        return unless sides.include?(:top)
+        return render_border(horizontal) unless full_horizontal_border?(sides)
+
+        render_border("#{border.top_left}#{horizontal}#{border.top_right}")
+      end
+
+      def bottom_border(border, horizontal, sides)
+        return unless sides.include?(:bottom)
+        return render_border(horizontal) unless full_horizontal_border?(sides)
+
+        render_border("#{border.bottom_left}#{horizontal}#{border.bottom_right}")
+      end
+
+      def full_horizontal_border?(sides)
+        sides.include?(:left) && sides.include?(:right)
+      end
+
+      def render_border(value)
+        border_foreground = @options[:border_foreground]
+        return value unless border_foreground
+
+        Style.new(foreground: border_foreground, background: @options[:background]).render(value)
       end
 
       def apply_ansi(value)

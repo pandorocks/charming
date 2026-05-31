@@ -17,8 +17,8 @@ module Charming
 
       attr_reader :items, :selected_index
 
-      def initialize(items:, selected_index: 0, height: nil, label: nil)
-        super()
+      def initialize(items:, selected_index: 0, height: nil, label: nil, theme: nil)
+        super(theme: theme)
         @items = items
         @selected_index = selected_index
         @height = height
@@ -93,7 +93,7 @@ module Charming
       def render_item(item, index)
         prefix = (index == selected_index) ? "> " : "  "
         rendered = "#{prefix}#{@label.call(item)}"
-        (index == selected_index) ? style.reverse.render(rendered) : rendered
+        (index == selected_index) ? theme.selected.render(rendered) : rendered
       end
 
       def clamp_position

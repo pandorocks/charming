@@ -28,14 +28,14 @@ module Charming
         @root = File.expand_path(path)
       end
 
-      def theme(name, from: nil, built_in: nil, variant: :dark)
+      def theme(name, from: nil, built_in: nil)
         raise ArgumentError, "theme expects from: or built_in:" unless from || built_in
         raise ArgumentError, "theme expects either from: or built_in:, not both" if from && built_in
 
         themes[name.to_sym] = if built_in
-          UI::Theme.load_builtin(built_in, variant: variant)
+          UI::Theme.load_builtin(built_in)
         else
-          UI::Theme.load_file(resolve_theme_path(from), variant: variant)
+          UI::Theme.load_file(resolve_theme_path(from))
         end
       end
 

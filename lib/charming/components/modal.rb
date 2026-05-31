@@ -13,8 +13,7 @@ module Charming
       end
 
       def render
-        rendered = box(column(*lines, gap: 1), style: modal_style)
-        @style ? rendered : color_border(rendered)
+        box(column(*lines, gap: 1), style: modal_style)
       end
 
       private
@@ -26,7 +25,7 @@ module Charming
       end
 
       def title_line
-        text(title, style: style.bold.align(:center).width(title_width)) if title
+        text(title, style: theme.title.align(:center).width(title_width)) if title
       end
 
       def help_line
@@ -38,31 +37,11 @@ module Charming
       end
 
       def modal_style
-        @style || style.border(:double).padding(1, 3).width(width)
+        @style || theme.modal.width(width)
       end
 
       def title_width
         [width - 8, 0].max
-      end
-
-      def color_border(value)
-        value.lines(chomp: true).map.with_index do |line, index|
-          border_line?(index, value) ? border_style.render(line) : color_vertical_borders(line)
-        end.join("\n")
-      end
-
-      def border_line?(index, value)
-        index.zero? || index == value.lines.count - 1
-      end
-
-      def color_vertical_borders(line)
-        return line unless line.start_with?("║") && line.end_with?("║")
-
-        border_style.render("║") + line[1...-1] + border_style.render("║")
-      end
-
-      def border_style
-        theme.border
       end
     end
   end

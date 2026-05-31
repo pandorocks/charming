@@ -103,7 +103,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Added layout, partial, and theme support:
   - controller layouts
   - class-based partial rendering
-  - bundled opencode-compatible JSON themes
+  - bundled Phosphor TUI theme
 - Added namespaced route resolution for generated apps.
 - Added dynamic route parameters:
   - routes such as `/users/:id`

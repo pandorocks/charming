@@ -59,20 +59,20 @@ RSpec.describe Charming::Components::List do
   it "renders the selected item highlighted" do
     list = described_class.new(items: %w[Open Quit])
 
-    expect(list.render).to eq("\e[7m> Open\e[0m\n  Quit")
+    expect(list.render).to eq("\e[1;38;2;159;232;176;48;2;24;35;61m> Open\e[0m\n  Quit")
   end
 
   it "supports custom item labels" do
     command = Struct.new(:name)
     list = described_class.new(items: [command.new("Open File")], label: :name.to_proc)
 
-    expect(list.render).to eq("\e[7m> Open File\e[0m")
+    expect(list.render).to eq("\e[1;38;2;159;232;176;48;2;24;35;61m> Open File\e[0m")
   end
 
   it "renders a viewport around the selected item" do
     list = described_class.new(items: %w[One Two Three Four], selected_index: 2, height: 2)
 
-    expect(list.render).to eq("  Two\n\e[7m> Three\e[0m")
+    expect(list.render).to eq("  Two\n\e[1;38;2;159;232;176;48;2;24;35;61m> Three\e[0m")
   end
 
   it "handles mouse click selection within viewport" do

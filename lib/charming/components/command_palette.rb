@@ -18,8 +18,8 @@ module Charming
       # parameters for building the underlying TextInput (placeholder text, cursor
       # position, value) and List (display height, initial selection). Returns void;
       # the state is later serializable via +state+ for session persistence.
-      def initialize(commands:, placeholder: "Search commands", height: nil, value: "", cursor: nil, selected_index: 0)
-        super()
+      def initialize(commands:, placeholder: "Search commands", height: nil, value: "", cursor: nil, selected_index: 0, theme: nil)
+        super(theme: theme)
         @commands = commands
         @height = height
         @input = TextInput.new(value: value, placeholder: placeholder, cursor: cursor)
@@ -101,7 +101,7 @@ module Charming
       # Builds a new List from the currently filtered commands at the given selected_index height and label extractor.
       # The +selected_index+ parameter defaults to the last known value in +list+ to preserve scroll position across rebuilds.
       def build_list(selected_index: list&.selected_index || 0)
-        List.new(items: filtered_commands, selected_index: selected_index, height: height, label: :label.to_proc)
+        List.new(items: filtered_commands, selected_index: selected_index, height: height, label: :label.to_proc, theme: theme)
       end
 
       # Returns the full commands array when input value is empty; otherwise a subset whose labels match case-insensitively
