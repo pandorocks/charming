@@ -2,6 +2,8 @@
 
 This is a compact reference for Charming's current public API. Prefer these APIs in app code. Classes under `Charming::Internal` are runtime internals and are documented mainly for testing.
 
+For tutorial-style explanations, see [Getting Started](getting_started.md). For topic guides, see the [docs index](README.md).
+
 ## Application
 
 Inherit from `Charming::Application`:

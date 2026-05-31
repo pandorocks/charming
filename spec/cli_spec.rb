@@ -14,6 +14,8 @@ RSpec.describe Charming::CLI do
       app_root = File.join(dir, "weather_tui")
       expect(status).to eq(0)
       expect(output.string).to include("create exe/weather_tui")
+      expect(output.string).to include("init git")
+      expect(File).to exist(File.join(app_root, ".git"))
       expect(File.executable?(File.join(app_root, "exe/weather_tui"))).to be(true)
       expect(File).to exist(File.join(app_root, "weather_tui.gemspec"))
       expect(File.read(File.join(app_root, "weather_tui.gemspec"))).to include(

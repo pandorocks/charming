@@ -45,6 +45,7 @@ module Charming
         FILE_TEMPLATES.each do |path, template|
           create_file(file_path(path), send(template), executable: template == :executable)
         end
+        initialize_git_repository
       end
 
       private
@@ -70,6 +71,14 @@ end
 
 require "#{name.snake_name}"
 )
+      end
+
+      def initialize_git_repository
+        unless system("git", "init", chdir: destination, out: File::NULL, err: File::NULL)
+          raise Error, "Could not initialize git repository"
+        end
+
+        out.puts "init git"
       end
     end
   end
