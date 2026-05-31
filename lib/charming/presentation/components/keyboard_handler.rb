@@ -10,13 +10,47 @@ module Charming
       # looks up the corresponding action in KEY_ACTIONS, sends that method on self, and returns :handled if an
       # action was found. Returns nil (via :handled being truthy or not) when no matching key exists.
       module KeyboardHandler
+        VIM_KEYMAP = {
+          up: :k,
+          down: :j,
+          left: :h,
+          right: :l
+        }.freeze
+
         def handle_key(event)
           key = Charming.key_of(event)
-          action = self.class.const_get(:KEY_ACTIONS)[key]
+          action = key_actions[key]
           return unless action
 
           send(action)
           :handled
+        end
+
+        private
+
+        def key_actions
+          base_key_actions.merge(normalized_keymap)
+        end
+
+        def base_key_actions
+          self.class.const_get(:KEY_ACTIONS)
+        end
+
+        def normalized_keymap
+          resolved_keymap.each_with_object({}) do |(action_key, keys), actions|
+            action = base_key_actions[action_key.to_sym]
+            next unless action
+
+            Array(keys).each { |key| actions[key.to_sym] = action }
+          end
+        end
+
+        def resolved_keymap
+          case @keymap
+          when :vim then VIM_KEYMAP
+          when nil then {}
+          else @keymap
+          end
         end
       end
     end

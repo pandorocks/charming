@@ -18,12 +18,13 @@ module Charming
 
         attr_reader :items, :selected_index
 
-        def initialize(items:, selected_index: 0, height: nil, label: nil, theme: nil)
+        def initialize(items:, selected_index: 0, height: nil, label: nil, theme: nil, keymap: :vim)
           super(theme: theme)
           @items = items
           @selected_index = selected_index
           @height = height
           @label = label || :to_s.to_proc
+          @keymap = keymap
           clamp_position
         end
 
@@ -80,15 +81,11 @@ module Charming
         def viewport_start
           return 0 unless @height
 
-          (selected_index - @height + 1).clamp(0, max_viewport_start)
+          Layout.selected_window_start(selected_index: selected_index, item_count: items.length, window_size: @height)
         end
 
         def viewport_height
           @height || items.length
-        end
-
-        def max_viewport_start
-          [items.length - @height, 0].max
         end
 
         def render_item(item, index)

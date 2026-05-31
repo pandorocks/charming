@@ -19,11 +19,12 @@ module Charming
 
         attr_reader :header, :rows, :selected_index
 
-        def initialize(header:, rows: [], selected_index: 0)
+        def initialize(header:, rows: [], selected_index: 0, keymap: :vim)
           super()
           @header = Array(header).map(&:to_s)
           @rows = Array(rows)
           @selected_index = clamp_index(selected_index)
+          @keymap = keymap
         end
 
         def handle_key(event)

@@ -4,5 +4,9 @@ module Charming
   # Screen represents the terminal viewport dimensions as a simple Data class.
   # The `width` and `height` values flow from the backend through the runtime
   # loop into every controller dispatch for layout calculations.
-  Screen = Data.define(:width, :height)
+  Screen = Data.define(:width, :height) do
+    def narrow?(below:, min_height: nil)
+      width < below && (min_height.nil? || height >= min_height)
+    end
+  end
 end

@@ -22,7 +22,7 @@ module Charming
 
         attr_reader :offset, :column
 
-        def initialize(content:, width: nil, height: nil, offset: 0, column: 0, wrap: false)
+        def initialize(content:, width: nil, height: nil, offset: 0, column: 0, wrap: false, keymap: :vim)
           super()
           @content = content
           @width = width
@@ -30,6 +30,7 @@ module Charming
           @offset = offset
           @column = column
           @wrap = wrap
+          @keymap = keymap
           clamp_position
         end
 

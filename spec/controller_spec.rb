@@ -41,6 +41,55 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("Count: 1")
   end
 
+  it "auto-renders the configured action when an action produces no response" do
+    controller = Class.new(described_class) do
+      auto_render :show
+
+      def show
+        render "Count: #{session[:count]}"
+      end
+
+      def increment
+        session[:count] = 1
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:increment)
+
+    expect(response.body).to eq("Count: 1")
+  end
+
+  it "does not auto-render the configured render action into itself" do
+    controller = Class.new(described_class) do
+      auto_render :show
+
+      def show
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("")
+  end
+
+  it "inherits auto-render actions" do
+    parent = Class.new(described_class) do
+      auto_render :show
+    end
+    child = Class.new(parent) do
+      def show
+        render "Rendered"
+      end
+
+      def update
+      end
+    end
+
+    response = child.new(application: application).dispatch(:update)
+
+    expect(response.body).to eq("Rendered")
+  end
+
   it "returns a quit response from controller actions" do
     response = ControllerSpecController.new(
       application: application,
@@ -941,6 +990,45 @@ RSpec.describe Charming::Controller do
 
       expect(response).to be_navigate
       expect(controller_class.new(application: app).focus.current).to eq(:content)
+    end
+
+    it "uses the active route when computing the current sidebar index" do
+      controller_class = Class.new(described_class) do
+        def show = render("show")
+        def settings = render("settings")
+      end
+      stub_const("RouteAwareSidebarController", controller_class)
+      app_class = Class.new(Charming::Application)
+      app_class.routes do
+        root "route_aware_sidebar#show"
+        screen "/settings", to: "route_aware_sidebar#settings"
+      end
+      route = app_class.routes.resolve("/settings")
+
+      controller = controller_class.new(application: app_class.new, route: route)
+
+      expect(controller.sidebar_index).to eq(1)
+      expect(controller.current_route?(route)).to be(true)
+    end
+
+    it "allows controllers to override sidebar routes" do
+      controller_class = Class.new(described_class) do
+        def show = render("show")
+
+        def sidebar_routes
+          application.routes.all.last(1)
+        end
+      end
+      stub_const("CustomSidebarRoutesController", controller_class)
+      app_class = Class.new(Charming::Application)
+      app_class.routes do
+        root "custom_sidebar_routes#show"
+        screen "/other", to: "custom_sidebar_routes#show"
+      end
+
+      controller = controller_class.new(application: app_class.new)
+
+      expect(controller.sidebar_routes.map(&:path)).to eq(["/other"])
     end
 
     it "preserves session focus fallback when no focus_ring slot is declared" do

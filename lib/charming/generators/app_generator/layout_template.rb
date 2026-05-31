@@ -10,14 +10,15 @@ palette_component = assigns.fetch(:palette, nil)
 sidebar_focused = controller.sidebar_focused?
 content_focused = controller.content_focused?
 sidebar_index = controller.sidebar_index
-narrow = screen.width < 72 && screen.height >= 20
-sidebar_width = narrow ? [screen.width - 6, 20].max : 22
-main_content_width = narrow ? [screen.width - 6, 20].max : [screen.width - sidebar_width - 13, 20].max
-panel_height = narrow ? nil : [screen.height - 4, 5].max
+narrow = screen.narrow?(below: 72, min_height: 20)
+layout = Charming::Presentation::Layout
+sidebar_width = narrow ? layout.available_width(screen, reserved: 6, min: 20) : 22
+main_content_width = narrow ? layout.available_width(screen, reserved: 6, min: 20) : layout.clamp_size(screen.width - sidebar_width - 13, min: 20)
+panel_height = narrow ? nil : layout.available_height(screen, reserved: 4, min: 5)
 
 app_title = text "#{name.class_name}", style: theme.header_accent.align(:center).width(sidebar_width)
-nav_items = controller.application.routes.all.each_with_index.map do |route, index|
-  current_route = route.controller_class == controller.class && route.action == :show
+nav_items = controller.sidebar_routes.each_with_index.map do |route, index|
+  current_route = controller.current_route?(route)
   cursor = sidebar_focused && index == sidebar_index ? ">" : " "
   active = current_route ? "●" : " "
   item_style = if sidebar_focused && index == sidebar_index
@@ -43,7 +44,7 @@ main_content_style = main_content_style.faint if palette_component
 
 sidebar = box(column(app_title, navigation, shortcuts, gap: 1), style: sidebar_style)
 main_content = box(yield_content, style: main_content_style)
-app_frame = narrow ? column(sidebar, main_content, gap: 1) : row(sidebar, main_content, gap: 1)
+app_frame = layout.stack_or_row(sidebar, main_content, narrow: narrow, gap: 1)
 body = Charming::Presentation::UI.place(app_frame, width: screen.width, height: screen.height)
 
 if palette_component

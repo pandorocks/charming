@@ -69,6 +69,15 @@ RSpec.describe Charming::Presentation::Components::Table do
       expect(table.selected_index).to eq(1)
     end
 
+    it "supports vim navigation keys by default" do
+      table = described_class.new(header: %w[Name Age], rows: %w[a b c])
+
+      expect(table.handle_key(key(:j))).to eq(:handled)
+      table.handle_key(key(:k))
+
+      expect(table.selected_index).to eq(0)
+    end
+
     it "clamps at the top boundary" do
       table = described_class.new(header: %w[Name Age], rows: %w[a b c])
 

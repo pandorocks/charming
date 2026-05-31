@@ -35,6 +35,19 @@ module Charming
         task_bindings[name.to_sym] = TaskBinding.new(name: name.to_sym, action: action)
       end
 
+      # Re-renders the given action after dispatched actions that do not set a response.
+      # This is opt-in so existing controllers keep explicit render semantics.
+      def auto_render(action = :show)
+        @auto_render_action = action.to_sym
+      end
+
+      def auto_render_action
+        return @auto_render_action if instance_variable_defined?(:@auto_render_action)
+        return superclass.auto_render_action if superclass.respond_to?(:auto_render_action)
+
+        nil
+      end
+
       # Sets the layout class to wrap this controller's rendered output (e.g., for sidebar + main content).
       # Accepts a special `:__charming_layout_reader__` sentinel to query — without setting — the current layout.
       def layout(layout_class = :__charming_layout_reader__)
@@ -100,15 +113,16 @@ module Charming
       end
     end
 
-    attr_reader :application, :event, :params, :screen
+    attr_reader :application, :event, :params, :screen, :route
 
     # Initializes the controller with its parent application and an optional event (key/mouse/timer/task data).
     # Defaults to a 80x24 screen when no backend size is available.
-    def initialize(application:, event: nil, params: {}, screen: nil)
+    def initialize(application:, event: nil, params: {}, screen: nil, route: nil)
       @application = application
       @event = event
       @params = params
       @screen = screen || Screen.new(width: 80, height: 24)
+      @route = route
       @response = nil
     end
 
@@ -116,6 +130,7 @@ module Charming
     # returning a default empty render if the action produces no response.
     def dispatch(action)
       public_send(action)
+      render_default_action if response.nil? && auto_render_after?(action)
       response || render("")
     end
 
@@ -303,12 +318,24 @@ module Charming
       session[:sidebar_index] || current_route_index
     end
 
+    def sidebar_routes
+      application.routes.all
+    end
+
+    def current_route?(candidate)
+      return candidate.controller_class == self.class && candidate.action == :show unless route
+
+      candidate.path == route.path &&
+        candidate.controller_class == route.controller_class &&
+        candidate.action == route.action
+    end
+
     private
 
     # Finds the position of this controller among all registered routes (for sidebar highlighting).
     # Returns 0 if no matching route is found.
     def current_route_index
-      application.routes.all.index { |route| route.controller_class == self.class && route.action == :show } || 0
+      sidebar_routes.index { |candidate| current_route?(candidate) } || 0
     end
 
     # Checks whether the given slot is registered as a focus ring slot for this controller.
@@ -492,7 +519,7 @@ module Charming
 
     # Moves sidebar selection up or down by `delta`. Does nothing if there are no routes.
     def sidebar_move(delta)
-      count = application.routes.all.length
+      count = sidebar_routes.length
       return render_default_action if count.zero?
 
       session[:sidebar_index] = (sidebar_index + delta).clamp(0, count - 1)
@@ -502,7 +529,7 @@ module Charming
     # Selects the currently highlighted sidebar route and navigates to it — shifting focus to content area.
     # If no route is found at the current index, falls back to default action.
     def sidebar_select
-      route = application.routes.all[sidebar_index]
+      route = sidebar_routes[sidebar_index]
       if focus_ring_slot?(:content)
         focus.focus(:content)
       else
@@ -579,10 +606,16 @@ module Charming
       value.respond_to?(:call) ? instance_exec(&value) : send(value)
     end
 
-    # Renders the default `:show` action if this controller defines it. Called after navigation, command execution,
+    # Renders the default action if this controller defines it. Called after navigation, command execution,
     # or key handling when no explicit response was produced — ensures the view stays rendered.
     def render_default_action
-      show if respond_to?(:show)
+      action = self.class.auto_render_action || :show
+      public_send(action) if respond_to?(action)
+    end
+
+    def auto_render_after?(action)
+      auto_render_action = self.class.auto_render_action
+      auto_render_action && action.to_sym != auto_render_action
     end
 
     def global_key_action

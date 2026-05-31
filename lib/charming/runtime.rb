@@ -76,7 +76,7 @@ module Charming
     end
 
     def controller(event: nil)
-      @route.controller_class.new(application: @application, event: event, params: @route.params, screen: screen)
+      @route.controller_class.new(application: @application, event: event, params: @route.params, screen: screen, route: @route)
     end
 
     # Type-based dispatcher: routes resize, task, timer, mouse, and key events

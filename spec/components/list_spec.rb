@@ -23,6 +23,29 @@ RSpec.describe Charming::Presentation::Components::List do
     expect(list.selected_item).to eq("Run")
   end
 
+  it "supports vim navigation keys by default" do
+    list = described_class.new(items: %w[Open Run Quit])
+
+    expect(list.handle_key(key(:j))).to eq(:handled)
+    list.handle_key(key(:k))
+
+    expect(list.selected_index).to eq(0)
+  end
+
+  it "allows vim navigation keys to be disabled" do
+    list = described_class.new(items: %w[Open Run Quit], keymap: nil)
+
+    expect(list.handle_key(key(:j))).to be_nil
+    expect(list.selected_index).to eq(0)
+  end
+
+  it "supports custom navigation keymaps" do
+    list = described_class.new(items: %w[Open Run Quit], keymap: {down: :s})
+
+    expect(list.handle_key(key(:s))).to eq(:handled)
+    expect(list.selected_index).to eq(1)
+  end
+
   it "clamps movement at list boundaries" do
     list = described_class.new(items: %w[Open Quit])
 
