@@ -15,6 +15,7 @@ RSpec.describe "home/show template" do
 
       expect(view.render).to include("DemoApp")
       expect(view.render).to include("Status: Idle")
+      expect(Charming::UI::Width.strip_ansi(view.render)).to include("Markdown Preview")
     end
   end
 end

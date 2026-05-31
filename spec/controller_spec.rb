@@ -845,6 +845,25 @@ RSpec.describe Charming::Controller do
       expect(response).to be_quit
     end
 
+    it "moves focus to content when selecting a sidebar route with a focus ring" do
+      controller_class = focus_controller(component_class, ring: %i[sidebar content])
+      stub_const("FocusRingSidebarTargetController", controller_class)
+      app_class = Class.new(Charming::Application)
+      app_class.routes do
+        root "focus_ring_sidebar_target#show"
+      end
+      app = app_class.new
+
+      controller_class.new(application: app).dispatch(:show)
+      response = controller_class.new(
+        application: app,
+        event: Charming::KeyEvent.new(key: :enter)
+      ).dispatch_key
+
+      expect(response).to be_navigate
+      expect(controller_class.new(application: app).focus.current).to eq(:content)
+    end
+
     it "preserves session focus fallback when no focus_ring slot is declared" do
       controller_class = Class.new(described_class) { def show = render("ok") }
       stub_const("SessionFocusFallbackController", controller_class)

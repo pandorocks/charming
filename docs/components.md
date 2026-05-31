@@ -40,12 +40,46 @@ Assigns passed to `new` become reader methods:
 | `List` | Selectable list with keyboard navigation and mouse support. |
 | `Modal` | Overlay dialog with title, content, and help text. |
 | `CommandPalette` | Fuzzy-search command input used internally by the framework. |
+| `Markdown` | Markdown renderer backed by Kramdown with Rouge syntax highlighting for code blocks. |
 | `Viewport` | Scrollable container for tall content lists. |
 | `Spinner` | Animated progress indicator. |
 | `ActivityIndicator` | Spinner-style activity indicator. |
 | `Progressbar` | Text-based progress bar. |
 | `Table` | Unicode-rendered data table with keyboard and mouse selection. |
 | `KeyboardHandler` | Key-mapping mixin for custom components. |
+
+## Markdown
+
+Render Markdown with `Charming::Components::Markdown`:
+
+```erb
+<%= render_component Charming::Components::Markdown.new(
+  content: readme,
+  width: 72,
+  theme: theme
+) %>
+```
+
+Markdown parsing is handled by Kramdown. Code block tokenization is handled by Rouge. Charming owns the terminal rendering, wrapping, and theme styling.
+
+Use it with `Viewport` for scrollable documentation or help screens:
+
+```erb
+<%= render_component Charming::Components::Viewport.new(
+  content: Charming::Components::Markdown.new(content: readme, width: 72, theme: theme),
+  width: 72,
+  height: 20
+) %>
+```
+
+Disable code syntax highlighting when plain code blocks are preferred:
+
+```erb
+<%= render_component Charming::Components::Markdown.new(
+  content: readme,
+  syntax_highlighting: false
+) %>
+```
 
 ## Interaction
 

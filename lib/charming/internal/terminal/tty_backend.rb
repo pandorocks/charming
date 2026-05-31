@@ -12,6 +12,8 @@ module Charming
 
         ALT_SCREEN_ON = "\e[?1049h"
         ALT_SCREEN_OFF = "\e[?1049l"
+        AUTO_WRAP_OFF = "\e[?7l"
+        AUTO_WRAP_ON = "\e[?7h"
         CTRL_KEY_PATTERN = /\Actrl_(?<key>.+)\z/
         MOUSE_SGR_PATTERN = /\e\[<(\d+);(\d+);(\d+)([HmMhCc]?)(M|m)/
         MOUSE_LEGACY_PATTERN = /\e\[M(.{3})/
@@ -92,12 +94,15 @@ module Charming
         end
 
         def write_frame(frame)
-          @output.write(frame)
-          @output.flush
+          without_auto_wrap do
+            write_positioned_lines(frame.to_s.lines(chomp: true))
+          end
         end
 
         def write_lines(line_changes, **)
-          write_control(line_changes.map { |row, line| "\e[#{row};1H\e[2K#{line}" }.join)
+          without_auto_wrap do
+            write_control(line_changes.map { |row, line| "\e[#{row};1H\e[2K#{line}" }.join)
+          end
         end
 
         def enter_alt_screen
@@ -242,6 +247,18 @@ module Charming
 
         def write_control(sequence)
           @output.write(sequence)
+          @output.flush
+        end
+
+        def write_positioned_lines(lines)
+          write_control(lines.each_with_index.map { |line, index| "\e[#{index + 1};1H\e[2K#{line}" }.join)
+        end
+
+        def without_auto_wrap
+          @output.write(AUTO_WRAP_OFF)
+          yield
+        ensure
+          @output.write(AUTO_WRAP_ON)
           @output.flush
         end
       end

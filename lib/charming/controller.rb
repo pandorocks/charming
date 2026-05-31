@@ -465,7 +465,11 @@ module Charming
     # If no route is found at the current index, falls back to default action.
     def sidebar_select
       route = application.routes.all[sidebar_index]
-      session[:focus] = :content
+      if focus_ring_slot?(:content)
+        focus.focus(:content)
+      else
+        session[:focus] = :content
+      end
       route ? navigate_to(route.path) : render_default_action
     end
 

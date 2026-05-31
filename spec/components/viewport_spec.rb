@@ -29,6 +29,24 @@ RSpec.describe Charming::Components::Viewport do
     expect(viewport.render).to eq("cde")
   end
 
+  it "wraps long lines when requested" do
+    viewport = described_class.new(content: "abcdef", width: 3, wrap: true)
+
+    expect(viewport.render).to eq("abc\ndef")
+  end
+
+  it "clips wrapped content vertically after wrapping" do
+    viewport = described_class.new(content: "abcdef", width: 3, height: 1, offset: 1, wrap: true)
+
+    expect(viewport.render).to eq("def")
+  end
+
+  it "preserves ANSI styling across wrapped slices" do
+    viewport = described_class.new(content: "\e[31mabcdef\e[0m", width: 3, wrap: true)
+
+    expect(viewport.render).to eq("\e[31mabc\e[0m\n\e[31mdef\e[0m")
+  end
+
   it "uses Unicode display width when clipping" do
     viewport = described_class.new(content: "a界b", width: 3)
 
@@ -90,6 +108,15 @@ RSpec.describe Charming::Components::Viewport do
     expect(viewport.render).to eq("bcd")
 
     viewport.handle_key(key(:left))
+    expect(viewport.render).to eq("abc")
+  end
+
+  it "does not scroll horizontally when wrapping" do
+    viewport = described_class.new(content: "abcdef", width: 3, height: 1, wrap: true)
+
+    viewport.handle_key(key(:right))
+
+    expect(viewport.column).to eq(0)
     expect(viewport.render).to eq("abc")
   end
 

@@ -4,11 +4,11 @@
   "background": "background",
   "palette": {
     "bright": "#9FE8B0",
-    "muted": "#5A8A68",
+    "muted": "#7FB98C",
     "subtle": "#788E80",
     "background": "#111A2C",
     "selected": "#18233D",
-    "divider": "#2A3752",
+    "divider": "#536B91",
     "amber": "#FFB347",
     "cyan": "#6FD0E3"
   },

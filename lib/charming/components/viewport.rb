@@ -21,13 +21,14 @@ module Charming
 
       attr_reader :offset, :column
 
-      def initialize(content:, width: nil, height: nil, offset: 0, column: 0)
+      def initialize(content:, width: nil, height: nil, offset: 0, column: 0, wrap: false)
         super()
         @content = content
         @width = width
         @height = height
         @offset = offset
         @column = column
+        @wrap = wrap
         clamp_position
       end
 
@@ -113,6 +114,7 @@ module Charming
 
       def render_line(line)
         return line unless width
+        return pad_line(line, width) if wrap?
 
         pad_line(clip_line(line), width)
       end
@@ -154,7 +156,26 @@ module Charming
       end
 
       def content_lines
+        return wrapped_content_lines if wrap?
+
         rendered_content.lines(chomp: true)
+      end
+
+      def wrapped_content_lines
+        rendered_content.lines(chomp: true).flat_map { |line| wrap_line(line) }
+      end
+
+      def wrap_line(line)
+        line_width = UI::Width.measure(line)
+        return [""] if line_width.zero?
+
+        start_column = 0
+        out = []
+        while start_column < line_width
+          out << UI.visible_slice(line, start_column, width)
+          start_column += width
+        end
+        out
       end
 
       def rendered_content
@@ -174,6 +195,7 @@ module Charming
       end
 
       def max_column
+        return 0 if wrap?
         return 0 unless width
 
         [content_width - width, 0].max
@@ -185,6 +207,10 @@ module Charming
 
       def ansi?(token)
         token.match?(ANSI_PATTERN)
+      end
+
+      def wrap?
+        @wrap && width&.positive?
       end
     end
   end

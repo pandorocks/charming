@@ -263,12 +263,22 @@ Bundled components:
 - `Charming::Components::List`
 - `Charming::Components::CommandPalette`
 - `Charming::Components::Modal`
+- `Charming::Components::Markdown`
 - `Charming::Components::Viewport`
 - `Charming::Components::Spinner`
 - `Charming::Components::Progressbar`
 - `Charming::Components::ActivityIndicator`
 - `Charming::Components::Table`
 - `Charming::Components::KeyboardHandler`
+
+Markdown component constructor:
+
+- `content:` Markdown source string.
+- `width:` optional terminal width used for paragraph wrapping.
+- `theme:` optional `Charming::UI::Theme`.
+- `syntax_highlighting:` controls Rouge-backed code block highlighting, defaulting to `true`.
+
+Markdown parsing uses Kramdown. Syntax highlighting uses Rouge. Charming maps parsed nodes and Rouge tokens to terminal text through `Charming::UI::Style` and theme tokens.
 
 ## UI
 

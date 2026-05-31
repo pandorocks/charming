@@ -115,7 +115,21 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     backend.write_lines([[2, "updated"], [4, ""]])
 
-    expect(output.string).to eq("\e[2;1H\e[2Kupdated\e[4;1H\e[2K")
+    expect(output.string).to eq("\e[?7l\e[2;1H\e[2Kupdated\e[4;1H\e[2K\e[?7h")
+  end
+
+  it "writes full frames with positioned rows and auto-wrap disabled" do
+    output = StringIO.new
+    backend = described_class.new(
+      input: StringIO.new,
+      output: output,
+      reader: TTYBackendSpecReader.new(keys: {}),
+      cursor: TTYBackendSpecCursor
+    )
+
+    backend.write_frame("one\ntwo")
+
+    expect(output.string).to eq("\e[?7l\e[1;1H\e[2Kone\e[2;1H\e[2Ktwo\e[?7h")
   end
 
   it "returns a resize event after a resize notification" do
