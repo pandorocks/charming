@@ -8,7 +8,7 @@ module DemoApp
       # palette open). The frame uses responsive width detection — horizontal row layout for wide screens
       # (>= 72 cols), vertical column stack for narrow ones. Returns a multiline styled string.
       def render
-        body = Charming::UI.place(app_frame, width: screen.width, height: screen.height)
+        body = Charming::UI.place(app_frame, width: screen.width, height: screen.height, background: theme.background)
         return body unless palette
 
         Charming::UI.overlay(body, command_palette_modal)

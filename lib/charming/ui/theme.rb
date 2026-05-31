@@ -40,7 +40,17 @@ module Charming
           raise ArgumentError, "theme file must contain styles"
         end
 
-        new(resolve_palette_references(styles, value.fetch("palette", {})))
+        palette = value.fetch("palette", {})
+        new(
+          resolve_palette_references(styles, palette),
+          background: resolve_background(value["background"], palette)
+        )
+      end
+
+      def self.resolve_background(value, palette)
+        return unless value
+
+        deep_resolve_colors(value, normalize_colors(palette))
       end
 
       def self.built_in_path(name)
@@ -83,8 +93,11 @@ module Charming
         end
       end
 
-      def initialize(tokens = {})
+      attr_reader :background
+
+      def initialize(tokens = {}, background: nil)
         @tokens = symbolize_keys(tokens)
+        @background = background
       end
 
       def style(name)
