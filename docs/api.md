@@ -1,6 +1,6 @@
 # API Reference
 
-This is a compact reference for Charming's current public API. Prefer these APIs in app code; classes under `Charming::Internal` are runtime internals.
+This is a compact reference for Charming's current public API. Prefer these APIs in app code. Classes under `Charming::Internal` are runtime internals and are documented mainly for testing.
 
 ## Application
 
@@ -8,6 +8,24 @@ Inherit from `Charming::Application`:
 
 ```ruby
 class MyApp::Application < Charming::Application
+  root File.expand_path("../..", __dir__)
+end
+```
+
+Generated apps define routes separately in `config/routes.rb`:
+
+```ruby
+MyApp::Application.routes do
+  root "home#show"
+end
+```
+
+Routes can also be defined inline on the application class:
+
+```ruby
+class MyApp::Application < Charming::Application
+  root File.expand_path("../..", __dir__)
+
   routes do
     root "home#show"
   end
@@ -17,11 +35,12 @@ end
 Class APIs:
 
 - `routes { ... }` defines routes with the router DSL.
-- `root path` sets the application root path used for resolving relative files.
+- `root path` sets the application root path used for resolving relative files and templates.
 - `theme name, built_in: "phosphor"` registers a built-in JSON theme.
 - `theme name, from: "config/themes/custom.json"` registers an app-local theme file.
 - `default_theme name` sets the default theme.
 - `theme_for name` resolves a theme object.
+- `namespace` returns the application namespace used for controller and template binding lookup.
 
 Instance APIs:
 
@@ -74,11 +93,13 @@ Inherit from `Charming::Controller` or your app's `ApplicationController`.
 
 Class APIs:
 
-- `key name, action, scope: :content` binds a content-pane key to an action. Use `scope: :global` for app-level shortcuts that should work from any focused pane.
+- `key name, action, scope: :content` binds a content-pane key to an action.
+- `key name, action, scope: :global` binds an app-level shortcut.
 - `command label, action = nil, &block` adds a command palette item.
 - `timer name, every:, action:` dispatches a periodic timer while the route is active.
 - `on_task name, action:` handles async task completion.
-- `layout layout_class` wraps rendered output in a layout view.
+- `layout layout_class` wraps rendered output in a class-based layout view.
+- `layout "layouts/application"` wraps rendered output in a template layout.
 - `layout false` disables inherited layout wrapping.
 - `focus_ring *slots` defines tab-traversable focus slots.
 
@@ -86,7 +107,11 @@ Instance APIs:
 
 - `dispatch(action)` calls an action and returns a response.
 - `dispatch_key`, `dispatch_timer`, `dispatch_task`, and `dispatch_mouse` dispatch event-specific handlers.
-- `render(body = "")` produces a render response.
+- `render(body = "", **assigns)` produces a render response.
+- `render "literal"` renders a literal string.
+- `render :show, **assigns` renders `app/views/<controller>/show.tui.erb` or `.txt.erb`.
+- `render view_object` renders a class-based view or component object.
+- `render_template(name, **assigns)` renders an explicit template path under `app/views`.
 - `navigate_to(path)` produces a navigation response.
 - `quit` produces a quit response.
 - `session` accesses the application session.
@@ -99,6 +124,7 @@ Instance APIs:
 - `use_theme(name)` switches themes.
 - `open_command_palette`, `close_command_palette`, and `command_palette` manage the command palette.
 - `open_theme_palette` opens the theme picker.
+- `command_palette_open?` returns whether a command or theme palette is open.
 - `focus_sidebar`, `focus_content`, `sidebar_focused?`, and `content_focused?` support generated layouts.
 
 Controller instances are ephemeral. Store durable state in `ApplicationModel` objects through `model(...)`.
@@ -115,9 +141,66 @@ end
 
 It includes ActiveModel model and attributes support, so typed attributes and validations are available.
 
+Common attribute types include `:string`, `:integer`, `:float`, `:boolean`, `:date`, `:datetime`, and `:time`.
+
+## Templates
+
+`Charming::Templates` resolves and renders templates under `app/views`.
+
+Template APIs:
+
+- `Charming::Templates.register(extension, handler)` registers a template handler.
+- `Charming::Templates.resolve(name, root:)` resolves a template from an app root.
+- `Charming::Templates::MissingTemplateError` is raised when no candidate file exists.
+
+Registered extensions:
+
+- `.tui.erb`
+- `.txt.erb`
+
+For `Templates.resolve("home/show", root: app_root)`, Charming searches:
+
+```text
+app/views/home/show.tui.erb
+app/views/home/show.txt.erb
+```
+
+`.tui.erb` is preferred before `.txt.erb`.
+
+Template handlers implement:
+
+```ruby
+def self.render(path, view)
+  # return rendered string
+end
+```
+
+## TemplateView
+
+`Charming::TemplateView` renders resolved templates with normal view helpers and assigns:
+
+```ruby
+template = Charming::Templates.resolve("home/show", root: app_root)
+view = Charming::TemplateView.new(template: template, home: home, theme: theme)
+view.render
+```
+
+Constructor:
+
+- `template:` is a resolved template.
+- `namespace:` optionally controls constant lookup during template binding.
+- `**assigns` become reader methods available inside the template.
+
+Instance APIs:
+
+- `render` renders the template to a string.
+- `template_binding` returns the binding used by ERB handlers.
+
+Generated controllers usually do not instantiate `TemplateView` directly. Use `render :show` or `render_template "path"` from controller actions instead.
+
 ## View
 
-Inherit from `Charming::View` and implement `render`:
+Class-based views remain supported. Inherit from `Charming::View` and implement `render`:
 
 ```ruby
 class HomeView < Charming::View
@@ -133,10 +216,11 @@ Assigns passed to `new` become reader methods:
 HomeView.new(title: "Home", theme: theme)
 ```
 
-View helpers:
+View and template helpers:
 
 - `text(value, style: nil)` renders text through an optional style.
-- `box(value, style: nil)` renders boxed content.
+- `box(value, style: nil)` renders boxed or styled content.
+- `box(style: style) { ... }` captures nested helper output into a styled block.
 - `row(*items, gap: 0)` joins rendered items horizontally.
 - `column(*items, gap: 0)` joins rendered items vertically.
 - `style` returns a new `Charming::UI::Style`.
@@ -145,6 +229,7 @@ View helpers:
 - `render_partial(view)` renders another view.
 - `yield_content` returns layout content.
 - `layout_assigns` returns assigns used when composing layouts.
+- `focused?(slot)` delegates focus lookup to the controller assign.
 
 ## Component
 
@@ -181,6 +266,7 @@ Bundled components:
 - `Charming::Components::Progressbar`
 - `Charming::Components::ActivityIndicator`
 - `Charming::Components::Table`
+- `Charming::Components::KeyboardHandler`
 
 ## UI
 
@@ -190,7 +276,7 @@ Bundled components:
 - `Charming::UI.join_horizontal(*blocks, gap: 0)`
 - `Charming::UI.join_vertical(*blocks, gap: 0)`
 - `Charming::UI.center(block, width:, height:)`
-- `Charming::UI.place(block, width:, height:, top: 0, left: 0)`
+- `Charming::UI.place(block, width:, height:, top: 0, left: 0, background: nil)`
 - `Charming::UI.overlay(base, overlay, top: :center, left: :center)`
 - `Charming::UI.visible_slice(line, start_column, width)`
 - `Charming::UI::Width.measure(value)`
@@ -214,6 +300,20 @@ Common style methods:
 - `align`
 - `render(value)`
 
+## Themes
+
+Theme tokens return `Charming::UI::Style` objects:
+
+- `text`
+- `title`
+- `muted`
+- `border`
+- `selected`
+- `info`
+- `warn`
+
+Themes can be loaded with `theme name, built_in:` or `theme name, from:` on the application class.
+
 ## Events
 
 Runtime events include:
@@ -234,10 +334,27 @@ Controllers return response objects through helper methods:
 - `navigate_to(path)` creates a navigation response.
 - `quit` creates a quit response.
 
+Response factories:
+
+- `Charming::Response.render(body)`
+- `Charming::Response.navigate(path)`
+- `Charming::Response.quit`
+
+Response predicates:
+
+- `response.navigate?`
+- `response.quit?`
+
+Response attributes:
+
+- `kind`
+- `body`
+- `path`
+
 The runtime follows navigation responses, renders render responses, and exits on quit responses.
 
-## Backends
+## Runtime And Testing Backends
 
 Apps normally use `TTYBackend` through `Charming.run`. Tests should use `Charming::Internal::Terminal::MemoryBackend` to avoid real terminal I/O.
 
-Backend and renderer classes under `Charming::Internal` are not the primary application API.
+For testing patterns, see [Testing](testing.md).

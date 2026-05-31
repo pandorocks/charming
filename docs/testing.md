@@ -1,10 +1,10 @@
 # Testing
 
-Charming is designed to be tested without a real terminal. Use controller/view/component specs for small units and `MemoryBackend` for runtime-level behavior.
+Charming is designed to be tested without a real terminal. Use controller, template, view, and component specs for small units, and use `MemoryBackend` for runtime-level behavior.
 
 ## Generated Specs
 
-Generated apps include specs for the default model, controller, view, and component. Run them from the generated app with:
+Generated apps include specs for the default model, controller, template, and component. Run them from the generated app with:
 
 ```sh
 bundle exec rspec
@@ -23,13 +23,13 @@ bin/check
 Instantiate controllers with an application and dispatch actions directly:
 
 ```ruby
-RSpec.describe WeatherTui::HomeController do
-  let(:application) { WeatherTui::Application.new }
+RSpec.describe MyApp::HomeController do
+  let(:application) { MyApp::Application.new }
 
   it "renders the home screen" do
     response = described_class.new(application: application).dispatch(:show)
 
-    expect(response.body).to include("Weather")
+    expect(response.body).to include("Home")
   end
 end
 ```
@@ -48,24 +48,47 @@ controller = described_class.new(application: application, params: {id: "123"})
 expect(controller.dispatch(:show).body).to include("123")
 ```
 
-## View Specs
+## Template Specs
 
-Views are plain objects. Pass assigns to `new` and call `render`:
+Resolve and render templates directly when testing template output:
 
 ```ruby
-view = WeatherTui::HomeView.new(
-  home: double(title: "Weather"),
+template = Charming::Templates.resolve("home/show", root: app_root)
+view = Charming::TemplateView.new(
+  template: template,
+  home: double(title: "Home"),
   theme: Charming::UI::Theme.default
 )
 
-expect(view.render).to include("Weather")
+expect(view.render).to include("Home")
 ```
 
-Use `Charming::UI::Width.strip_ansi` when assertions do not need ANSI escape codes:
+Templates can use normal view helpers. Strip ANSI codes when assertions do not need styling:
 
 ```ruby
 body = Charming::UI::Width.strip_ansi(view.render)
-expect(body).to include("Weather")
+expect(body).to include("Home")
+```
+
+Controller tests can cover template rendering through `render :show`:
+
+```ruby
+response = MyApp::HomeController.new(application: application).dispatch(:show)
+
+expect(response.body).to include("Home")
+```
+
+## Class-Based View Specs
+
+Class-based views are plain objects. Pass assigns to `new` and call `render`:
+
+```ruby
+view = MyApp::HomeView.new(
+  home: double(title: "Home"),
+  theme: Charming::UI::Theme.default
+)
+
+expect(view.render).to include("Home")
 ```
 
 ## Component Specs
@@ -96,19 +119,17 @@ backend = Charming::Internal::Terminal::MemoryBackend.new(
   events: [
     Charming::KeyEvent.new(key: :up),
     Charming::KeyEvent.new(key: :q)
-  ]
+  ],
+  width: 80,
+  height: 24
 )
 
-Charming::Runtime.new(WeatherTui::Application.new, backend: backend).run
+Charming::Runtime.new(MyApp::Application.new, backend: backend).run
 
-expect(backend.frames).to include("Count: 1")
+expect(backend.frames).to eq(["Count: 0", "Count: 1"])
 ```
 
-`MemoryBackend` also accepts dimensions:
-
-```ruby
-backend = Charming::Internal::Terminal::MemoryBackend.new(width: 100, height: 40)
-```
+`MemoryBackend` accepts `events:`, `width:`, and `height:` keyword args. After running, inspect `backend.frames` to assert against rendered terminal frames.
 
 ## Timer Specs
 
@@ -153,6 +174,12 @@ controller.dispatch(:refresh)
 
 expect(executor.name).to eq(:refresh_home)
 ```
+
+## Renderer Specs
+
+For renderer-level tests, pass a custom `renderer:` to `Charming::Runtime.new` or test renderer classes directly with `MemoryBackend`.
+
+Backend and renderer classes under `Charming::Internal` are mostly test-facing implementation details. Prefer `MemoryBackend` for app and framework specs unless you specifically need TTY integration behavior.
 
 ## Snapshot-Style Assertions
 
