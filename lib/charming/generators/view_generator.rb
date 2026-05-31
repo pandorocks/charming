@@ -3,31 +3,28 @@
 module Charming
   module Generators
     class ViewGenerator < AppFileGenerator
+      def initialize(name, args, out:, destination:, force: false)
+        super
+        raise Error, "Usage: charming generate view NAME [ACTION]" if args.length > 1
+
+        @action = args.fetch(0, "show")
+      end
+
       def generate
-        create_file(app_path("app", "views"), view)
+        create_file(File.join("app", "views", name.snake_name, "#{action}.tui.erb"), view)
       end
 
       private
+
+      attr_reader :action
 
       def suffix
         "view"
       end
 
       def view
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.view_class_name} < Charming::View
-#{view_body}
-  end
-end
+        %(<%= "#{name.class_name}" %>
 )
-      end
-
-      def view_body
-        %(    def render
-      "#{name.class_name}"
-    end)
       end
     end
   end

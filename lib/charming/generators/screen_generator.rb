@@ -36,7 +36,7 @@ module Charming
       end
 
       def view_path
-        File.join("app", "views", "#{name.snake_name}_view.rb")
+        File.join("app", "views", name.snake_name, "show.tui.erb")
       end
 
       def spec_model_path
@@ -48,7 +48,7 @@ module Charming
       end
 
       def spec_view_path
-        File.join("spec", "views", "#{name.snake_name}_view_spec.rb")
+        File.join("spec", "views", name.snake_name, "show_template_spec.rb")
       end
 
       def route_path
@@ -83,11 +83,9 @@ end
 
       def controller_body
         %(    def show
-      render #{name.view_class_name}.new(
+      render :show,
         #{name.snake_name}: #{name.snake_name},
-        palette: command_palette,
-        screen: screen
-      )
+        palette: command_palette
     end
 
     private
@@ -98,20 +96,8 @@ end
       end
 
       def view
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.view_class_name} < Charming::View
-#{view_body}
-  end
-end
+        %(<%= #{name.snake_name}.title %>
 )
-      end
-
-      def view_body
-        %(    def render
-      #{name.snake_name}.title
-    end)
       end
 
       def insert_route

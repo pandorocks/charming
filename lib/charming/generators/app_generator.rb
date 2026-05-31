@@ -26,13 +26,13 @@ module Charming
         ["app/models/home_model.rb", :home_model],
         ["app/controllers/application_controller.rb", :application_controller],
         ["app/controllers/home_controller.rb", :controller],
-        ["app/views/layouts/application.rb", :layout],
-        ["app/views/home_view.rb", :view],
+        ["app/views/layouts/application.tui.erb", :layout],
+        ["app/views/home/show.tui.erb", :view],
         ["app/components/app_frame_component.rb", :component],
         ["spec/spec_helper.rb", :spec_helper],
         ["spec/models/home_model_spec.rb", :spec_model],
         ["spec/controllers/home_controller_spec.rb", :spec_controller],
-        ["spec/views/home_view_spec.rb", :spec_view],
+        ["spec/views/home/show_template_spec.rb", :spec_view],
         ["spec/components/app_frame_component_spec.rb", :spec_component]
       ].freeze
 

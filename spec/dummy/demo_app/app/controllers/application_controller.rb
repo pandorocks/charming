@@ -2,7 +2,7 @@
 
 module DemoApp
   class ApplicationController < Charming::Controller
-    layout Layouts::Application
+    layout "layouts/application"
     focus_ring :sidebar, :content
 
     key "p", :open_command_palette, scope: :global

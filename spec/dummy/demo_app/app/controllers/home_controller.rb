@@ -43,7 +43,7 @@ module DemoApp
     private
 
     def render_home
-      render HomeView.new(home: home, palette: command_palette, screen: screen, theme: theme)
+      render :show, home: home, palette: command_palette
     end
 
     def home

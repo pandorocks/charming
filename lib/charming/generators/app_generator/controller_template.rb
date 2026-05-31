@@ -9,7 +9,7 @@ module Charming
 
 module #{name.class_name}
   class ApplicationController < Charming::Controller
-    layout Layouts::Application
+    layout "layouts/application"
     focus_ring :sidebar, :content
 
     key "p", :open_command_palette, scope: :global
@@ -42,7 +42,7 @@ end
         def controller_actions
           %(
     def show
-      render_home
+      render :show, home: home, palette: command_palette
     end)
         end
 
@@ -50,15 +50,6 @@ end
           %(
 
     private
-#{render_helpers})
-        end
-
-        def render_helpers
-          %(
-    def render_home
-      render HomeView.new(home: home, palette: command_palette, screen: screen, theme: theme)
-    end
-
     def home
       model(:home, HomeModel)
     end)

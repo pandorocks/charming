@@ -51,12 +51,11 @@ end
 
 require "#{app_name.snake_name}"
 
-RSpec.describe #{app_name.class_name}::#{name.view_class_name} do
+RSpec.describe "#{name.snake_name}/show template" do
   describe "#render" do
     it "renders the model title" do
-      view = described_class.new(
-        #{name.snake_name}: double(title: "#{name.class_name}")
-       )
+      template = Charming::Templates.resolve("#{name.snake_name}/show", root: #{app_name.class_name}::Application.root)
+      view = Charming::TemplateView.new(template: template, #{name.snake_name}: double(title: "#{name.class_name}"))
 
       expect(view.render).to eq("#{name.class_name}")
     end

@@ -43,6 +43,8 @@ require_relative "../config/routes"
 
 module #{name.class_name}
   class Application < Charming::Application
+    root File.expand_path("../..", __dir__)
+
     Charming::UI::Theme.built_in_names.each do |theme_name|
       theme theme_name.to_sym, built_in: theme_name
     end
@@ -63,26 +65,8 @@ end
         end
 
         def view
-          %(# frozen_string_literal: true
-
-module #{name.class_name}
-  class HomeView < Charming::View
-    def render
-      app_frame
-    end
-#{view_helpers}
-  end
-end
+          %(<%= render_component AppFrameComponent.new(title: home.title, theme: theme) %>
 )
-        end
-
-        def view_helpers
-          %(
-    private
-
-    def app_frame
-      render_component AppFrameComponent.new(title: home.title, theme: theme)
-    end)
         end
       end
     end

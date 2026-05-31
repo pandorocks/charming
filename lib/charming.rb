@@ -6,6 +6,7 @@ loader = Zeitwerk::Loader.for_gem
 loader.inflector.inflect(
   "cli" => "CLI",
   "ui" => "UI",
+  "erb_handler" => "ErbHandler",
   "tty_backend" => "TTYBackend"
 )
 loader.setup
@@ -22,3 +23,6 @@ module Charming
     key.to_sym
   end
 end
+
+Charming::Templates.register ".tui.erb", Charming::Templates::ErbHandler
+Charming::Templates.register ".txt.erb", Charming::Templates::ErbHandler

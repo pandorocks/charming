@@ -38,10 +38,7 @@ end
 
       def action_method(action)
         %(    def #{action}
-      render #{name.view_class_name}.new(
-        palette: command_palette,
-        screen: screen
-      )
+      render :#{action}, palette: command_palette
     end
 )
       end

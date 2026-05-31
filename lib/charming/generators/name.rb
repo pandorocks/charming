@@ -20,10 +20,6 @@ module Charming
         "#{class_name}Controller"
       end
 
-      def view_class_name
-        "#{class_name}View"
-      end
-
       def component_class_name
         "#{class_name}Component"
       end

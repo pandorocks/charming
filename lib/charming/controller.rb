@@ -158,10 +158,15 @@ module Charming
       dispatch_component_mouse
     end
 
-    # Renders `body` wrapped in this controller's layout (if one is defined) and stores the response.
-    # If no layout is set, renders body bare. Called by controllers after rendering a view.
-    def render(body = "")
+    # Renders a body or template wrapped in this controller's layout (if one is defined) and stores the response.
+    # Symbols render `app/views/<controller>/<symbol>.tui.erb` (or `.txt.erb`); strings render as literal bodies.
+    def render(body = "", **assigns)
+      body = template_body(default_template_name(body), **assigns) if body.is_a?(Symbol)
       @response = Response.render(render_with_layout(body))
+    end
+
+    def render_template(name, **assigns)
+      @response = Response.render(render_with_layout(template_body(name, **assigns)))
     end
 
     def theme
@@ -310,14 +315,21 @@ module Charming
       body.respond_to?(:render) ? body.render.to_s : body.to_s
     end
 
-    # Wraps `body` rendering in this controller's layout class (if one is defined).
+    # Wraps `body` rendering in this controller's layout (if one is defined).
     # If no layout is set, returns body as-is. Provides content, screen, and controller to the layout for composition.
     def render_with_layout(body)
       rendered = render_body(body)
-      layout_class = self.class.layout
-      return rendered unless layout_class
+      layout = self.class.layout
+      return rendered unless layout
 
-      render_body(layout_class.new(**layout_assigns(body, rendered)))
+      render_body(layout_body(layout, body, rendered))
+    end
+
+    def layout_body(layout, body, rendered)
+      assigns = layout_assigns(body, rendered)
+      return template_body(layout, **assigns) if layout.is_a?(String) || layout.is_a?(Symbol)
+
+      layout.new(**assigns)
     end
 
     # Provides view assigns for layout rendering: merges body-specific assigns with standard `content`, `screen`, and `controller`.
@@ -329,6 +341,41 @@ module Charming
     # otherwise returns an empty hash. Used by layout rendering for composition.
     def view_assigns(body)
       body.respond_to?(:layout_assigns) ? body.layout_assigns : {}
+    end
+
+    def template_body(name, **assigns)
+      TemplateView.new(template: resolve_template(name), namespace: template_namespace, **template_assigns(assigns))
+    end
+
+    def resolve_template(name)
+      Templates.resolve(name, root: application.class.root)
+    end
+
+    def template_assigns(assigns)
+      {screen: screen, controller: self, theme: theme}.merge(assigns)
+    end
+
+    def template_namespace
+      namespace_name = application.class.namespace
+      return nil if namespace_name.to_s.empty?
+
+      Object.const_get(namespace_name)
+    end
+
+    def default_template_name(action)
+      "#{controller_template_path}/#{action}"
+    end
+
+    def controller_template_path
+      underscore(self.class.name.split("::").last.delete_suffix("Controller"))
+    end
+
+    def underscore(value)
+      value
+        .gsub(/([A-Z]+)([A-Z][a-z])/, "\\1_\\2")
+        .gsub(/([a-z\d])([A-Z])/, "\\1_\\2")
+        .tr("-", "_")
+        .downcase
     end
 
     # Extracts the normalized key from the current event, handling both KeyEvent objects and raw key strings.
