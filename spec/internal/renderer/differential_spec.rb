@@ -32,7 +32,7 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     )
   end
 
-  it "updates changed lines only" do
+  it "updates from the first changed line through the frame end" do
     backend = Charming::Internal::Terminal::MemoryBackend.new
     renderer = described_class.new(backend)
 
@@ -40,7 +40,7 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     renderer.render("one\nTWO\nthree")
 
     expect(backend.frames).to eq(%W[one\ntwo\nthree one\nTWO\nthree])
-    expect(backend.operations.last).to eq([:write_lines, [[2, "TWO"]]])
+    expect(backend.operations.last).to eq([:write_lines, [[2, "TWO"], [3, "three"]]])
   end
 
   it "clears lines removed by shorter frames" do
