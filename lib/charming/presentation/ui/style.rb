@@ -4,33 +4,9 @@ module Charming
   module Presentation
     module UI
       class Style
-        ATTRIBUTES = {
-          bold: 1,
-          faint: 2,
-          italic: 3,
-          underline: 4,
-          reverse: 7,
-          strikethrough: 9
-        }.freeze
+        ATTRIBUTES = ANSICodes::ATTRIBUTES
 
-        COLORS = {
-          black: 30,
-          red: 31,
-          green: 32,
-          yellow: 33,
-          blue: 34,
-          magenta: 35,
-          cyan: 36,
-          white: 37,
-          bright_black: 90,
-          bright_red: 91,
-          bright_green: 92,
-          bright_yellow: 93,
-          bright_blue: 94,
-          bright_magenta: 95,
-          bright_cyan: 96,
-          bright_white: 97
-        }.freeze
+        COLORS = ANSICodes::COLORS
 
         def initialize(options = {})
           @options = {
@@ -130,90 +106,40 @@ module Charming
           border_name = @options[:border]
           return lines unless border_name
 
-          border = Border.fetch(border_name)
-          sides = Array(@options[:border_sides] || %i[top right bottom left]).map(&:to_sym)
-          width = lines.map { |line| Width.measure(line) }.max || 0
-          horizontal = border.horizontal * width
-          body = lines.map { |line| border_line(line, width, border, sides) }
-
-          [top_border(border, horizontal, sides), *body, bottom_border(border, horizontal, sides)].compact
+          border_painter(border_name).paint(lines, content_width(lines))
         end
 
         def pad_line(line, inner_width, left, right)
           (" " * left) + line + (" " * (inner_width - Width.measure(line) + right))
         end
 
-        def border_line(line, width, border, sides)
-          left = sides.include?(:left) ? render_border(border.vertical) : ""
-          right = sides.include?(:right) ? render_border(border.vertical) : ""
-
-          "#{left}#{line}#{" " * (width - Width.measure(line))}#{right}"
+        def border_painter(border_name)
+          BorderPainter.new(
+            border: Border.fetch(border_name),
+            sides: @options[:border_sides],
+            foreground: @options[:border_foreground],
+            background: @options[:background]
+          )
         end
 
-        def top_border(border, horizontal, sides)
-          return unless sides.include?(:top)
-          return render_border(horizontal) unless full_horizontal_border?(sides)
-
-          render_border("#{border.top_left}#{horizontal}#{border.top_right}")
-        end
-
-        def bottom_border(border, horizontal, sides)
-          return unless sides.include?(:bottom)
-          return render_border(horizontal) unless full_horizontal_border?(sides)
-
-          render_border("#{border.bottom_left}#{horizontal}#{border.bottom_right}")
-        end
-
-        def full_horizontal_border?(sides)
-          sides.include?(:left) && sides.include?(:right)
-        end
-
-        def render_border(value)
-          border_foreground = @options[:border_foreground]
-          return value unless border_foreground
-
-          Style.new(foreground: border_foreground, background: @options[:background]).render(value)
+        def content_width(lines)
+          lines.map { |line| Width.measure(line) }.max || 0
         end
 
         def apply_ansi(value)
-          codes = ansi_codes
-          return value if codes.empty?
-
-          start = "\e[#{codes.join(";")}m"
-          value.split("\n", -1).map { |line| "#{start}#{line.gsub("\e[0m", "\e[0m#{start}")}\e[0m" }.join("\n")
+          ansi_codes_obj.apply(value)
         end
 
         def ansi_codes
-          @options.fetch(:attributes).map { |attribute| ATTRIBUTES.fetch(attribute) } +
-            color_codes(@options[:foreground], foreground: true) +
-            color_codes(@options[:background], foreground: false)
+          ansi_codes_obj.codes
         end
 
-        def color_codes(color, foreground:)
-          return [] unless color
-          return indexed_color_code(color, foreground: foreground) if color.is_a?(Integer)
-          return named_color_code(color, foreground: foreground) if COLORS.key?(color.to_sym)
-          return truecolor_codes(color, foreground: foreground) if color.to_s.start_with?("#")
-
-          raise ArgumentError, "unknown color: #{color.inspect}"
-        end
-
-        def named_color_code(color, foreground:)
-          code = COLORS.fetch(color.to_sym)
-          [foreground ? code : code + 10]
-        end
-
-        def indexed_color_code(color, foreground:)
-          raise ArgumentError, "indexed color must be between 0 and 255" unless color.between?(0, 255)
-
-          [foreground ? 38 : 48, 5, color]
-        end
-
-        def truecolor_codes(color, foreground:)
-          hex = color.to_s.delete_prefix("#")
-          raise ArgumentError, "truecolor must be #rrggbb" unless hex.match?(/\A[0-9a-fA-F]{6}\z/)
-
-          [foreground ? 38 : 48, 2, hex[0..1].to_i(16), hex[2..3].to_i(16), hex[4..5].to_i(16)]
+        def ansi_codes_obj
+          ANSICodes.new(
+            attributes: @options.fetch(:attributes),
+            foreground: @options[:foreground],
+            background: @options[:background]
+          )
         end
 
         def align_line(line, width)

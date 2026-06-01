@@ -14,20 +14,13 @@ module Charming
         ALT_SCREEN_OFF = "\e[?1049l"
         AUTO_WRAP_OFF = "\e[?7l"
         AUTO_WRAP_ON = "\e[?7h"
-        CTRL_KEY_PATTERN = /\Actrl_(?<key>.+)\z/
-        MOUSE_SGR_PATTERN = /\e\[<(\d+);(\d+);(\d+)([HmMhCc]?)(M|m)/
-        MOUSE_LEGACY_PATTERN = /\e\[M(.{3})/
-        MOUSE_BUTTON_MAP = {
-          0 => :left, 1 => :middle, 2 => :right, 3 => :release,
-          64 => :scroll_up, 65 => :scroll_down,
-          66 => :scroll_up, 67 => :scroll_down
-        }.freeze
 
         def initialize(input: $stdin, output: $stdout, reader: nil, cursor: TTY::Cursor)
           @input = input
           @output = output
           @reader = reader || TTY::Reader.new(input: input, output: output)
           @cursor = cursor
+          @key_normalizer = KeyNormalizer.new(@reader)
           @resized = false
           @previous_winch_handler = nil
           @mouse_enabled = false
@@ -38,10 +31,9 @@ module Charming
 
           raw = @reader.read_keypress(echo: false, raw: true, nonblock: timeout)
           return nil unless raw
+          return MouseParser.parse(raw) if MouseParser.sequence?(raw)
 
-          return mouse_event(raw) if mouse_sequence?(raw)
-
-          normalize_keypress(raw)
+          @key_normalizer.normalize(raw)
         rescue Errno::EAGAIN, IO::WaitReadable
           nil
         end
@@ -133,55 +125,6 @@ module Charming
 
         private
 
-        def mouse_sequence?(raw)
-          return false unless raw.is_a?(String)
-          return true if raw.match?(MOUSE_SGR_PATTERN)
-          return true if raw.start_with?("\e[M")
-
-          false
-        end
-
-        def mouse_event(raw)
-          if raw.match?(MOUSE_SGR_PATTERN)
-            parse_sgr_mouse(raw)
-          else
-            parse_legacy_mouse(raw)
-          end
-        end
-
-        def parse_sgr_mouse(raw)
-          match = raw.match(MOUSE_SGR_PATTERN)
-          return nil unless match
-
-          # \e[<button>;<col>;<row><mode>M
-          button_code = match[1].to_i
-          col = match[2].to_i - 1
-          row = match[3].to_i - 1
-          mode = match[4]
-
-          ctrl = mode == "C"
-          alt = raw.include?("\e[38;5;")
-          shift = mode == "M"
-
-          Events::MouseEvent.new(button: button_code, x: col, y: row, ctrl: ctrl, alt: alt, shift: shift)
-        end
-
-        def parse_legacy_mouse(raw)
-          # Legacy format: \e[M + 3 bytes (button, col, row)
-          # Each byte is 32 + value (space offset)
-          match = raw.match(MOUSE_LEGACY_PATTERN)
-          return nil unless match
-
-          bytes = match[1].bytes
-          return nil unless bytes.length == 3
-
-          button_code = bytes[0] - 32
-          col = bytes[1] - 32
-          row = bytes[2] - 32
-
-          Events::MouseEvent.new(button: button_code, x: col, y: row)
-        end
-
         def resized?
           @resized
         end
@@ -190,59 +133,6 @@ module Charming
           @resized = false
           width, height = size
           Events::ResizeEvent.new(width: width, height: height)
-        end
-
-        def normalize_keypress(keypress)
-          return nil unless keypress
-
-          key_name = @reader.console.keys[keypress]
-          return character_event(keypress) unless key_name
-
-          named_event(key_name)
-        end
-
-        def character_event(keypress)
-          Events::KeyEvent.new(key: keypress.to_sym, char: keypress)
-        end
-
-        def named_event(key_name)
-          normalized = normalize_key_name(key_name)
-          Events::KeyEvent.new(
-            key: normalized.fetch(:key),
-            char: normalized.fetch(:char, nil),
-            ctrl: normalized.fetch(:ctrl, false),
-            alt: normalized.fetch(:alt, false),
-            shift: normalized.fetch(:shift, false)
-          )
-        end
-
-        def normalize_key_name(key_name)
-          name = key_name.to_s
-          return ctrl_key(name) if name.match?(CTRL_KEY_PATTERN)
-          return {key: :tab, shift: true} if name == "back_tab"
-
-          {key: normalized_key(name), char: printable_char(name)}
-        end
-
-        def normalized_key(name)
-          return :enter if name == "return"
-
-          name.to_sym
-        end
-
-        def ctrl_key(name)
-          match = name.match(CTRL_KEY_PATTERN)
-          {key: match[:key].to_sym, ctrl: true}
-        end
-
-        def printable_char(name)
-          case name
-          when "space" then " "
-          when "enter", "return" then "\n"
-          when "tab" then "\t"
-          else
-            name if name.length == 1 && !name.match?(/[[:cntrl:]]/)
-          end
         end
 
         def write_control(sequence)

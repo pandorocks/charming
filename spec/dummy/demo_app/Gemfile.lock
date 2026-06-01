@@ -1,10 +1,12 @@
 PATH
   remote: ../../..
   specs:
-    charming (0.1.0)
+    charming (0.1.1)
       activemodel (~> 8.1, >= 8.1.2)
+      activerecord (~> 8.1, >= 8.1.2)
       kramdown (~> 2.5)
       rouge (~> 5.0)
+      sqlite3 (~> 2.0)
       tty-cursor (~> 0.7)
       tty-progressbar (~> 0.18)
       tty-reader (~> 0.9)
@@ -24,6 +26,10 @@ GEM
   specs:
     activemodel (8.1.3)
       activesupport (= 8.1.3)
+    activerecord (8.1.3)
+      activemodel (= 8.1.3)
+      activesupport (= 8.1.3)
+      timeout (>= 0.4.0)
     activesupport (8.1.3)
       base64
       bigdecimal
@@ -58,12 +64,14 @@ GEM
     rouge (5.0.0)
       strscan (~> 3.1)
     securerandom (0.4.1)
+    sqlite3 (2.9.4-arm64-darwin)
     strings (0.2.1)
       strings-ansi (~> 0.2)
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     strscan (3.1.8)
+    timeout (0.6.1)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-progressbar (0.18.3)
@@ -90,7 +98,6 @@ GEM
 
 PLATFORMS
   arm64-darwin-25
-  ruby
 
 DEPENDENCIES
   charming!
@@ -98,10 +105,11 @@ DEPENDENCIES
 
 CHECKSUMS
   activemodel (8.1.3) sha256=90c05cbe4cef3649b8f79f13016191ea94c4525ce4a5c0fb7ef909c4b91c8219
+  activerecord (8.1.3)
   activesupport (8.1.3) sha256=21a5e0dfbd4c3ddd9e1317ec6a4d782fa226e7867dc70b0743acda81a1dca20e
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
-  charming (0.1.0)
+  charming (0.1.1)
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   demo_app (0.1.0)
@@ -116,9 +124,11 @@ CHECKSUMS
   rexml (3.4.4)
   rouge (5.0.0)
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
+  sqlite3 (2.9.4-arm64-darwin)
   strings (0.2.1) sha256=933293b3c95cf85b81eb44b3cf673e3087661ba739bbadfeadf442083158d6fb
   strings-ansi (0.2.0) sha256=90262d760ea4a94cc2ae8d58205277a343409c288cbe7c29416b1826bd511c88
   strscan (3.1.8)
+  timeout (0.6.1)
   tty-color (0.6.0) sha256=6f9c37ca3a4e2367fb2e6d09722762647d6f455c111f05b59f35730eeb24332a
   tty-cursor (0.7.1) sha256=79534185e6a777888d88628b14b6a1fdf5154a603f285f80b1753e1908e0bf48
   tty-progressbar (0.18.3) sha256=6cbb4260e55e74a9180d502143eb6a467d2c8e51bf5f3c9509fb5cacc3d4a5f6
