@@ -1083,4 +1083,23 @@ RSpec.describe Charming::Controller do
       expect(child.task_bindings).not_to equal(parent.task_bindings)
     end
   end
+
+  describe "dispatch_mouse with sidebar focused" do
+    it "does not raise when the sidebar is focused and mouse events arrive" do
+      controller_class = Class.new(described_class) do
+        focus_ring :sidebar, :content
+
+        def show
+        end
+      end
+
+      mouse_event = Charming::Events::MouseEvent.new(button: 0, x: 5, y: 2)
+      controller = controller_class.new(application: application, event: mouse_event)
+
+      expect(controller.focus.current).to eq(:sidebar)
+      result = nil
+      expect { result = controller.dispatch_mouse }.not_to raise_error
+      expect(result).to be_nil
+    end
+  end
 end
