@@ -3,7 +3,13 @@
 require "fileutils"
 
 module Charming
+  # DatabaseInstaller implements `charming db:install sqlite3`. It adds database support
+  # to an existing Charming app by creating `config/database.rb`, `app/models/application_record.rb`,
+  # `db/migrate/`, and `db/seeds.rb`, and patching the gemspec and root loader to include
+  # the new dependencies and the `app/models` autoload directory.
   class DatabaseInstaller
+    # *database* is the adapter name (only "sqlite3" is currently supported). *out* is the
+    # status-output stream. *destination* is the app root.
     def initialize(database, out:, destination:)
       @database = database
       @out = out
@@ -11,6 +17,9 @@ module Charming
       @app_name = Generators::Name.new(app_name_from_gemspec)
     end
 
+    # Performs the install: writes the database config, application record, migrate directory,
+    # seeds file, and patches the gemspec + root loader. Idempotent: existing files are
+    # reported with "exist <path>" instead of being overwritten.
     def install
       raise Generators::Error, "Unsupported database: #{database.inspect}" unless database == "sqlite3"
 
@@ -25,8 +34,11 @@ module Charming
 
     private
 
+    # The database adapter, status stream, app destination, and derived app name.
     attr_reader :database, :out, :destination, :app_name
 
+    # Writes *content* to *path* (relative to the app root), creating intermediate directories.
+    # Reports "exist <path>" without overwriting when the file already exists.
     def create_file(path, content)
       absolute_path = File.join(destination, path)
       if File.exist?(absolute_path)
@@ -39,6 +51,8 @@ module Charming
       out.puts "create #{path}"
     end
 
+    # Patches the gemspec to include the `db` directory in the gem files glob and to add
+    # activerecord + sqlite3 dependencies.
     def update_gemspec
       update_file(gemspec_path) do |current|
         updated = current.sub('Dir.glob("{app,config,exe,lib}/**/*")', 'Dir.glob("{app,config,db,exe,lib}/**/*")')
@@ -47,6 +61,8 @@ module Charming
       end
     end
 
+    # Patches the root loader file (`lib/<app>.rb`) to require `config/database` and to push
+    # the `app/models` autoload directory. Both edits are no-ops when already applied.
     def update_root_file
       update_file(root_file_path) do |current|
         updated = current
@@ -61,6 +77,8 @@ module Charming
       end
     end
 
+    # Reads *path*, yields its contents to the block, and writes the result back when it
+    # differs. Raises Generators::Error when the file is missing.
     def update_file(path)
       raise Generators::Error, "Missing file: #{relative_path(path)}" unless File.exist?(path)
 
@@ -72,6 +90,8 @@ module Charming
       out.puts "update #{relative_path(path)}"
     end
 
+    # Inserts a `spec.add_dependency "name", "version"` line after the `charming` dependency
+    # when it's not already present.
     def insert_dependency(content, gem_name, version)
       return content if content.include?(%(spec.add_dependency "#{gem_name}"))
 
@@ -79,6 +99,8 @@ module Charming
       content.sub(%(  spec.add_dependency "charming"\n), %(  spec.add_dependency "charming"\n#{dependency}\n))
     end
 
+    # The contents of the new `config/database.rb` (establishes an SQLite connection to
+    # `db/development.sqlite3`).
     def database_config
       %(# frozen_string_literal: true
 
@@ -95,6 +117,7 @@ ActiveRecord::Base.establish_connection(
 )
     end
 
+    # The contents of the new `app/models/application_record.rb` (abstract ActiveRecord base).
     def application_record
       %(# frozen_string_literal: true
 
@@ -106,18 +129,22 @@ end
 )
     end
 
+    # Reads the app's gemspec filename to derive the app name.
     def app_name_from_gemspec
       File.basename(gemspec_path, ".gemspec")
     end
 
+    # The path to the app's gemspec (raises when not found).
     def gemspec_path
       @gemspec_path ||= Dir.glob(File.join(destination, "*.gemspec")).first || raise(Generators::Error, "Run this command from a Charming app root")
     end
 
+    # The path to the app's root loader file (`lib/<app_name>.rb`).
     def root_file_path
       File.join(destination, "lib", "#{app_name.snake_name}.rb")
     end
 
+    # Strips the app destination prefix from *path* for human-friendly status output.
     def relative_path(path)
       path.delete_prefix("#{destination}/")
     end

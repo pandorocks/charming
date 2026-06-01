@@ -4,7 +4,13 @@ module Charming
   module Presentation
     module Components
       class Form
+        # Textarea is a multi-line Form field backed by a TextArea widget. The cursor offset,
+        # top-visible row, and preferred vertical column are all persisted in the form's
+        # per-field state so the field behaves consistently when refocused mid-edit.
         class Textarea < Field
+          # *value* is the initial text. *placeholder* is shown when the value is empty.
+          # *width* and *height* constrain the rendered area. All other options are forwarded
+          # to Field (label, required, validate, help, theme).
           def initialize(name, value: "", placeholder: "", width: nil, height: nil, **options)
             super(name, **options)
             @initial_value = value
@@ -13,6 +19,7 @@ module Charming
             @height = height
           end
 
+          # Binds the field, seeds the initial value, and initializes the cursor/offset state.
           def bind(state)
             super
             state[:values][name] = @initial_value if state[:values][name].nil?
@@ -20,6 +27,8 @@ module Charming
             field_state[:offset] ||= 0
           end
 
+          # Forwards key events to the underlying TextArea, syncing the value, cursor, offset,
+          # and preferred column back into the form state. Returns :handled when consumed.
           def handle_key(event)
             area = text_area
             result = area.handle_key(event)
@@ -32,6 +41,8 @@ module Charming
             :handled
           end
 
+          # Renders the field with its label on the first line, body lines indented, and
+          # optional help/error lines below.
           def render(active: false)
             label_line = "#{active ? ">" : " "} #{label}:"
             label_line = theme.selected.render(label_line) if active
@@ -40,14 +51,18 @@ module Charming
 
           private
 
+          # The default value for a freshly-bound field is the *value* passed at construction.
           def default_value
             @initial_value
           end
 
+          # Renders the multi-line body, indenting each line by two spaces.
           def body_lines
             text_area.render.lines(chomp: true).map { |line| "  #{line}" }
           end
 
+          # Builds a fresh TextArea each render, seeded from the current form-state value and
+          # the persisted cursor/offset/preferred_column.
           def text_area
             TextArea.new(
               value: value.to_s,
@@ -60,6 +75,7 @@ module Charming
             )
           end
 
+          # Returns the per-field state hash for this field.
           def field_state
             state[:fields][name]
           end

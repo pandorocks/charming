@@ -5,9 +5,14 @@ require "tty-table"
 module Charming
   module Presentation
     module Components
+      # Table renders tabular data with a header row, a selected row highlight, and keyboard
+      # navigation. Mouse clicks within the body area also select rows. The table is rendered
+      # via tty-table and the selected row is overlaid with reverse-video ANSI styling.
       class Table < Component
         include KeyboardHandler
 
+        # Maps navigation keys to the instance methods that move the selection. Shared with
+        # List and Viewport via KeyboardHandler.
         KEY_ACTIONS = {
           up: :move_up,
           down: :move_down,
@@ -15,10 +20,16 @@ module Charming
           end: :move_end
         }.freeze
 
+        # Number of terminal rows occupied by the table's top border and header line. Used by
+        # the mouse handler to translate absolute row coordinates to body rows.
         HEADER_HEIGHT = 2
 
+        # The header row, the body rows, and the currently selected row index, respectively.
         attr_reader :header, :rows, :selected_index
 
+        # *header* is an array of column labels. *rows* is the array of body rows (each either a
+        # String, an Array, or a Hash of column-value pairs). *selected_index* defaults to 0.
+        # *keymap* selects the keybinding style (`:vim` enables h/j/k/l → left/down/up/right).
         def initialize(header:, rows: [], selected_index: 0, keymap: :vim)
           super()
           @header = Array(header).map(&:to_s)
@@ -27,6 +38,8 @@ module Charming
           @keymap = keymap
         end
 
+        # Handles key events. Returns `[:selected, row]` on Enter; otherwise delegates to the
+        # KeyboardHandler for navigation keys.
         def handle_key(event)
           return nil if rows.empty?
 
@@ -36,6 +49,8 @@ module Charming
           end
         end
 
+        # Handles mouse events: a click within the body area selects the clicked row.
+        # Returns :handled on a successful click.
         def handle_mouse(event)
           return nil if rows.empty?
           return nil unless event.respond_to?(:click?) && event.click?
@@ -47,10 +62,12 @@ module Charming
           :handled
         end
 
+        # Returns the currently selected row, or nil when the table is empty.
         def selected_row
           rows[selected_index]
         end
 
+        # Renders the table to a string. Returns a placeholder when both header and rows are empty.
         def render
           return "(empty table)" if header.empty? && rows.empty?
 
@@ -64,6 +81,8 @@ module Charming
 
         private
 
+        # Coerces a *row* (Hash / String / Array) into a flat cell array matching the header.
+        # Excess cells are merged into the last column with a space separator.
         def normalize_row(row)
           cells = case row
           when Hash then row.values
@@ -77,6 +96,7 @@ module Charming
           kept + [merged]
         end
 
+        # Applies the selected-row highlight and trims unused body rows below the actual row count.
         def compact_layout(lines)
           return lines.join("\n") if lines.length < 4
 
@@ -91,22 +111,27 @@ module Charming
           [top, header_line, *highlighted, bottom].compact.join("\n")
         end
 
+        # Moves the selection up one row.
         def move_up
           @selected_index -= 1 if selected_index.positive?
         end
 
+        # Moves the selection down one row.
         def move_down
           @selected_index += 1 if selected_index < rows.length - 1
         end
 
+        # Moves the selection to the first row.
         def move_home
           @selected_index = 0
         end
 
+        # Moves the selection to the last row.
         def move_end
           @selected_index = rows.length - 1
         end
 
+        # Clamps *value* to the valid row range, defaulting to 0 when the table is empty.
         def clamp_index(value)
           return 0 if rows.empty?
 

@@ -81,18 +81,23 @@ module Charming
       @response = Response.render(render_with_layout(view_class.new(**template_assigns(assigns))))
     end
 
+    # Renders a template from `app/views` by name, applying the controller's layout. *name* is the
+    # template path (e.g., "home/show") and additional keyword *assigns* are forwarded to the view.
     def render_template(name, **assigns)
       @response = Response.render(render_with_layout(template_body(name, **assigns)))
     end
 
+    # Returns the active theme for this request, delegated to the application.
     def theme
       application.theme
     end
 
+    # Switches the active theme to *name* and persists the choice in the application session.
     def use_theme(name)
       application.use_theme(name)
     end
 
+    # Opens the theme picker (a CommandPalette populated with the registered themes) and renders.
     def open_theme_palette
       session[:command_palette] = command_palette_state(:themes)
       focus.push_scope([:command_palette], origin: :command_palette)

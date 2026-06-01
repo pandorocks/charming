@@ -3,7 +3,12 @@
 module Charming
   module Presentation
     module Components
+      # Markdown renders Markdown source as ANSI-styled terminal text. Parsing is delegated to
+      # `Presentation::Markdown::Renderer`; set *syntax_highlighting* to false to disable
+      # Rouge-backed code block highlighting.
       class Markdown < Component
+        # *content* is the Markdown source string. *width* optionally sets the wrap width.
+        # *syntax_highlighting* enables Rouge for code blocks (defaults to true).
         def initialize(content:, width: nil, theme: nil, syntax_highlighting: true)
           super(theme: theme)
           @content = content
@@ -11,6 +16,7 @@ module Charming
           @syntax_highlighting = syntax_highlighting
         end
 
+        # Renders the Markdown body to a styled, terminal-safe string.
         def render
           Charming::Presentation::Markdown::Renderer.new(
             content: @content,

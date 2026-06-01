@@ -3,13 +3,22 @@
 module Charming
   module Internal
     module Renderer
+      # Differential renders frame updates by emitting only the lines that changed since
+      # the previous frame. On the first frame it falls back to a full repaint; when no
+      # lines changed it returns without writing anything.
       class Differential
+        # *output* is the terminal backend (must support `write_lines` for the differential
+        # path or `write_frame` for the fallback). *full_renderer* is the FullRepaint used
+        # for the initial frame and as a fallback when *output* doesn't support partial writes.
         def initialize(output, full_renderer: FullRepaint.new(output))
           @output = output
           @full_renderer = full_renderer
           @previous_frame = nil
         end
 
+        # Renders *frame*. The first call performs a full repaint and stores the frame.
+        # Subsequent calls compute the per-line diff and emit only changed rows. Returns nil
+        # when the frame is identical to the previous one.
         def render(frame)
           frame = frame.to_s
           return render_initial(frame) unless @previous_frame
@@ -20,11 +29,15 @@ module Charming
 
         private
 
+        # Performs the initial full repaint and records the first frame.
         def render_initial(frame)
           @full_renderer.render(frame)
           @previous_frame = frame
         end
 
+        # Computes the per-line diff against the previous frame, writes the changed lines,
+        # and records the new frame. Falls back to a full repaint when the output backend
+        # doesn't support partial writes.
         def render_changes(frame)
           changes = changed_lines(@previous_frame, frame)
           return @previous_frame = frame if changes.empty?
@@ -37,6 +50,8 @@ module Charming
           @previous_frame = frame
         end
 
+        # Returns an array of [1-based-row, line] tuples covering the larger of the two
+        # frames' line counts, with empty strings padding the shorter frame.
         def changed_lines(previous_frame, frame)
           previous_lines = previous_frame.lines(chomp: true)
           lines = frame.lines(chomp: true)

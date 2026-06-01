@@ -75,6 +75,8 @@ module Charming
       controller(event: event).dispatch_mouse
     end
 
+    # Instantiates a fresh controller for the active route, passing the application, current *event*,
+    # route params, screen dimensions, and route object. Called by every dispatch path.
     def controller(event: nil)
       @route.controller_class.new(application: @application, event: event, params: @route.params, screen: screen, route: @route)
     end

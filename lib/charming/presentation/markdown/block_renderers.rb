@@ -3,12 +3,18 @@
 module Charming
   module Presentation
     module Markdown
+      # BlockRenderer dispatches Kramdown block-level elements (paragraph, header, list,
+      # code block, etc.) to their individual rendering handlers. Handlers are built once
+      # at construction time as a frozen hash of element-type symbols to callables.
       class BlockRenderer
+        # *renderer* is the parent Renderer (used to wrap text, render inlines, and look up styles).
         def initialize(renderer:)
           @renderer = renderer
           build_handlers
         end
 
+        # Renders *element* using the handler registered for `element.type`. Unknown types
+        # fall through to `render_unknown`.
         def render(element, context:)
           handler = @handlers[element.type] || method(:render_unknown)
           handler.call(element, context)
@@ -16,8 +22,11 @@ module Charming
 
         private
 
+        # The frozen hash of element-type → handler mapping.
         attr_reader :handlers
 
+        # Builds the handler hash. Each handler is a small lambda that calls back into the
+        # parent renderer (or one of the private render_* methods below).
         def build_handlers
           r = @renderer
           @handlers = {
@@ -33,12 +42,16 @@ module Charming
           }.freeze
         end
 
+        # Fallback for unknown block types: wraps the raw value when there are no children,
+        # otherwise recurses into the children.
         def render_unknown(element, context)
           return @renderer.wrap(element.value.to_s, width: context.width) if element.children.empty?
 
           @renderer.render_blocks(element.children, list_depth: context.list_depth, width: context.width)
         end
 
+        # Renders a header element, using the `markdown_heading` style for h1 and the
+        # `markdown_subheading` style for h2+.
         def render_header(element, context)
           rendered = @renderer.wrap(@renderer.render_inlines(element.children), width: context.width)
           style = if element.options[:level].to_i == 1

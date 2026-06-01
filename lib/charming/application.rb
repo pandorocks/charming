@@ -22,12 +22,16 @@ module Charming
         name&.split("::")&.then { |parts| parts[0...-1].join("::") }
       end
 
+      # Returns the app's filesystem root, used to resolve relative theme and template paths.
+      # Pass *path* to set it; without arguments it returns the current value (or nil if unset).
       def root(path = THEME_READER)
         return @root if path == THEME_READER
 
         @root = File.expand_path(path)
       end
 
+      # Registers a named theme. Provide either *from:* (path to a JSON file relative to the app root)
+      # or *built_in:* (name of a bundled theme such as "phosphor"). Raises when neither or both are given.
       def theme(name, from: nil, built_in: nil)
         raise ArgumentError, "theme expects from: or built_in:" unless from || built_in
         raise ArgumentError, "theme expects either from: or built_in:, not both" if from && built_in
@@ -39,16 +43,21 @@ module Charming
         end
       end
 
+      # Hash of all registered themes keyed by symbol, including those inherited from superclasses.
       def themes
         @themes ||= superclass.respond_to?(:themes) ? superclass.themes.dup : {}
       end
 
+      # Returns the default theme name, or sets it when *name* is given. When unset, falls back
+      # to the first registered theme. Used by `theme_for` when no name is provided.
       def default_theme(name = THEME_READER)
         return @default_theme || themes.keys.first if name == THEME_READER
 
         @default_theme = name.to_sym
       end
 
+      # Resolves a theme by *name* (or the default theme when *name* is nil). Returns the default
+      # built-in theme if no name is given and no default is registered.
       def theme_for(name = nil)
         theme_name = name || default_theme
         return Presentation::UI::Theme.default unless theme_name
@@ -58,6 +67,8 @@ module Charming
 
       private
 
+      # Expands a relative theme path against the app root (or the current working directory
+      # when no root is configured). Returns *path* unchanged when it is already absolute.
       def resolve_theme_path(path)
         return path if File.absolute_path?(path)
 
