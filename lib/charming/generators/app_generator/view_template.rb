@@ -66,7 +66,27 @@ end
         end
 
         def view
-          %(<%= render_component AppFrameComponent.new(title: home.title, theme: theme) %>
+          %(# frozen_string_literal: true
+
+module #{name.class_name}
+  module Home
+    class ShowView < Charming::Presentation::View
+      def render
+        column(title_line, help_line, gap: 1)
+      end
+
+      private
+
+      def title_line
+        text home.title, style: theme.title
+      end
+
+      def help_line
+        text "Press p for commands, q to quit.", style: theme.muted
+      end
+    end
+  end
+end
 )
         end
 

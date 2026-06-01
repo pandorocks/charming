@@ -1,4 +1,4 @@
-# Controllers & Templates
+# Controllers & Views
 
 Controllers dispatch actions, bind input, navigate between routes, run background tasks, and render responses.
 
@@ -22,10 +22,10 @@ module MyApp
 end
 ```
 
-`render :show` resolves the template for the current controller action:
+`render :show` resolves the conventional Ruby view class for the current controller action:
 
 ```text
-app/views/home/show.tui.erb
+app/views/home/show_view.rb
 ```
 
 ## Rendering
@@ -34,39 +34,47 @@ Controller render forms:
 
 | Form | Behavior |
 |------|----------|
-| `render :show, **assigns` | Renders `app/views/<controller>/show.tui.erb` or `.txt.erb`. |
-| `render_template "custom/page", **assigns` | Renders an explicit template path under `app/views`. |
+| `render :show, **assigns` | Renders `AppName::Home::ShowView`, falling back to `app/views/home/show.tui.erb` or `.txt.erb`. |
+| `render_template "custom/page", **assigns` | Renders an explicit ERB template path under `app/views`. |
 | `render "literal text"` | Renders a literal string. |
 | `render view_object` | Renders a class-based view or component object. |
 
-Assigns passed to `render` become methods in the template:
+Assigns passed to `render` become methods in the view:
 
 ```ruby
 render :show, home: home, palette: command_palette
 ```
 
-```erb
-<%= text home.title, style: theme.title %>
+```ruby
+module MyApp
+  module Home
+    class ShowView < Charming::Presentation::View
+      def render
+        text home.title, style: theme.title
+      end
+    end
+  end
+end
 ```
 
-Templates also receive `screen`, `controller`, and `theme` assigns.
+Views also receive `screen`, `controller`, and `theme` assigns.
 
-## Template Files
+## ERB Template Fallback
 
-Charming resolves templates from `app/views`.
+ERB templates remain available for large text rendering or simple fallback views.
 
-For `render :show` in `HomeController`, Charming searches:
+If no `Home::ShowView` class exists, `render :show` searches:
 
 ```text
 app/views/home/show.tui.erb
 app/views/home/show.txt.erb
 ```
 
-`.tui.erb` is preferred before `.txt.erb`.
+`.tui.erb` is preferred before `.txt.erb`. `render_template` always renders an explicit template path.
 
 ## Template Helpers
 
-Templates share the same helper set as class-based views:
+Views and templates share the same helper set:
 
 | Helper | Purpose |
 |--------|---------|
@@ -74,6 +82,7 @@ Templates share the same helper set as class-based views:
 | `box(value, style: nil)` | Style or border a block. |
 | `row(*items, gap: 0)` | Join blocks side by side. |
 | `column(*items, gap: 0)` | Stack blocks vertically. |
+| `screen_layout { ... }` | Build a full-screen declarative layout tree. |
 | `render_component(component)` | Render a component or partial object. |
 | `render_partial(partial)` | Alias for `render_component`. |
 | `yield_content` | Render wrapped screen content in a layout. |

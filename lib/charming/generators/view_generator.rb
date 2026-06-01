@@ -11,7 +11,7 @@ module Charming
       end
 
       def generate
-        create_file(File.join("app", "views", name.snake_name, "#{action}.tui.erb"), view)
+        create_file(File.join("app", "views", name.snake_name, "#{action}_view.rb"), view)
       end
 
       private
@@ -23,8 +23,22 @@ module Charming
       end
 
       def view
-        %(<%= "#{name.class_name}" %>
+        %(# frozen_string_literal: true
+
+module #{app_name.class_name}
+  module #{name.class_name}
+    class #{action_class_name}View < Charming::Presentation::View
+      def render
+        "#{name.class_name}"
+      end
+    end
+  end
+end
 )
+      end
+
+      def action_class_name
+        action.split("_").map(&:capitalize).join
       end
     end
   end

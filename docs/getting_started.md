@@ -27,8 +27,8 @@ Generated apps use Rails-like folders:
 app/components/
 app/controllers/
 app/state/
-app/views/home/show.tui.erb
-app/views/layouts/application.tui.erb
+app/views/home/show_view.rb
+app/views/layouts/application_layout.rb
 config/routes.rb
 exe/my_app
 lib/my_app.rb
@@ -45,7 +45,7 @@ Charming.run(MyApp::Application.new)
 The generated app flow is:
 
 ```text
-Route -> Controller Action -> Template -> Layout -> Renderer -> Terminal
+Route -> Controller Action -> View -> Layout -> Renderer -> Terminal
 ```
 
 Read more in [Core Concepts](core_concepts.md).
@@ -65,9 +65,9 @@ end
 
 Read more in [Routing](routing.md).
 
-## Controllers And Templates
+## Controllers And Views
 
-Generated controllers render templates by symbol:
+Generated controllers render views by symbol:
 
 ```ruby
 module MyApp
@@ -91,26 +91,37 @@ end
 For `HomeController`, `render :show` resolves:
 
 ```text
-app/views/home/show.tui.erb
+app/views/home/show_view.rb
 ```
 
-Templates are ERB files with access to assigns and view helpers:
+Views are Ruby classes with access to assigns and view helpers:
 
-```erb
-<%= text home.title, style: theme.title %>
-<%= text "Press p for commands, q to quit.", style: theme.muted %>
+```ruby
+module MyApp
+  module Home
+    class ShowView < Charming::Presentation::View
+      def render
+        column(
+          text(home.title, style: theme.title),
+          text("Press p for commands, q to quit.", style: theme.muted),
+          gap: 1
+        )
+      end
+    end
+  end
+end
 ```
 
 Read more in [Controllers & Templates](controllers_and_templates.md).
 
 ## Layouts
 
-Generated apps use a template layout:
+Generated apps use a Ruby layout class:
 
 ```ruby
 module MyApp
   class ApplicationController < Charming::Controller
-    layout "layouts/application"
+    layout Layouts::ApplicationLayout
     focus_ring :sidebar, :content
   end
 end
@@ -119,17 +130,20 @@ end
 That resolves:
 
 ```text
-app/views/layouts/application.tui.erb
+app/views/layouts/application_layout.rb
 ```
 
 Layouts use `yield_content` to place the current screen inside shared UI:
 
-```erb
-<%
-sidebar = box("Home\nSettings", style: theme.border.border(:rounded).padding(1, 2).width(20))
-main = box(yield_content, style: theme.border.border(:rounded).padding(1, 2).width(60))
-frame = row(sidebar, main, gap: 1)
-%><%= Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height) %>
+```ruby
+def render
+  screen_layout do
+    split :horizontal, gap: 1 do
+      pane(:sidebar, width: 24, border: :rounded, padding: [1, 2]) { "Home\nSettings" }
+      pane(:content, grow: 1, border: :rounded, padding: [1, 2]) { yield_content }
+    end
+  end
+end
 ```
 
 Read more in [Layouts](layouts.md).
@@ -153,10 +167,12 @@ Read more in [State](state.md).
 
 ## Components
 
-Render components from templates with `render_component`:
+Generate reusable widgets with `charming generate component NAME`, then render them from views with `render_component`:
 
-```erb
-<%= render_component AppFrameComponent.new(title: home.title, theme: theme) %>
+```ruby
+def render
+  render_component StatusBadgeComponent.new(status: home.status, theme: theme)
+end
 ```
 
 Components can be static renderable objects or interactive widgets that implement `handle_key(event)` and `handle_mouse(event)`.

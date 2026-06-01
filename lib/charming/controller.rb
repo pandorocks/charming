@@ -52,7 +52,10 @@ module Charming
     # Timer event dispatcher: looks up the named action in timer bindings.
     def dispatch_timer
       b = self.class.timer_bindings[event.name.to_sym]
-      b ? dispatch(b.action) : nil
+      return nil unless b
+
+      public_send(b.action)
+      response
     end
 
     # Task event dispatcher: looks up the handler in task bindings.
@@ -70,8 +73,12 @@ module Charming
 
     # Renders a body or template wrapped in the controller's layout.
     def render(body = "", **assigns)
-      body = template_body(default_template_name(body), **assigns) if body.is_a?(Symbol)
+      body = view_body(default_template_name(body), **assigns) if body.is_a?(Symbol)
       @response = Response.render(render_with_layout(body))
+    end
+
+    def render_view(view_class, **assigns)
+      @response = Response.render(render_with_layout(view_class.new(**template_assigns(assigns))))
     end
 
     def render_template(name, **assigns)

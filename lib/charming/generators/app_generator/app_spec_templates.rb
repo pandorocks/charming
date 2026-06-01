@@ -51,34 +51,15 @@ end
 
 require "#{app_name.snake_name}"
 
-RSpec.describe "home/show template" do
+RSpec.describe #{app_name.class_name}::Home::ShowView do
   describe "#render" do
     it "renders the state title" do
-      template = Charming::Presentation::Templates.resolve("home/show", root: #{app_name.class_name}::Application.root)
-      view = Charming::Presentation::TemplateView.new(
-        template: template,
-        namespace: #{app_name.class_name},
+      view = described_class.new(
         home: double(title: "#{app_name.class_name}"),
         theme: #{app_name.class_name}::Application.new.theme
       )
 
       expect(view.render).to include("#{app_name.class_name}")
-    end
-  end
-end
-)
-        end
-
-        def spec_component
-          %(# frozen_string_literal: true
-
-require "#{app_name.snake_name}"
-
-RSpec.describe #{app_name.class_name}::AppFrameComponent do
-  describe "#render" do
-    it "returns a string" do
-      component = described_class.new(title: "#{app_name.class_name}")
-      expect(component.render).to be_a(String)
     end
   end
 end

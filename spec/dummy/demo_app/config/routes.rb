@@ -2,4 +2,5 @@
 
 DemoApp::Application.routes do
   root "home#show"
+  screen "/lg", to: "lg#show", title: "LG Layout"
 end

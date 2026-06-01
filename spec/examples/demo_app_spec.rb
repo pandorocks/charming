@@ -17,6 +17,78 @@ RSpec.describe "demo app example" do
     expect(backend.frames.first).to include("Tab content, then press r for async task.")
   end
 
+  it "registers the LG layout demo route" do
+    route = DemoApp::Application.routes.resolve("/lg")
+
+    expect(route.controller_class).to eq(DemoApp::LgController)
+    expect(route.action).to eq(:show)
+    expect(route.title).to eq("LG Layout")
+  end
+
+  it "renders the LG layout demo screen" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::Events::KeyEvent.new(key: :q)],
+      width: 90,
+      height: 24
+    )
+    app = DemoApp::Application.new
+
+    app.routes.resolve("/lg")
+    Charming::Runtime.new(app, backend: backend).tap do |runtime|
+      runtime.instance_variable_set(:@route, app.routes.resolve("/lg"))
+      runtime.run
+    end
+
+    frame = Charming::Presentation::UI::Width.strip_ansi(backend.frames.first)
+    expect(frame).to include("Working Tree")
+    expect(frame).to include("Recent Commits")
+    expect(frame).to include("Diff")
+    expect(frame).to include("p commands")
+  end
+
+  it "navigates to the LG layout demo from the command palette" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :l, char: "l"),
+        Charming::Events::KeyEvent.new(key: :g, char: "g"),
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
+      ],
+      width: 90,
+      height: 24
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+
+    frames = Charming::Presentation::UI::Width.strip_ansi(backend.frames.join("\n"))
+    expect(frames).to include("LG Layout")
+    expect(frames).to include("Working Tree")
+    expect(frames).to include("Recent Commits")
+  end
+
+  it "tabs through focusable panes on the LG layout demo" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :tab),
+        Charming::Events::KeyEvent.new(key: :tab),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
+      ],
+      width: 90,
+      height: 24
+    )
+    app = DemoApp::Application.new
+
+    Charming::Runtime.new(app, backend: backend).tap do |runtime|
+      runtime.instance_variable_set(:@route, app.routes.resolve("/lg"))
+      runtime.run
+    end
+
+    layout_scope = app.session.dig(:focus_state, "DemoApp::LgController", :scopes).find { |scope| scope[:origin] == :layout }
+    expect(layout_scope[:ring]).to eq(%i[status commits files diff])
+    expect(layout_scope[:current]).to eq(:files)
+  end
+
   it "renders async loading and completed states" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
@@ -36,6 +108,35 @@ RSpec.describe "demo app example" do
     expect(frames).to include("Status: Loading")
     expect(frames).to include("Status: Loaded")
     expect(frames).to include("Async task finished.")
+  end
+
+  it "does not let idle timers repaint before quit" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::Events::KeyEvent.new(key: :q)]
+    )
+    times = [0.0, 0.0, 0.05, 0.05]
+
+    Charming::Runtime.new(
+      DemoApp::Application.new,
+      backend: backend,
+      clock: -> { times.shift || 0.05 }
+    ).run
+
+    expect(backend.frames.size).to eq(1)
+  end
+
+  it "tabs from sidebar to content before quitting" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::Events::KeyEvent.new(key: :tab), Charming::Events::KeyEvent.new(key: :q, char: "q")],
+      width: 60,
+      height: 12
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend, clock: -> { 0.0 }).run
+
+    focused_content = Charming::Presentation::UI::Width.strip_ansi(backend.frames.last)
+    expect(focused_content).to include("  ● Home")
+    expect(focused_content).not_to include("> ● Home")
   end
 
   it "advances the loading progress while the async task is running" do

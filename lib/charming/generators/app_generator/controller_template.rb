@@ -9,7 +9,7 @@ module Charming
 
 module #{name.class_name}
   class ApplicationController < Charming::Controller
-    layout "layouts/application"
+    layout Layouts::ApplicationLayout
     focus_ring :sidebar, :content
 
     key "p", :open_command_palette, scope: :global

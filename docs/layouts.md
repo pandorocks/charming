@@ -1,12 +1,12 @@
 # Layouts
 
-Layouts wrap screen templates with shared UI such as sidebars, headers, footers, command palettes, and modal overlays.
+Layouts wrap screen views with shared UI such as sidebars, headers, footers, command palettes, and modal overlays.
 
-Generated apps use a template layout:
+Generated apps use Ruby layout classes and the declarative layout DSL:
 
 ```ruby
 class ApplicationController < Charming::Controller
-  layout "layouts/application"
+  layout Layouts::ApplicationLayout
   focus_ring :sidebar, :content
 end
 ```
@@ -14,10 +14,42 @@ end
 That resolves:
 
 ```text
-app/views/layouts/application.tui.erb
+app/views/layouts/application_layout.rb
 ```
 
-Class-based layout views are also supported with `layout Layouts::Application`.
+ERB layouts remain available as a fallback with `layout "layouts/application"`.
+
+## Layout Class
+
+Layout classes inherit from `Charming::Presentation::View`:
+
+```ruby
+module MyApp
+  module Layouts
+    class ApplicationLayout < Charming::Presentation::View
+      def render
+        screen_layout(background: theme.background) do
+          split :horizontal, gap: 1 do
+            pane(:sidebar, width: 24, border: :rounded, padding: [1, 2]) do
+              navigation
+            end
+
+            pane(:content, grow: 1, border: :rounded, padding: [1, 2]) do
+              yield_content
+            end
+          end
+        end
+      end
+
+      private
+
+      def navigation
+        column("Home", "Settings", gap: 1)
+      end
+    end
+  end
+end
+```
 
 ## Layout Assigns
 
@@ -30,165 +62,181 @@ Layouts receive standard assigns:
 | `controller` | Current controller instance. |
 | `theme` | Active theme. |
 
-Any assigns passed to the screen template are also available to the layout.
+Any assigns passed to the screen view are also available to the layout.
 
-Use `yield_content` to place the current screen inside the layout:
+Use `yield_content` to place the current screen inside the layout.
 
-```erb
-<%= box(yield_content, style: theme.border.border(:rounded).padding(1, 2)) %>
-```
+## DSL Primitives
 
-## Basic Frame
+`screen_layout` creates a full-screen layout tree for the current terminal size.
 
-Use `row` for side-by-side panels and `Charming::Presentation::UI.place` to fill the terminal canvas:
-
-```erb
-<%
-sidebar = box("Home\nSettings", style: theme.border.border(:rounded).padding(1, 2).width(20))
-main = box(yield_content, style: theme.border.border(:rounded).padding(1, 2).width(60))
-frame = row(sidebar, main, gap: 1)
-%><%= Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height) %>
-```
-
-## Layout Tool Layers
-
-Charming has two layers of layout tools:
-
-| Layer | Use For | APIs |
-|-------|---------|------|
-| View composition | Building blocks relative to each other | `row`, `column`, `box`, `text` |
-| Spatial placement | Placing blocks on fixed terminal canvases | `Charming::Presentation::UI.center`, `place`, `overlay` |
-
-All layout helpers are ANSI-aware and account for terminal display width.
-
-## Stacked Layouts
-
-Use `column` for vertical screens, forms, and status panels:
-
-```erb
-<%= column(
-  text("Create Project", style: theme.title),
-  row(text("Name", style: theme.muted.width(12)), text(project.name, style: theme.text)),
-  row(text("Owner", style: theme.muted.width(12)), text(project.owner, style: theme.text)),
-  text("Tab moves focus. Enter saves.", style: theme.muted),
-  gap: 1
-) %>
-```
-
-## Sidebars And Split Panes
-
-Give each panel an explicit width so multiline content aligns correctly:
-
-```erb
-<%
-sidebar = box(nav_items, style: theme.border.border(:rounded).padding(1, 2).width(22))
-details = box(yield_content, style: theme.border.border(:rounded).padding(1, 2).width(60))
-%><%= row(sidebar, details, gap: 1) %>
-```
-
-Generated app layouts use route titles and focus state to build sidebar navigation:
-
-```erb
-<%
-nav_items = controller.application.routes.all.each_with_index.map do |route, index|
-  selected = controller.sidebar_focused? && index == controller.sidebar_index
-  style = selected ? theme.selected : theme.muted
-  text route.title, style: style
+```ruby
+screen_layout(background: theme.background) do
+  split :horizontal, gap: 1 do
+    pane(:sidebar, width: 24) { "Sidebar" }
+    pane(:content, grow: 1) { yield_content }
+  end
 end
-%><%= column(*nav_items) %>
 ```
+
+Available primitives:
+
+| Primitive | Purpose |
+|-----------|---------|
+| `screen_layout(background: nil) { ... }` | Render a full-screen layout using the current `screen`. |
+| `split(:horizontal, gap: n) { ... }` | Divide space into left-to-right panes. |
+| `split(:vertical, gap: n) { ... }` | Divide space into top-to-bottom panes. |
+| `pane(:name, **options) { ... }` | Render content into an assigned rectangle. |
+| `overlay(content, top: :center, left: :center)` | Draw content over the finished layout. |
+
+Pane sizing options:
+
+| Option | Behavior |
+|--------|----------|
+| `width: n` | Fixed outer width in a horizontal split. |
+| `height: n` | Fixed outer height in a vertical split. |
+| `grow: n` | Take remaining space, weighted by `n`. |
+| no size | Equivalent to `grow: 1` inside a split. |
+
+Pane styling options:
+
+| Option | Behavior |
+|--------|----------|
+| `border: true` | Draw a normal border. |
+| `border: :rounded` | Draw a named border style. |
+| `padding: 1` | Add equal padding on all sides. |
+| `padding: [1, 2]` | Add vertical and horizontal padding. |
+| `style: theme.title` | Apply a base style. |
+| `focus: true` | Include this pane in the layout's Tab focus ring. |
+| `focused_style: theme.title` | Style the pane when it is focused. Defaults to `theme.title`. |
+| `clip: true` | Clip content to the pane. This is the default. |
+| `wrap: true` | Wrap long lines inside the pane. |
+
+Pane dimensions are outer dimensions. Borders and padding are included in the assigned width and height.
+
+Focusable panes are opt-in. Named panes are not focusable unless `focus: true` is set:
+
+```ruby
+screen_layout do
+  split :horizontal, gap: 1 do
+    pane(:files, width: 32, border: :rounded, focus: true) { files_panel }
+    pane(:diff, grow: 1, border: :rounded, focus: true) { diff_panel }
+  end
+end
+```
+
+The first focusable pane starts focused. `Tab` cycles forward and `Shift+Tab` cycles backward. Command palettes and other modal scopes still take priority while open.
+
+## Screen Views
+
+Screens are Ruby view classes by default:
+
+```ruby
+module MyApp
+  module Home
+    class ShowView < Charming::Presentation::View
+      def render
+        column(
+          text(home.title, style: theme.title),
+          text("Press p for commands, q to quit.", style: theme.muted),
+          gap: 1
+        )
+      end
+    end
+  end
+end
+```
+
+The controller can still render by action name:
+
+```ruby
+def show
+  render :show, home: home, palette: command_palette
+end
+```
+
+For `HomeController`, that resolves `MyApp::Home::ShowView` before falling back to ERB templates.
 
 ## Responsive Layouts
 
-Branch on `screen.width` and `screen.height`:
+Use normal Ruby methods and `screen` dimensions:
 
-```erb
-<%
-narrow = screen.width < 72 && screen.height >= 20
-body = narrow ? column(sidebar, main_content, gap: 1) : row(sidebar, main_content, gap: 1)
-%><%= Charming::Presentation::UI.place(body, width: screen.width, height: screen.height) %>
+```ruby
+def render
+  screen_layout do
+    split(narrow? ? :vertical : :horizontal, gap: 1) do
+      pane(:sidebar, **sidebar_options, border: :rounded, padding: [1, 2]) do
+        navigation
+      end
+
+      pane(:content, grow: 1, border: :rounded, padding: [1, 2]) do
+        yield_content
+      end
+    end
+  end
+end
+
+private
+
+def narrow?
+  screen.narrow?(below: 72, min_height: 20)
+end
+
+def sidebar_options
+  narrow? ? {height: [screen.height / 3, 5].max} : {width: 24}
+end
 ```
-
-## Centered Dialogs
-
-Use `Charming::Presentation::UI.center` to put a block in the middle of a fixed-size canvas:
-
-```erb
-<%
-dialog = box(
-  column(
-    text("Delete project?", style: theme.title),
-    text("This cannot be undone.", style: theme.warn),
-    text("Enter confirms. Escape cancels.", style: theme.muted),
-    gap: 1
-  ),
-  style: theme.border.border(:rounded).padding(1, 2).width(42)
-)
-%><%= Charming::Presentation::UI.center(dialog, width: screen.width, height: screen.height) %>
-```
-
-## Fixed Placement
-
-Use `Charming::Presentation::UI.place` when the final output must fill the terminal:
-
-```erb
-<%
-body = column(header, content, footer, gap: 1)
-%><%= Charming::Presentation::UI.place(body, width: screen.width, height: screen.height, top: 0, left: 0) %>
-```
-
-`top:` and `left:` accept integers or `:center`.
 
 ## Modal Overlays
 
-Use `Charming::Presentation::UI.overlay` to draw a modal, palette, tooltip, or toast over an existing frame:
+Use `overlay` inside `screen_layout` for command palettes, dialogs, tooltips, or toasts:
 
-```erb
-<%
-body = Charming::Presentation::UI.place(frame, width: screen.width, height: screen.height)
+```ruby
+def render
+  screen_layout(background: theme.background) do
+    split :horizontal, gap: 1 do
+      pane(:sidebar, width: 24, border: :rounded) { navigation }
+      pane(:content, grow: 1, border: :rounded) { yield_content }
+    end
 
-if palette
-  modal = render_component Charming::Presentation::Components::Modal.new(
+    overlay command_palette_modal if command_palette_modal
+  end
+end
+
+private
+
+def command_palette_modal
+  return unless palette
+
+  render_component Charming::Presentation::Components::Modal.new(
     title: "Command palette",
     content: palette,
     help: "Type to filter. Enter selects. Escape closes.",
     width: 52,
     theme: theme
   )
-  body = Charming::Presentation::UI.overlay(body, modal)
 end
-%><%= body %>
 ```
 
-## Dashboard Grids
+## Lower-Level Helpers
 
-Compose rows and columns recursively:
+The DSL sits above the lower-level string helpers. Use these inside panes and screen views:
 
-```erb
-<%
-metric = ->(label, value) do
-  box(
-    column(
-      text(label, style: theme.muted),
-      text(value, style: theme.title),
-      gap: 1
-    ),
-    style: theme.border.border(:rounded).padding(1, 2).width(20)
-  )
-end
-%><%= column(
-  row(metric.call("Users", "12k"), metric.call("Revenue", "$8.4k"), gap: 2),
-  row(activity, alerts, gap: 2),
-  gap: 1
-) %>
-```
+| Helper | Purpose |
+|--------|---------|
+| `text(value, style: nil)` | Render styled text. |
+| `box(value, style: nil)` | Style or border a block manually. |
+| `row(*items, gap: 0)` | Join blocks side by side. |
+| `column(*items, gap: 0)` | Stack blocks vertically. |
+| `render_component(component)` | Render reusable components. |
+
+Use `Charming::Presentation::UI.place`, `center`, and `overlay` only when you need lower-level canvas control.
 
 ## Style Chaining
 
 `Charming::Presentation::UI::Style` objects are immutable and chainable:
 
-```erb
-<%
+```ruby
 panel_style = Charming::Presentation::UI.style
   .foreground(:bright_cyan)
   .background("#101820")
@@ -197,7 +245,8 @@ panel_style = Charming::Presentation::UI.style
   .padding(1, 2)
   .width(40)
   .align(:center)
-%><%= box("System ready", style: panel_style) %>
+
+box("System ready", style: panel_style)
 ```
 
 Common style methods:

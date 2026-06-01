@@ -24,12 +24,16 @@ module DemoApp
     end
 
     def advance_loading_progress
-      home.progress = [home.progress + 1, 9].min if home.status == "Loading"
+      return unless home.status == "Loading"
+
+      home.progress = [home.progress + 1, 9].min
       render_home
     end
 
     def advance_loading_activity
-      home.activity_index += 1 if home.status == "Loading"
+      return unless home.status == "Loading"
+
+      home.activity_index += 1
       render_home
     end
 

@@ -36,7 +36,7 @@ module Charming
       end
 
       def view_path
-        File.join("app", "views", name.snake_name, "show.tui.erb")
+        File.join("app", "views", name.snake_name, "show_view.rb")
       end
 
       def spec_state_path
@@ -48,7 +48,7 @@ module Charming
       end
 
       def spec_view_path
-        File.join("spec", "views", name.snake_name, "show_template_spec.rb")
+        File.join("spec", "views", name.snake_name, "show_view_spec.rb")
       end
 
       def route_path
@@ -96,7 +96,17 @@ end
       end
 
       def view
-        %(<%= #{name.snake_name}.title %>
+        %(# frozen_string_literal: true
+
+module #{app_name.class_name}
+  module #{name.class_name}
+    class ShowView < Charming::Presentation::View
+      def render
+        #{name.snake_name}.title
+      end
+    end
+  end
+end
 )
       end
 

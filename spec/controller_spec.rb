@@ -340,6 +340,23 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("refreshed at 1.5")
   end
 
+  it "allows timer actions to no-op without rendering a blank response" do
+    controller = Class.new(described_class) do
+      timer :refresh, every: 0.5, action: :refresh
+
+      def refresh
+        nil
+      end
+    end
+
+    response = controller.new(
+      application: application,
+      event: Charming::Events::TimerEvent.new(name: :refresh, now: 1.5)
+    ).dispatch_timer
+
+    expect(response).to be_nil
+  end
+
   describe "on_task" do
     it "registers task bindings keyed by symbol" do
       controller = Class.new(described_class) do

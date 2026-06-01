@@ -19,6 +19,14 @@ module Charming
       @state[:scopes] << build_scope(slots, :ring)
     end
 
+    def define_layout(slots)
+      current = current_layout_slot(slots)
+      remove_scope(:layout)
+      return if slots.empty?
+
+      @state[:scopes].insert(layout_scope_index, build_scope(slots, :layout, current))
+    end
+
     def push_scope(slots, origin: :modal)
       @state[:scopes] << build_scope(slots, origin)
     end
@@ -58,8 +66,26 @@ module Charming
       @state[:scopes].last
     end
 
-    def build_scope(slots, origin)
-      {ring: slots.dup.freeze, current: slots.first, origin: origin}
+    def remove_scope(origin)
+      @state[:scopes].reject! { |scope| scope[:origin] == origin }
+    end
+
+    def layout_scope_index
+      index = @state[:scopes].index { |scope| !%i[ring layout].include?(scope[:origin]) }
+      index || @state[:scopes].length
+    end
+
+    def current_layout_slot(slots)
+      current_slot = current_layout_scope&.fetch(:current)
+      slots.include?(current_slot) ? current_slot : slots.first
+    end
+
+    def current_layout_scope
+      @state[:scopes].find { |scope| scope[:origin] == :layout }
+    end
+
+    def build_scope(slots, origin, current = slots.first)
+      {ring: slots.dup.freeze, current: current, origin: origin}
     end
   end
 end

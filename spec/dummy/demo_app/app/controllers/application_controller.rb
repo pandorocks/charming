@@ -2,7 +2,7 @@
 
 module DemoApp
   class ApplicationController < Charming::Controller
-    layout "layouts/application"
+    layout Layouts::ApplicationLayout
     focus_ring :sidebar, :content
 
     key "p", :open_command_palette, scope: :global
@@ -13,6 +13,11 @@ module DemoApp
     end
 
     command "Theme", :open_theme_palette
+
+    command "LG Layout" do
+      navigate_to "/lg"
+    end
+
     command "Close palette", :close_command_palette
     command "Quit app", :quit
   end

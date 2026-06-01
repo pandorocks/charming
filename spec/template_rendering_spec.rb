@@ -70,6 +70,74 @@ RSpec.describe "template rendering" do
     end
   end
 
+  it "renders conventional Ruby view classes before ERB templates" do
+    Dir.mktmpdir do |dir|
+      write_template(dir, "home/show.tui.erb", "ERB")
+      stub_const("ClassViewSpec", Module.new)
+      stub_const("ClassViewSpec::Application", Class.new(Charming::Application) { root dir })
+      stub_const("ClassViewSpec::Home", Module.new)
+      stub_const("ClassViewSpec::Home::ShowView", Class.new(Charming::Presentation::View) do
+        def render
+          "Class #{name}"
+        end
+      end)
+      stub_const("ClassViewSpec::HomeController", Class.new(Charming::Controller) do
+        def show
+          render :show, name: "Ruby"
+        end
+      end)
+
+      response = ClassViewSpec::HomeController.new(application: ClassViewSpec::Application.new).dispatch(:show)
+
+      expect(response.body).to eq("Class Ruby")
+    end
+  end
+
+  it "falls back to ERB templates when no conventional Ruby view class exists" do
+    Dir.mktmpdir do |dir|
+      write_template(dir, "home/show.tui.erb", "ERB <%= name %>")
+      stub_const("FallbackViewSpec", Module.new)
+      stub_const("FallbackViewSpec::Application", Class.new(Charming::Application) { root dir })
+      stub_const("FallbackViewSpec::HomeController", Class.new(Charming::Controller) do
+        def show
+          render :show, name: "Ruby"
+        end
+      end)
+
+      response = FallbackViewSpec::HomeController.new(application: FallbackViewSpec::Application.new).dispatch(:show)
+
+      expect(response.body).to eq("ERB Ruby")
+    end
+  end
+
+  it "renders class layouts with rendered content and assigns" do
+    stub_const("ClassLayoutSpec", Module.new)
+    stub_const("ClassLayoutSpec::Application", Class.new(Charming::Application))
+    stub_const("ClassLayoutSpec::Layouts", Module.new)
+    stub_const("ClassLayoutSpec::Layouts::ApplicationLayout", Class.new(Charming::Presentation::View) do
+      def render
+        "Layout(#{yield_content} / #{name})"
+      end
+    end)
+    stub_const("ClassLayoutSpec::Home", Module.new)
+    stub_const("ClassLayoutSpec::Home::ShowView", Class.new(Charming::Presentation::View) do
+      def render
+        "Hello #{name}"
+      end
+    end)
+    stub_const("ClassLayoutSpec::HomeController", Class.new(Charming::Controller) do
+      layout ClassLayoutSpec::Layouts::ApplicationLayout
+
+      def show
+        render :show, name: "Ruby"
+      end
+    end)
+
+    response = ClassLayoutSpec::HomeController.new(application: ClassLayoutSpec::Application.new).dispatch(:show)
+
+    expect(response.body).to eq("Layout(Hello Ruby / Ruby)")
+  end
+
   it "renders explicit template paths from controllers" do
     Dir.mktmpdir do |dir|
       write_template(dir, "custom/page.txt.erb", "Explicit <%= name %>")

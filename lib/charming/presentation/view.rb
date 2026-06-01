@@ -78,6 +78,13 @@ module Charming
         render_component(partial)
       end
 
+      # Builds a declarative layout tree for the current terminal screen and renders it.
+      def screen_layout(background: nil, &)
+        layout = Layout::Builder.build(screen: layout_screen, view: self, background: background, &)
+        register_layout_focus(layout)
+        layout.render
+      end
+
       # Yields the layout's `content` slot — used by view templates to inject their body into a layout wrapper (e.g., sidebar).
       def yield_content
         assigns.fetch(:content, "")
@@ -112,6 +119,16 @@ module Charming
 
           define_singleton_method(name) { assigns.fetch(name) }
         end
+      end
+
+      def layout_screen
+        assigns[:screen] || assigns[:controller]&.screen || Charming::Screen.new(width: 80, height: 24)
+      end
+
+      def register_layout_focus(layout)
+        return unless assigns[:controller]
+
+        assigns[:controller].focus.define_layout(layout.focusable_names)
       end
     end
   end

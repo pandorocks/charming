@@ -4,7 +4,6 @@ module Charming
   module Generators
     class AppGenerator < Base
       include BasicTemplates
-      include ComponentTemplates
       include ControllerTemplate
       include DatabaseTemplates
       include LayoutTemplate
@@ -27,14 +26,13 @@ module Charming
         ["app/state/home_state.rb", :home_state],
         ["app/controllers/application_controller.rb", :application_controller],
         ["app/controllers/home_controller.rb", :controller],
-        ["app/views/layouts/application.tui.erb", :layout],
-        ["app/views/home/show.tui.erb", :view],
-        ["app/components/app_frame_component.rb", :component],
+        ["app/views/layouts/application_layout.rb", :layout],
+        ["app/views/home/show_view.rb", :view],
+        ["app/components/.keep", :keep],
         ["spec/spec_helper.rb", :spec_helper],
         ["spec/state/home_state_spec.rb", :spec_state],
         ["spec/controllers/home_controller_spec.rb", :spec_controller],
-        ["spec/views/home/show_template_spec.rb", :spec_view],
-        ["spec/components/app_frame_component_spec.rb", :spec_component]
+        ["spec/views/home/show_view_spec.rb", :spec_view]
       ].freeze
 
       DATABASE_FILE_TEMPLATES = [

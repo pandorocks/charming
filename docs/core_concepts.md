@@ -74,9 +74,9 @@ end
 
 `Controller#state` stores the state object in the application session and returns the same object on later dispatches.
 
-## Templates And Layouts
+## Views And Layouts
 
-Generated controllers render templates by symbol:
+Generated controllers render views by symbol:
 
 ```ruby
 def show
@@ -87,24 +87,24 @@ end
 For `HomeController`, `render :show` resolves:
 
 ```text
-app/views/home/show.tui.erb
+app/views/home/show_view.rb
 ```
 
-Layouts wrap rendered templates. Generated apps use a template layout:
+Layouts wrap rendered views. Generated apps use a Ruby layout class:
 
 ```ruby
 class ApplicationController < Charming::Controller
-  layout "layouts/application"
+  layout Layouts::ApplicationLayout
 end
 ```
 
 That resolves:
 
 ```text
-app/views/layouts/application.tui.erb
+app/views/layouts/application_layout.rb
 ```
 
-See [Controllers & Templates](controllers_and_templates.md) and [Layouts](layouts.md) for details.
+ERB templates remain available as a fallback. See [Controllers & Templates](controllers_and_templates.md) and [Layouts](layouts.md) for details.
 
 ## Runtime
 

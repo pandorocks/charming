@@ -101,7 +101,7 @@ Class APIs:
 - `timer name, every:, action:` dispatches a periodic timer while the route is active.
 - `on_task name, action:` handles async task completion.
 - `layout layout_class` wraps rendered output in a class-based layout view.
-- `layout "layouts/application"` wraps rendered output in a template layout.
+- `layout "layouts/application"` wraps rendered output in an ERB template layout fallback.
 - `layout false` disables inherited layout wrapping.
 - `focus_ring *slots` defines tab-traversable focus slots.
 
@@ -111,7 +111,7 @@ Instance APIs:
 - `dispatch_key`, `dispatch_timer`, `dispatch_task`, and `dispatch_mouse` dispatch event-specific handlers.
 - `render(body = "", **assigns)` produces a render response.
 - `render "literal"` renders a literal string.
-- `render :show, **assigns` renders `app/views/<controller>/show.tui.erb` or `.txt.erb`.
+- `render :show, **assigns` renders a conventional Ruby view class, falling back to `app/views/<controller>/show.tui.erb` or `.txt.erb`.
 - `render view_object` renders a class-based view or component object.
 - `render_template(name, **assigns)` renders an explicit template path under `app/views`.
 - `navigate_to(path)` produces a navigation response.
@@ -145,9 +145,27 @@ It includes ActiveModel model and attributes support, so typed attributes and va
 
 Common attribute types include `:string`, `:integer`, `:float`, `:boolean`, `:date`, `:datetime`, and `:time`.
 
-## Templates
+## Views And Templates
 
-`Charming::Presentation::Templates` resolves and renders templates under `app/views`.
+Class-based views are the default. Inherit from `Charming::Presentation::View` and implement `render`:
+
+```ruby
+module MyApp
+  module Home
+    class ShowView < Charming::Presentation::View
+      def render
+        text title, style: theme.title
+      end
+    end
+  end
+end
+```
+
+For `render :show` in `HomeController`, Charming resolves `MyApp::Home::ShowView` first.
+
+## Template Fallback
+
+`Charming::Presentation::Templates` resolves and renders ERB templates under `app/views` when no conventional view class exists or when `render_template` is used.
 
 Template APIs:
 
@@ -198,11 +216,11 @@ Instance APIs:
 - `render` renders the template to a string.
 - `template_binding` returns the binding used by ERB handlers.
 
-Generated controllers usually do not instantiate `TemplateView` directly. Use `render :show` or `render_template "path"` from controller actions instead.
+Generated controllers usually do not instantiate `TemplateView` directly. Use Ruby views with `render :show`, or `render_template "path"` for ERB fallback content.
 
 ## View
 
-Class-based views remain supported. Inherit from `Charming::Presentation::View` and implement `render`:
+Inherit from `Charming::Presentation::View` and implement `render`:
 
 ```ruby
 class HomeView < Charming::Presentation::View
@@ -225,6 +243,7 @@ View and template helpers:
 - `box(style: style) { ... }` captures nested helper output into a styled block.
 - `row(*items, gap: 0)` joins rendered items horizontally.
 - `column(*items, gap: 0)` joins rendered items vertically.
+- `screen_layout(background: nil) { ... }` renders a full-screen declarative layout tree with `split`, `pane`, and `overlay`.
 - `style` returns a new `Charming::Presentation::UI::Style`.
 - `theme` returns the assigned theme or default theme.
 - `render_component(component)` renders a component.

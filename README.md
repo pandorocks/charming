@@ -52,8 +52,8 @@ The generator produces a Bundler gem with a Rails-like structure:
 app/controllers/                         # controller actions and input bindings
 app/state/                               # session-backed TUI state
 app/models/                              # optional Active Record models
-app/views/home/show.tui.erb              # screen templates
-app/views/layouts/application.tui.erb    # layout template
+app/views/home/show_view.rb              # screen view classes
+app/views/layouts/application_layout.rb  # layout view class
 app/components/                          # reusable components
 config/routes.rb                         # route definitions
 lib/my_app.rb                            # namespace loader (Zeitwerk)

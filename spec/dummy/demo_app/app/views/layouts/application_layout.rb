@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
-module Charming
-  module Generators
-    class AppGenerator
-      module LayoutTemplate
-        def layout
-          %(# frozen_string_literal: true
-
-module #{name.class_name}
+module DemoApp
   module Layouts
     class ApplicationLayout < Charming::Presentation::View
       def render
@@ -33,7 +26,7 @@ module #{name.class_name}
       end
 
       def narrow?
-        screen.narrow?(below: 72, min_height: 20)
+        screen.width < 72 && screen.height >= 20
       end
 
       def sidebar_options
@@ -45,7 +38,7 @@ module #{name.class_name}
       end
 
       def app_title
-        text "#{name.class_name}", style: theme.header_accent.align(:center).width(sidebar_inner_width)
+        text "DemoApp", style: theme.header_accent.align(:center).width(sidebar_inner_width)
       end
 
       def navigation
@@ -53,15 +46,15 @@ module #{name.class_name}
       end
 
       def nav_items
-        controller.sidebar_routes.each_with_index.map do |route, index|
+        controller.application.routes.all.each_with_index.map do |route, index|
           text nav_item_label(route, index), style: nav_item_style(route, index)
         end
       end
 
       def nav_item_label(route, index)
         cursor = (sidebar_focused? && index == sidebar_index) ? ">" : " "
-        active = current_route?(route) ? "\\u{25cf}" : " "
-        "\#{cursor} \#{active} \#{route.title}"
+        active = current_route?(route) ? "\u{25cf}" : " "
+        "#{cursor} #{active} #{route.title}"
       end
 
       def nav_item_style(route, index)
@@ -114,12 +107,6 @@ module #{name.class_name}
 
       def current_route?(route)
         controller.current_route?(route)
-      end
-    end
-  end
-end
-)
-        end
       end
     end
   end

@@ -24,6 +24,13 @@ module Charming
         layout.new(**assigns)
       end
 
+      def view_body(name, **assigns)
+        view_class = conventional_view_class(name)
+        return view_class.new(**template_assigns(assigns)) if view_class
+
+        template_body(name, **assigns)
+      end
+
       def layout_assigns(body, rendered)
         view_assigns(body).merge(content: rendered, screen: screen, controller: self, theme: theme)
       end
@@ -49,6 +56,28 @@ module Charming
         return nil if namespace_name.to_s.empty?
 
         Object.const_get(namespace_name)
+      end
+
+      def conventional_view_class(name)
+        namespace = template_namespace
+        return unless namespace
+
+        constant_path = conventional_view_constant_path(name)
+        constant_path.reduce(namespace) do |scope, constant_name|
+          break unless scope.const_defined?(constant_name, false)
+
+          scope.const_get(constant_name, false)
+        end
+      end
+
+      def conventional_view_constant_path(name)
+        parts = name.to_s.split("/")
+        action = parts.pop
+        parts.map { |part| camelize(part) } + ["#{camelize(action)}View"]
+      end
+
+      def camelize(value)
+        value.to_s.split("_").map(&:capitalize).join
       end
 
       def default_template_name(action)
