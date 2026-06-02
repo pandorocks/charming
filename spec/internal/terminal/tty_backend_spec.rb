@@ -115,7 +115,21 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     backend.write_lines([[2, "updated"], [4, ""]])
 
-    expect(output.string).to eq("\e[?7l\e[2;1H\e[2Kupdated\e[4;1H\e[2K\e[?7h")
+    expect(output.string).to eq("\e[?7l\e[0m\e[2;1H\e[2Kupdated\e[0m\e[0m\e[4;1H\e[2K\e[0m\e[?7h")
+  end
+
+  it "resets styling around every line update" do
+    output = StringIO.new
+    backend = described_class.new(
+      input: StringIO.new,
+      output: output,
+      reader: TTYBackendSpecReader.new(keys: {}),
+      cursor: TTYBackendSpecCursor
+    )
+
+    backend.write_lines([[2, "\e[31mred"], [3, "plain"]])
+
+    expect(output.string).to eq("\e[?7l\e[0m\e[2;1H\e[2K\e[31mred\e[0m\e[0m\e[3;1H\e[2Kplain\e[0m\e[?7h")
   end
 
   it "writes full frames with positioned rows and auto-wrap disabled" do
@@ -129,7 +143,7 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     backend.write_frame("one\ntwo")
 
-    expect(output.string).to eq("\e[?7l\e[1;1H\e[2Kone\e[2;1H\e[2Ktwo\e[?7h")
+    expect(output.string).to eq("\e[?7l\e[0m\e[1;1H\e[2Kone\e[0m\e[0m\e[2;1H\e[2Ktwo\e[0m\e[?7h")
   end
 
   it "returns a resize event after a resize notification" do

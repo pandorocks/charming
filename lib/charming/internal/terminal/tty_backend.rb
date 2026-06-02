@@ -120,7 +120,7 @@ module Charming
         # Writes a partial frame composed of [row, line] tuples (1-based rows).
         def write_lines(line_changes, **)
           without_auto_wrap do
-            write_control(line_changes.map { |row, line| "\e[#{row};1H\e[2K#{line}" }.join)
+            write_control(line_changes.map { |row, line| positioned_line(row, line) }.join)
           end
         end
 
@@ -180,7 +180,13 @@ module Charming
         # Writes *lines* one row at a time, with each line preceded by an ANSI cursor
         # position and a clear-to-end-of-line sequence.
         def write_positioned_lines(lines)
-          write_control(lines.each_with_index.map { |line, index| "\e[#{index + 1};1H\e[2K#{line}" }.join)
+          write_control(lines.each_with_index.map { |line, index| positioned_line(index + 1, line) }.join)
+        end
+
+        # Resets SGR before and after each row so partial repaint rows cannot inherit
+        # colors/backgrounds from the previous physical terminal line.
+        def positioned_line(row, line)
+          "\e[0m\e[#{row};1H\e[2K#{line}\e[0m"
         end
 
         # Disables auto-wrap, yields, then re-enables it and flushes the output.
