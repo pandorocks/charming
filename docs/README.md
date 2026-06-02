@@ -13,7 +13,7 @@ New users:
 App builders:
 
 1. [Routing](routing.md)
-2. [Controllers & Templates](controllers_and_templates.md)
+2. [Controllers & Views](controllers_and_templates.md)
 3. [State](state.md)
 4. [Database](database.md)
 
@@ -35,7 +35,7 @@ Maintainers:
 | [Getting Started](getting_started.md) | Build and run a generated Charming app. |
 | [Core Concepts](core_concepts.md) | App architecture, runtime flow, ephemeral controllers, and state. |
 | [Routing](routing.md) | `root`, `screen`, dynamic params, route titles, and route order. |
-| [Controllers & Templates](controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
+| [Controllers & Views](controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
 | [Layouts](layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
 | [State](state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
 | [Database](database.md) | Optional SQLite persistence with Active Record models and migrations. |

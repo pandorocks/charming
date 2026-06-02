@@ -26,6 +26,9 @@ module Charming
         # Ellipsis frame sequence: four states cycle through "., "..", "...", and "" (empty).
         ELLIPSIS_FRAMES = [".", "..", "...", ""].freeze
 
+        # Minimum bar width reserved when deciding whether a long label can fit before falling back.
+        MIN_FITTED_INDICATOR_WIDTH = 4
+
         # Number of frames in the animation cycle before the indicator pattern repeats.
         FRAME_COUNT = 10
 
@@ -34,7 +37,7 @@ module Charming
         FNV_PRIME = 16_777_619
         FNV_MASK = 0xffffffff
 
-        attr_reader :width, :label, :index, :seed, :chars, :gradient, :label_style
+        attr_reader :width, :label, :index, :seed, :chars, :gradient, :label_style, :max_width, :fallback_label
 
         # Initializes a new ActivityIndicator with configurable visual parameters.
         # width       — Display width of the gradient bar in characters (minimum 1). Default: 10.
@@ -43,9 +46,11 @@ module Charming
         # seed        — Hash seed that determines which characters appear at each position.
         # chars       — Character pool to draw from (default is DEFAULT_CHARS).
         # gradient    — Two-element array of hex color strings ["#rrggbb", "#rrggbb"] for interpolation.
-        # label_style — A Style object to use for rendering the label text; falls back to a gray foreground.
+        # label_style    — A Style object to use for rendering the label text; falls back to a gray foreground.
+        # max_width      — Optional total display width cap for the indicator, label, and ellipsis.
+        # fallback_label — Optional shorter label used when the primary label cannot fit within max_width.
         def initialize(width: 10, label: nil, index: 0, seed: 0, chars: DEFAULT_CHARS,
-          gradient: DEFAULT_GRADIENT, label_style: nil)
+          gradient: DEFAULT_GRADIENT, label_style: nil, max_width: nil, fallback_label: nil)
           super()
           raise ArgumentError, "chars cannot be empty" if chars.empty?
 
@@ -56,6 +61,8 @@ module Charming
           @chars = chars.map(&:to_s)
           @gradient = gradient
           @label_style = label_style
+          @max_width = max_width&.to_i
+          @fallback_label = fallback_label
         end
 
         # Advances the frame counter forward by +count+ steps, allowing the displayed pattern to change.
@@ -81,7 +88,7 @@ module Charming
         # making the pattern stable across renders — then styled with the interpolated gradient color
         # at that position.
         def indicator
-          Array.new(width) { |position| styled_char(position) }.join
+          Array.new(indicator_width) { |position| styled_char(position) }.join
         end
 
         # Selects a character for the bar at the given +position+, styles it with the gradient color
@@ -99,7 +106,7 @@ module Charming
 
         # Renders the label text in its own style (or fallback gray color) via a Style renderer call.
         def styled_label
-          label_style_or_default.render(label.to_s)
+          label_style_or_default.render(label_text)
         end
 
         # Renders an ellipsis frame (".", "..", "...", or empty) based on (index / 4) mod 4, styled with the label style.
@@ -117,12 +124,46 @@ module Charming
           label_style || style.foreground(DEFAULT_LABEL_COLOR)
         end
 
+        # Returns the label to render, using fallback_label when the primary label cannot fit
+        # alongside a minimal indicator and the widest ellipsis frame.
+        def label_text
+          return label.to_s unless use_fallback_label?
+
+          fallback_label.to_s
+        end
+
+        # True when the primary label cannot fit within max_width even with a compact indicator.
+        def use_fallback_label?
+          return false unless max_width && fallback_label
+
+          fitted_width(label.to_s, MIN_FITTED_INDICATOR_WIDTH) > max_width
+        end
+
+        # Returns the fitted indicator width after reserving room for label text and the widest ellipsis.
+        def indicator_width
+          return width unless max_width && label
+
+          (max_width - label_width - 1 - widest_ellipsis_width).clamp(1, width)
+        end
+
+        def label_width
+          UI::Width.measure(label_text)
+        end
+
+        def fitted_width(text, indicator_width)
+          indicator_width + 1 + UI::Width.measure(text) + widest_ellipsis_width
+        end
+
+        def widest_ellipsis_width
+          @widest_ellipsis_width ||= ELLIPSIS_FRAMES.map { |frame| UI::Width.measure(frame) }.max
+        end
+
         # Interpolates between gradient[0] and gradient[1] at the fractional +position+ (0.0 to 1.0).
         # Returns the first gradient color if width is 1; otherwise returns a blended hex string based on position.
         def color_at(position)
-          return gradient.first unless width > 1
+          return gradient.first unless indicator_width > 1
 
-          blend(gradient.first, gradient.last, position / (width - 1).to_f)
+          blend(gradient.first, gradient.last, position / (indicator_width - 1).to_f)
         end
 
         # Blends two hex colors by interpolating their red/green/blue components at fractional +amount+.

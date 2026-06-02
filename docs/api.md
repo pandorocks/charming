@@ -243,7 +243,7 @@ View and template helpers:
 - `box(style: style) { ... }` captures nested helper output into a styled block.
 - `row(*items, gap: 0)` joins rendered items horizontally.
 - `column(*items, gap: 0)` joins rendered items vertically.
-- `screen_layout(background: nil) { ... }` renders a full-screen declarative layout tree with `split`, `pane`, and `overlay`.
+- `screen_layout(background: nil) { ... }` renders a full-screen declarative layout tree with `split`, `pane`, and `overlay`. `pane` blocks may accept a `Charming::Presentation::Layout::Rect` argument for the pane's inner content area.
 - `style` returns a new `Charming::Presentation::UI::Style`.
 - `theme` returns the assigned theme or default theme.
 - `render_component(component)` renders a component.
@@ -283,6 +283,7 @@ Bundled components:
 - `Charming::Presentation::Components::Form`
 - `Charming::Presentation::Components::List`
 - `Charming::Presentation::Components::CommandPalette`
+- `Charming::Presentation::Components::CommandPaletteModal`
 - `Charming::Presentation::Components::Modal`
 - `Charming::Presentation::Components::Markdown`
 - `Charming::Presentation::Components::Viewport`
@@ -291,6 +292,8 @@ Bundled components:
 - `Charming::Presentation::Components::ActivityIndicator`
 - `Charming::Presentation::Components::Table`
 - `Charming::Presentation::Components::KeyboardHandler`
+
+ActivityIndicator constructor options include `width:`, `label:`, `index:`, `seed:`, `chars:`, `gradient:`, `label_style:`, `max_width:`, and `fallback_label:`.
 
 Form component constructor:
 

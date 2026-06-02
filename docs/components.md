@@ -41,6 +41,7 @@ Assigns passed to `new` become reader methods:
 | `Form` | Huh-inspired form component with input, select, confirm, and note fields. |
 | `List` | Selectable list with keyboard navigation and mouse support. |
 | `Modal` | Overlay dialog with title, content, and help text. |
+| `CommandPaletteModal` | Standard modal wrapper for command palette content. |
 | `CommandPalette` | Fuzzy-search command input used internally by the framework. |
 | `Markdown` | Markdown renderer backed by Kramdown with Rouge syntax highlighting for code blocks. |
 | `Viewport` | Scrollable container for tall content lists. |
@@ -49,6 +50,17 @@ Assigns passed to `new` become reader methods:
 | `Progressbar` | Text-based progress bar. |
 | `Table` | Unicode-rendered data table with keyboard and mouse selection. |
 | `KeyboardHandler` | Key-mapping mixin for custom components. |
+
+`ActivityIndicator` accepts `max_width:` and `fallback_label:` to keep labeled loading indicators stable in constrained layouts:
+
+```ruby
+render_component Charming::Presentation::Components::ActivityIndicator.new(
+  width: 24,
+  label: "Loading Top Stories",
+  max_width: content_width,
+  fallback_label: "Working"
+)
+```
 
 ## Markdown
 

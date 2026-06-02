@@ -88,7 +88,15 @@ module MyApp
 end
 ```
 
-For `HomeController`, `render :show` resolves:
+There are three pieces in this generated screen:
+
+- `HomeState` stores durable in-memory state.
+- `HomeController#home` returns that state object.
+- `render :show, home: home` passes the state object into the view as the `home` assign.
+
+The left side of `home: home` is the assign name. The right side calls the controller's `home` method. Inside the view, that assign becomes the `home` method, so `home.title` reads from `HomeState#title`.
+
+`render :show` resolves the view from the controller/action name, not from the state class. For `HomeController#show`, it resolves:
 
 ```text
 app/views/home/show_view.rb
@@ -112,7 +120,7 @@ module MyApp
 end
 ```
 
-Read more in [Controllers & Templates](controllers_and_templates.md).
+Read more in [Controllers & Views](controllers_and_templates.md).
 
 ## Layouts
 

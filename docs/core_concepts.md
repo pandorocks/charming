@@ -104,7 +104,7 @@ That resolves:
 app/views/layouts/application_layout.rb
 ```
 
-ERB templates remain available as a fallback. See [Controllers & Templates](controllers_and_templates.md) and [Layouts](layouts.md) for details.
+ERB templates remain available as a fallback. See [Controllers & Views](controllers_and_templates.md) and [Layouts](layouts.md) for details.
 
 ## Runtime
 

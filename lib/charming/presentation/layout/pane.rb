@@ -58,15 +58,21 @@ module Charming
 
         # Returns the content string for *rect*, optionally clipped/scrolled by an embedded Viewport.
         def rendered_content(rect)
-          value = evaluate_content
+          content_rect = inner_rect(rect)
+          value = evaluate_content(content_rect)
           return value unless clip || scroll
 
-          Components::Viewport.new(content: value, width: inner_rect(rect).width, height: inner_rect(rect).height, wrap: wrap).render
+          Components::Viewport.new(content: value, width: content_rect.width, height: content_rect.height, wrap: wrap).render
         end
 
         # Evaluates the configured content (block or constant) and renders it to a string.
-        def evaluate_content
-          value = block ? view.instance_exec(&block) : content
+        # Pane blocks may accept the inner content Rect when they need exact available dimensions.
+        def evaluate_content(content_rect)
+          value = if block
+            block.arity.zero? ? view.instance_exec(&block) : view.instance_exec(content_rect, &block)
+          else
+            content
+          end
           value.respond_to?(:render) ? value.render.to_s : value.to_s
         end
 

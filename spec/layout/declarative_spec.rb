@@ -50,6 +50,40 @@ RSpec.describe Charming::Presentation::Layout::Builder do
     expect(output).to eq("+------+\n|      |\n| X    |\n|      |\n+------+")
   end
 
+  it "yields the pane content rect to pane blocks" do
+    output = build_layout(screen: Charming::Screen.new(width: 8, height: 5)) do
+      pane border: :normal, padding: 1 do |rect|
+        "#{rect.width}x#{rect.height}"
+      end
+    end
+
+    expect(output).to include("4x1")
+  end
+
+  it "yields positioned rects for panes inside splits" do
+    rects = []
+    layout = described_class.build(screen: Charming::Screen.new(width: 10, height: 3), view: view) do
+      split :horizontal, gap: 1 do
+        pane width: 3 do |rect|
+          rects << rect
+          "L"
+        end
+
+        pane grow: 1 do |rect|
+          rects << rect
+          "R"
+        end
+      end
+    end
+
+    layout.render
+
+    expect(rects).to eq([
+      Charming::Presentation::Layout::Rect.new(x: 0, y: 0, width: 3, height: 3),
+      Charming::Presentation::Layout::Rect.new(x: 4, y: 0, width: 6, height: 3)
+    ])
+  end
+
   it "clips oversized pane content" do
     output = build_layout(screen: Charming::Screen.new(width: 4, height: 2)) do
       pane do

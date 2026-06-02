@@ -67,4 +67,21 @@ RSpec.describe Charming::Presentation::Components::ActivityIndicator do
 
     expect(plain(indicator.render)).to end_with(" Working...")
   end
+
+  it "shrinks the indicator bar to fit a maximum width" do
+    indicator = described_class.new(width: 24, label: "Loading Top Stories", index: 8, seed: 1, max_width: 30, fallback_label: "Working")
+    output = plain(indicator.render)
+
+    expect(output).to include("Loading Top Stories")
+    expect(output.length).to be <= 30
+  end
+
+  it "uses a fallback label when the primary label cannot fit" do
+    indicator = described_class.new(width: 24, label: "Loading Very Long Feed Name", index: 8, seed: 1, max_width: 20, fallback_label: "Working")
+    output = plain(indicator.render)
+
+    expect(output).to include("Working")
+    expect(output).not_to include("Loading Very Long Feed Name")
+    expect(output.length).to be <= 20
+  end
 end

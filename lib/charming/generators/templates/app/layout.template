@@ -84,11 +84,8 @@ module __APP_CLASS__
       def command_palette_modal
         return unless palette_component
 
-        render_component Charming::Presentation::Components::Modal.new(
+        render_component Charming::Presentation::Components::CommandPaletteModal.new(
           content: palette_component,
-          title: "Command palette",
-          help: "Type to filter. Enter selects. Escape closes.",
-          width: 52,
           theme: theme
         )
       end

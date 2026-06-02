@@ -22,7 +22,9 @@ module MyApp
 end
 ```
 
-`render :show` resolves the conventional Ruby view class for the current controller action:
+The controller's private `home` method returns the screen state object. `render :show, home: home` passes that object into the view as the `home` assign.
+
+`render :show` resolves the conventional Ruby view class from the controller/action name, not from the state class:
 
 ```text
 app/views/home/show_view.rb
@@ -39,7 +41,7 @@ Controller render forms:
 | `render "literal text"` | Renders a literal string. |
 | `render view_object` | Renders a class-based view or component object. |
 
-Assigns passed to `render` become methods in the view:
+Assigns passed to `render` become methods in the view. In `home: home`, the left `home` is the assign name and the right `home` calls the controller method:
 
 ```ruby
 render :show, home: home, palette: command_palette
@@ -56,6 +58,8 @@ module MyApp
   end
 end
 ```
+
+Because the controller passed `home: home`, the view can call `home.title`. That title comes from the `HomeState` object returned by the controller's `home` method.
 
 Views also receive `screen`, `controller`, and `theme` assigns.
 

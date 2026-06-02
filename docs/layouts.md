@@ -74,7 +74,7 @@ Use `yield_content` to place the current screen inside the layout.
 screen_layout(background: theme.background) do
   split :horizontal, gap: 1 do
     pane(:sidebar, width: 24) { "Sidebar" }
-    pane(:content, grow: 1) { yield_content }
+    pane(:content, grow: 1) { |rect| "Content area: #{rect.width}x#{rect.height}" }
   end
 end
 ```
@@ -113,6 +113,14 @@ Pane styling options:
 | `wrap: true` | Wrap long lines inside the pane. |
 
 Pane dimensions are outer dimensions. Borders and padding are included in the assigned width and height.
+
+Pane blocks may accept a `Charming::Presentation::Layout::Rect` argument. The yielded rect is the pane's inner content area after border and padding are applied, so components can render to their actual available width and height:
+
+```ruby
+pane(:content, grow: 1, border: :rounded, padding: [1, 2]) do |rect|
+  render_component FeedList.new(width: rect.width, height: rect.height)
+end
+```
 
 Focusable panes are opt-in. Named panes are not focusable unless `focus: true` is set:
 
@@ -208,11 +216,8 @@ private
 def command_palette_modal
   return unless palette
 
-  render_component Charming::Presentation::Components::Modal.new(
-    title: "Command palette",
+  render_component Charming::Presentation::Components::CommandPaletteModal.new(
     content: palette,
-    help: "Type to filter. Enter selects. Escape closes.",
-    width: 52,
     theme: theme
   )
 end
