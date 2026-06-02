@@ -35,7 +35,7 @@ module Charming
           @previous_frame = frame
         end
 
-        # Computes the per-line diff against the previous frame, writes the changed lines,
+        # Computes the per-line diff against the previous frame, writes only changed lines,
         # and records the new frame. Falls back to a full repaint when the output backend
         # doesn't support partial writes.
         def render_changes(frame)
@@ -50,15 +50,17 @@ module Charming
           @previous_frame = frame
         end
 
-        # Returns an array of [1-based-row, line] tuples covering the larger of the two
-        # frames' line counts, with empty strings padding the shorter frame.
+        # Returns an array of [1-based-row, line] tuples for rows whose content changed.
+        # Empty strings clear rows that existed in the previous frame but not the new one.
         def changed_lines(previous_frame, frame)
           previous_lines = previous_frame.lines(chomp: true)
           lines = frame.lines(chomp: true)
           line_count = [previous_lines.length, lines.length].max
 
-          line_count.times.map do |index|
-            [index + 1, lines[index] || ""]
+          line_count.times.filter_map do |index|
+            line = lines[index] || ""
+            previous_line = previous_lines[index] || ""
+            [index + 1, line] unless line == previous_line
           end
         end
       end

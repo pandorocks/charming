@@ -32,7 +32,7 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     )
   end
 
-  it "updates every row of changed frames without clearing" do
+  it "updates only changed rows without clearing" do
     backend = Charming::Internal::Terminal::MemoryBackend.new
     renderer = described_class.new(backend)
 
@@ -40,7 +40,7 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     renderer.render("one\nTWO\nthree")
 
     expect(backend.frames).to eq(%W[one\ntwo\nthree one\nTWO\nthree])
-    expect(backend.operations.last).to eq([:write_lines, [[1, "one"], [2, "TWO"], [3, "three"]]])
+    expect(backend.operations.last).to eq([:write_lines, [[2, "TWO"]]])
     expect(backend.operations.count(:clear)).to eq(1)
   end
 
@@ -52,6 +52,6 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     renderer.render("one")
 
     expect(backend.frames.last).to eq("one")
-    expect(backend.operations.last).to eq([:write_lines, [[1, "one"], [2, ""], [3, ""]]])
+    expect(backend.operations.last).to eq([:write_lines, [[2, ""], [3, ""]]])
   end
 end
