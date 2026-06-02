@@ -108,6 +108,8 @@ RSpec.describe Charming::CLI do
       Charming::Runtime.new(WeatherTui::Application.new, backend: backend).run
       expect(backend.frames.first).to include("p commands")
       expect(backend.frames.first).to include("q quit")
+      expect(backend.frames.first).to include("> \u{25cf} Home")
+      expect(backend.frames.first).not_to include('#{cursor}')
       expect(backend.frames.join("\n")).to include("Command palette")
       expect(backend.frames.first.lines.count).to eq(12)
 

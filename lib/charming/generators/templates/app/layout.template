@@ -54,7 +54,7 @@ module __APP_CLASS__
       def nav_item_label(route, index)
         cursor = (sidebar_focused? && index == sidebar_index) ? ">" : " "
         active = current_route?(route) ? "\u{25cf}" : " "
-        "\#{cursor} \#{active} \#{route.title}"
+        "#{cursor} #{active} #{route.title}"
       end
 
       def nav_item_style(route, index)
