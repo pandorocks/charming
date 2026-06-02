@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+require "__APP_SNAKE__"
+
+RSpec.describe __APP_CLASS__::__RESOURCE_MODULE__::ShowView do
+  describe "#render" do
+    it "renders the state title" do
+      view = described_class.new(__SCREEN_NAME__: double(title: "__TITLE__"))
+
+      expect(view.render).to eq("__TITLE__")
+    end
+  end
+end

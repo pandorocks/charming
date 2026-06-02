@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+require "__APP_SNAKE__"
+
+RSpec.describe __APP_CLASS__::Home::ShowView do
+  describe "#render" do
+    it "renders the state title" do
+      view = described_class.new(
+        home: double(title: "__APP_NAME__"),
+        theme: __APP_CLASS__::Application.new.theme
+      )
+
+      expect(view.render).to include("__APP_NAME__")
+    end
+  end
+end

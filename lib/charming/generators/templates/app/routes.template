@@ -1,0 +1,5 @@
+# frozen_string_literal: true
+
+__APP_CLASS__::Application.routes do
+  root "home#show"
+end

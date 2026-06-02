@@ -20,16 +20,10 @@ module Charming
 
       # The full source of the generated component class.
       def component
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.component_class_name} < Charming::Presentation::Component
-    def render
-      text "#{name.class_name}"
-    end
-  end
-end
-)
+        render_template("component/component.rb.template",
+          app_class: app_name.class_name,
+          component_class: name.component_class_name,
+          resource_name: name.class_name)
       end
     end
   end

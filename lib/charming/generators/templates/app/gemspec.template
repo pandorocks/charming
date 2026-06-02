@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+require_relative "lib/__APP_SNAKE__/version"
+
+Gem::Specification.new do |spec|
+__GEMSPEC_ATTRIBUTES____GEMSPEC_DEPENDENCIES__end

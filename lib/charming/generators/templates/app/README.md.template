@@ -1,0 +1,9 @@
+# __APP_NAME__
+
+A Charming terminal user interface.
+
+Run it with:
+
+```sh
+bundle exec __APP_SNAKE__
+```

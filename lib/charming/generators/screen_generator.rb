@@ -7,8 +7,6 @@ module Charming
     # matching spec files, and inserts a route into `config/routes.rb` and a command entry
     # into `ApplicationController` for the command palette.
     class ScreenGenerator < AppFileGenerator
-      include AppGenerator::ScreenSpecTemplates
-
       # *name* is the resource name. *args* is unused (raises Error when non-empty).
       def initialize(name, args, out:, destination:, force: false)
         super
@@ -77,57 +75,68 @@ module Charming
 
       # The source of the generated state class.
       def state
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.class_name}State < ApplicationState
-    attribute :title, :string, default: "#{name.class_name}"
-  end
-end
-)
+        render_template("screen/state.rb.template",
+          app_class: app_name.class_name,
+          state_class: "#{name.class_name}State",
+          title: name.class_name)
       end
 
       # The source of the generated controller class.
       def controller
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.controller_class_name} < ApplicationController
-#{controller_body}
-  end
-end
-)
+        render_template("screen/controller.rb.template",
+          app_class: app_name.class_name,
+          controller_class: name.controller_class_name,
+          controller_body: controller_body)
       end
 
       # The body of the controller: a `show` action and a private accessor for the state.
       def controller_body
-        %(    def show
-      render :show,
-        #{name.snake_name}: #{name.snake_name},
-        palette: command_palette
-    end
-
-    private
-
-    def #{name.snake_name}
-      state(:#{name.snake_name}, #{name.class_name}State)
-    end)
+        "    def show\n" \
+          "      render :show,\n" \
+          "        #{name.snake_name}: #{name.snake_name},\n" \
+          "        palette: command_palette\n" \
+          "    end\n" \
+          "\n" \
+          "    private\n" \
+          "\n" \
+          "    def #{name.snake_name}\n" \
+          "      state(:#{name.snake_name}, #{name.class_name}State)\n" \
+          "    end"
       end
 
       # The source of the generated view class.
       def view
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  module #{name.class_name}
-    class ShowView < Charming::Presentation::View
-      def render
-        #{name.snake_name}.title
+        render_template("screen/view.rb.template",
+          app_class: app_name.class_name,
+          resource_module: name.class_name,
+          screen_name: name.snake_name)
       end
-    end
-  end
-end
-)
+
+      # The source of the generated state spec.
+      def spec_state
+        render_template("screen/spec_state.rb.template",
+          app_snake: app_name.snake_name,
+          app_class: app_name.class_name,
+          state_class: "#{name.class_name}State",
+          title: name.class_name)
+      end
+
+      # The source of the generated controller spec.
+      def spec_controller
+        render_template("screen/spec_controller.rb.template",
+          app_snake: app_name.snake_name,
+          app_class: app_name.class_name,
+          controller_class: name.controller_class_name)
+      end
+
+      # The source of the generated view spec.
+      def spec_view
+        render_template("screen/spec_view.rb.template",
+          app_snake: app_name.snake_name,
+          app_class: app_name.class_name,
+          resource_module: name.class_name,
+          screen_name: name.snake_name,
+          title: name.class_name)
       end
 
       # Inserts a `screen` route into `config/routes.rb`, idempotently.

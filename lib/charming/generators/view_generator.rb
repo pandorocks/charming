@@ -31,18 +31,11 @@ module Charming
 
       # The full source of the generated view class.
       def view
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  module #{name.class_name}
-    class #{action_class_name}View < Charming::Presentation::View
-      def render
-        "#{name.class_name}"
-      end
-    end
-  end
-end
-)
+        render_template("view/view.rb.template",
+          app_class: app_name.class_name,
+          resource_module: name.class_name,
+          resource_name: name.class_name,
+          action_view_class: action_class_name)
       end
 
       # CamelCase rendering of the action name (e.g., "user_settings" → "UserSettings").

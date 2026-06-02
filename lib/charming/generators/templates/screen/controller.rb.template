@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+module __APP_CLASS__
+  class __CONTROLLER_CLASS__ < ApplicationController
+__CONTROLLER_BODY__
+  end
+end

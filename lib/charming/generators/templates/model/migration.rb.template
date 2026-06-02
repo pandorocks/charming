@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+class Create__TABLE_CLASS__ < ActiveRecord::Migration[8.1]
+  def change
+    create_table :__TABLE_NAME__ do |t|
+__FIELD_LINES__      t.timestamps
+    end
+  end
+end

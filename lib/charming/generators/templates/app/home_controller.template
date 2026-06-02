@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+module __APP_CLASS__
+  class HomeController < ApplicationController
+__CONTROLLER_ACTIONS____CONTROLLER_HELPERS__  end
+end

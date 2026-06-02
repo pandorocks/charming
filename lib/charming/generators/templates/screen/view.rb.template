@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+module __APP_CLASS__
+  module __RESOURCE_MODULE__
+    class ShowView < Charming::Presentation::View
+      def render
+        __SCREEN_NAME__.title
+      end
+    end
+  end
+end

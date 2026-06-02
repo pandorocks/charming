@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+module __APP_CLASS__
+  class __STATE_CLASS__ < ApplicationState
+    attribute :title, :string, default: "__TITLE__"
+  end
+end

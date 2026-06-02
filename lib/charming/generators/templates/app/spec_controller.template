@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+require "__APP_SNAKE__"
+
+RSpec.describe __APP_CLASS__::HomeController do
+  let(:application) { __APP_CLASS__::Application.new }
+
+  subject(:controller) { described_class.new(application: application) }
+
+  describe "#show" do
+    it "renders the view with the state" do
+      response = controller.dispatch(:show)
+
+      expect(response).to respond_to(:body)
+    end
+  end
+end

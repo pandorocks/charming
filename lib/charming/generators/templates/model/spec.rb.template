@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+require "__APP_SNAKE__"
+
+RSpec.describe __APP_CLASS__::__MODEL_CLASS__ do
+  it "inherits from ApplicationRecord" do
+    expect(described_class.superclass).to eq(__APP_CLASS__::ApplicationRecord)
+  end
+end

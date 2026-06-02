@@ -56,49 +56,32 @@ module Charming
 
       # The full source of the generated ActiveRecord model class.
       def model
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.class_name} < ApplicationRecord
-  end
-end
-)
+        render_template("model/model.rb.template",
+          app_class: app_name.class_name,
+          model_class: name.class_name)
       end
 
       # The full source of the generated migration, with one `t.<type> :<name>` line per field.
       def migration
-        %(# frozen_string_literal: true
-
-class Create#{table_class_name} < ActiveRecord::Migration[8.1]
-  def change
-    create_table :#{table_name} do |t|
-#{field_lines}      t.timestamps
-    end
-  end
-end
-)
+        render_template("model/migration.rb.template",
+          table_class: table_class_name,
+          table_name: table_name,
+          field_lines: field_lines)
       end
 
       # The full source of the generated model spec (asserts the model inherits from
       # `ApplicationRecord`).
       def spec
-        %(# frozen_string_literal: true
-
-require "#{app_name.snake_name}"
-
-RSpec.describe #{app_name.class_name}::#{name.class_name} do
-  it "inherits from ApplicationRecord" do
-    expect(described_class.superclass).to eq(#{app_name.class_name}::ApplicationRecord)
-  end
-end
-)
+        render_template("model/spec.rb.template",
+          app_snake: app_name.snake_name,
+          app_class: app_name.class_name,
+          model_class: name.class_name)
       end
 
       # Renders one `t.<type> :<name>` line per field, joined together.
       def field_lines
         fields.map { |field|
-          %(      t.#{field.type} :#{field.name}
-)
+          "      t.#{field.type} :#{field.name}\n"
         }.join
       end
 

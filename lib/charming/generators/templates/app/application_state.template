@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+module __APP_CLASS__
+  class ApplicationState < Charming::ApplicationState
+  end
+end

@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+require "active_record"
+require "fileutils"
+
+database_path = File.expand_path("../db/development.sqlite3", __dir__)
+FileUtils.mkdir_p(File.dirname(database_path))
+
+ActiveRecord::Base.establish_connection(
+  adapter: "sqlite3",
+  database: database_path
+)

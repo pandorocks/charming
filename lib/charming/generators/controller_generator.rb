@@ -32,13 +32,10 @@ module Charming
 
       # The full source of the generated controller file.
       def controller
-        %(# frozen_string_literal: true
-
-module #{app_name.class_name}
-  class #{name.controller_class_name} < ApplicationController
-#{action_methods}  end
-end
-)
+        render_template("controller/controller.rb.template",
+          app_class: app_name.class_name,
+          controller_class: name.controller_class_name,
+          action_methods: action_methods)
       end
 
       # Renders one action method per action name; falls back to a single `show` action
@@ -52,10 +49,9 @@ end
       # Source for a single action method that renders the matching conventional view and
       # passes the command palette as an assign.
       def action_method(action)
-        %(    def #{action}
-      render :#{action}, palette: command_palette
-    end
-)
+        "    def #{action}\n" \
+          "      render :#{action}, palette: command_palette\n" \
+          "    end\n"
       end
     end
   end
