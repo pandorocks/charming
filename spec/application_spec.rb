@@ -3,6 +3,13 @@
 require "tmpdir"
 
 RSpec.describe Charming::Application do
+  it "derives its namespace from the application class name" do
+    stub_const("NamespaceSpec", Module.new)
+    stub_const("NamespaceSpec::Application", Class.new(described_class))
+
+    expect(NamespaceSpec::Application.namespace).to eq("NamespaceSpec")
+  end
+
   it "registers multiple themes and switches the active theme" do
     Dir.mktmpdir do |dir|
       File.write(File.join(dir, "custom.json"), custom_theme_json(title: "#112233"))

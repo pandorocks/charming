@@ -19,7 +19,7 @@ module Charming
       # Derives the module namespace from the class name — e.g., Admin::HomeController
       # yields "Admin". Mirrors Rails' engine-style namespacing.
       def namespace
-        name&.split("::")&.then { |parts| parts[0...-1].join("::") }
+        ActiveSupport::Inflector.deconstantize(name.to_s)
       end
 
       # Returns the app's filesystem root, used to resolve relative theme and template paths.

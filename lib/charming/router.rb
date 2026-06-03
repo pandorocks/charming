@@ -108,20 +108,15 @@ module Charming
       end
     end
 
-    # Splits a camel-case string into words for title derivation (e.g., "my_route" → ["my", "route"]).
-    def camelize(value)
-      value.split("_").map(&:capitalize).join
-    end
-
     # Looks up a constant by name in Object. Used to resolve controller strings from route definitions.
     def constantize(name)
-      Object.const_get(name)
+      ActiveSupport::Inflector.constantize(name)
     end
 
     # Builds the full controller constant name, prepending the namespace if present.
-    # For example: "HomeController" with namespace "Admin" → "Admin::HomeController".
+    # For example: "home" with namespace "Admin" → "Admin::HomeController".
     def controller_constant_name(controller_name)
-      name = "#{camelize(controller_name)}Controller"
+      name = "#{ActiveSupport::Inflector.camelize(controller_name)}Controller"
       @namespace.to_s.empty? ? name : "#{@namespace}::#{name}"
     end
 

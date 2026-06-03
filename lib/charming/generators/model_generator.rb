@@ -103,20 +103,12 @@ module Charming
 
       # The pluralized table name (e.g., "user" → "users", "category" → "categories").
       def table_name
-        pluralize(name.snake_name)
+        ActiveSupport::Inflector.pluralize(name.snake_name)
       end
 
       # The CamelCase migration class name (e.g., "users" → "Users").
       def table_class_name
-        table_name.split("_").map(&:capitalize).join
-      end
-
-      # Minimal English pluralization for the model name (covers the common -y, -s/x/z/ch/sh cases).
-      def pluralize(value)
-        return value.sub(/y\z/, "ies") if value.end_with?("y")
-        return "#{value}es" if value.match?(/(?:s|x|z|ch|sh)\z/)
-
-        "#{value}s"
+        ActiveSupport::Inflector.camelize(table_name)
       end
 
       # The current UTC timestamp in the format ActiveRecord uses for migration filenames.

@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activemodel", "~> 8.1", ">= 8.1.2"
   spec.add_dependency "activerecord", "~> 8.1", ">= 8.1.2"
+  spec.add_dependency "activesupport", "~> 8.1", ">= 8.1.2"
   spec.add_dependency "commonmarker", "~> 2.0"
   spec.add_dependency "rouge", "~> 5.0"
   spec.add_dependency "sqlite3", "~> 2.0"

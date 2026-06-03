@@ -31,6 +31,12 @@ RSpec.describe Charming::Components::Form do
     expect(rendered).to include("Escape cancels")
   end
 
+  it "humanizes default field labels" do
+    form = described_class.new(fields: [described_class::Input.new(:first_name)], state: {})
+
+    expect(plain(form.render)).to include("First name:")
+  end
+
   it "stores input value and cursor in primitive state" do
     state = {}
     form = described_class.new(fields: [described_class::Input.new(:name)], state: state)
