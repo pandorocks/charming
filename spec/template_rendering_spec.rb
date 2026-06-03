@@ -14,8 +14,8 @@ RSpec.describe "template rendering" do
     Dir.mktmpdir do |dir|
       write_template(dir, "greeting.tui.erb", '<%= text "Hello #{name}", style: style.bold %>')
 
-      template = Charming::Presentation::Templates.resolve("greeting", root: dir)
-      view = Charming::Presentation::TemplateView.new(template: template, name: "Ruby")
+      template = Charming::Templates.resolve("greeting", root: dir)
+      view = Charming::TemplateView.new(template: template, name: "Ruby")
 
       expect(view.render).to eq("\e[1mHello Ruby\e[0m")
     end
@@ -26,9 +26,9 @@ RSpec.describe "template rendering" do
       write_template(dir, "message.tui.erb", "TUI")
       write_template(dir, "message.txt.erb", "TXT")
 
-      template = Charming::Presentation::Templates.resolve("message", root: dir)
+      template = Charming::Templates.resolve("message", root: dir)
 
-      expect(Charming::Presentation::TemplateView.new(template: template).render).to eq("TUI")
+      expect(Charming::TemplateView.new(template: template).render).to eq("TUI")
     end
   end
 
@@ -36,16 +36,16 @@ RSpec.describe "template rendering" do
     Dir.mktmpdir do |dir|
       write_template(dir, "message.txt.erb", "Hello <%= name %>")
 
-      template = Charming::Presentation::Templates.resolve("message", root: dir)
+      template = Charming::Templates.resolve("message", root: dir)
 
-      expect(Charming::Presentation::TemplateView.new(template: template, name: "Ruby").render).to eq("Hello Ruby")
+      expect(Charming::TemplateView.new(template: template, name: "Ruby").render).to eq("Hello Ruby")
     end
   end
 
   it "raises a useful error when a template is missing" do
     Dir.mktmpdir do |dir|
-      expect { Charming::Presentation::Templates.resolve("missing", root: dir) }.to raise_error(
-        Charming::Presentation::Templates::MissingTemplateError,
+      expect { Charming::Templates.resolve("missing", root: dir) }.to raise_error(
+        Charming::Templates::MissingTemplateError,
         /missing.*missing\.tui\.erb.*missing\.txt\.erb/
       )
     end
@@ -76,7 +76,7 @@ RSpec.describe "template rendering" do
       stub_const("ClassViewSpec", Module.new)
       stub_const("ClassViewSpec::Application", Class.new(Charming::Application) { root dir })
       stub_const("ClassViewSpec::Home", Module.new)
-      stub_const("ClassViewSpec::Home::ShowView", Class.new(Charming::Presentation::View) do
+      stub_const("ClassViewSpec::Home::ShowView", Class.new(Charming::View) do
         def render
           "Class #{name}"
         end
@@ -114,13 +114,13 @@ RSpec.describe "template rendering" do
     stub_const("ClassLayoutSpec", Module.new)
     stub_const("ClassLayoutSpec::Application", Class.new(Charming::Application))
     stub_const("ClassLayoutSpec::Layouts", Module.new)
-    stub_const("ClassLayoutSpec::Layouts::ApplicationLayout", Class.new(Charming::Presentation::View) do
+    stub_const("ClassLayoutSpec::Layouts::ApplicationLayout", Class.new(Charming::View) do
       def render
         "Layout(#{yield_content} / #{name})"
       end
     end)
     stub_const("ClassLayoutSpec::Home", Module.new)
-    stub_const("ClassLayoutSpec::Home::ShowView", Class.new(Charming::Presentation::View) do
+    stub_const("ClassLayoutSpec::Home::ShowView", Class.new(Charming::View) do
       def render
         "Hello #{name}"
       end

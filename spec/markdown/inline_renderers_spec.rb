@@ -2,17 +2,17 @@
 
 require "kramdown"
 
-RSpec.describe Charming::Presentation::Markdown::InlineRenderer do
-  let(:renderer) { Charming::Presentation::Markdown::Renderer.new(content: "", width: 40) }
+RSpec.describe Charming::Markdown::InlineRenderer do
+  let(:renderer) { Charming::Markdown::Renderer.new(content: "", width: 40) }
   let(:subject_instance) { described_class.new(renderer: renderer) }
-  let(:context) { Charming::Presentation::Markdown::RenderContext.from(width: 40) }
+  let(:context) { Charming::Markdown::RenderContext.from(width: 40) }
 
   def first_inline(markdown)
     Kramdown::Document.new(markdown).root.children.first.children.first
   end
 
   def strip_ansi(value)
-    Charming::Presentation::UI::Width.strip_ansi(value.to_s)
+    Charming::UI::Width.strip_ansi(value.to_s)
   end
 
   describe "text elements" do

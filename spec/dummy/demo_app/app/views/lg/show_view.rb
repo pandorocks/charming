@@ -2,7 +2,7 @@
 
 module DemoApp
   module Lg
-    class ShowView < Charming::Presentation::View
+    class ShowView < Charming::View
       def render
         screen_layout(background: theme.background) do
           split :vertical, gap: 1 do
@@ -109,7 +109,7 @@ module DemoApp
       def command_palette_modal
         return unless palette
 
-        render_component Charming::Presentation::Components::Modal.new(
+        render_component Charming::Components::Modal.new(
           content: palette,
           title: "Command palette",
           help: "Type to filter. Enter selects. Escape closes.",

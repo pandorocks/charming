@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::UI::ANSISlicer do
+RSpec.describe Charming::UI::ANSISlicer do
   describe ".slice" do
     it "returns an empty string when width is non-positive" do
       expect(described_class.slice("hello", 0, 0)).to eq("")

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module __APP_CLASS__
-  class __COMPONENT_CLASS__ < Charming::Presentation::Component
+  class __COMPONENT_CLASS__ < Charming::Component
     def render
       text "__RESOURCE_NAME__"
     end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::UI::ANSICodes do
+RSpec.describe Charming::UI::ANSICodes do
   describe ".codes" do
     it "encodes attributes as ANSI numeric codes" do
       codes = described_class.new(attributes: [:bold, :italic], foreground: nil, background: nil).codes

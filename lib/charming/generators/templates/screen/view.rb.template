@@ -2,7 +2,7 @@
 
 module __APP_CLASS__
   module __RESOURCE_MODULE__
-    class ShowView < Charming::Presentation::View
+    class ShowView < Charming::View
       def render
         __SCREEN_NAME__.title
       end

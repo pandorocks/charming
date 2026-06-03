@@ -39,7 +39,7 @@ RSpec.describe Charming::Application do
   end
 
   it "passes the active theme into layouts" do
-    layout_class = Class.new(Charming::Presentation::View) do
+    layout_class = Class.new(Charming::View) do
       def render
         theme.title.render(yield_content)
       end

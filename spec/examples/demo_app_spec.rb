@@ -39,7 +39,7 @@ RSpec.describe "demo app example" do
       runtime.run
     end
 
-    frame = Charming::Presentation::UI::Width.strip_ansi(backend.frames.first)
+    frame = Charming::UI::Width.strip_ansi(backend.frames.first)
     expect(frame).to include("Working Tree")
     expect(frame).to include("Recent Commits")
     expect(frame).to include("Diff")
@@ -61,7 +61,7 @@ RSpec.describe "demo app example" do
 
     Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
 
-    frames = Charming::Presentation::UI::Width.strip_ansi(backend.frames.join("\n"))
+    frames = Charming::UI::Width.strip_ansi(backend.frames.join("\n"))
     expect(frames).to include("LG Layout")
     expect(frames).to include("Working Tree")
     expect(frames).to include("Recent Commits")
@@ -134,7 +134,7 @@ RSpec.describe "demo app example" do
 
     Charming::Runtime.new(DemoApp::Application.new, backend: backend, clock: -> { 0.0 }).run
 
-    focused_content = Charming::Presentation::UI::Width.strip_ansi(backend.frames.last)
+    focused_content = Charming::UI::Width.strip_ansi(backend.frames.last)
     expect(focused_content).to include("  ● Home")
     expect(focused_content).not_to include("> ● Home")
   end
@@ -158,7 +158,7 @@ RSpec.describe "demo app example" do
     ).run
 
     frames = backend.frames.join("\n")
-    stripped = Charming::Presentation::UI::Width.strip_ansi(frames)
+    stripped = Charming::UI::Width.strip_ansi(frames)
     expect(stripped).to include("[=                               ] Working")
     expect(stripped).to include("[==                              ] Working")
     expect(stripped).to include("a!2f$5C+8F%e1~9*B4&Ae%~1=b6Dc#1~ Working.")

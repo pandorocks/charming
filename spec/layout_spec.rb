@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Layout do
+RSpec.describe Charming::Layout do
   describe ".available_width" do
     it "subtracts reserved columns and clamps to a minimum" do
       screen = Charming::Screen.new(width: 40, height: 20)

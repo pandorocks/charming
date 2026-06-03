@@ -1,59 +1,57 @@
 # frozen_string_literal: true
 
 module Charming
-  module Presentation
-    module Layout
-      # ScreenLayout is the root of a layout tree. It owns a single child (typically a Split
-      # or Pane) rendered into the full terminal screen, and an ordered list of Overlays
-      # composited on top of the rendered body.
-      class ScreenLayout
-        # *screen* is the Charming::Screen whose dimensions define the layout area.
-        # *background* (optional) is a UI::Style applied to the empty canvas behind the body.
-        def initialize(screen:, background: nil)
-          @screen = screen
-          @background = background
-          @child = nil
-          @overlays = []
+  module Layout
+    # ScreenLayout is the root of a layout tree. It owns a single child (typically a Split
+    # or Pane) rendered into the full terminal screen, and an ordered list of Overlays
+    # composited on top of the rendered body.
+    class ScreenLayout
+      # *screen* is the Charming::Screen whose dimensions define the layout area.
+      # *background* (optional) is a UI::Style applied to the empty canvas behind the body.
+      def initialize(screen:, background: nil)
+        @screen = screen
+        @background = background
+        @child = nil
+        @overlays = []
+      end
+
+      # Sets the single root child. Raises ArgumentError when a child is already present.
+      def add_child(node)
+        raise ArgumentError, "screen_layout accepts one root layout node" if child
+
+        @child = node
+      end
+
+      # Appends an overlay to be composited on top of the body, in registration order.
+      def add_overlay(node)
+        overlays << node
+      end
+
+      # Returns the focusable names from the child, or [] when no child has been added.
+      def focusable_names
+        child ? child.focusable_names : []
+      end
+
+      # Renders the child into the full-screen rect, then overlays each registered overlay
+      # on top in order.
+      def render
+        body = UI.place(render_child, width: screen.width, height: screen.height, background: background)
+
+        overlays.reduce(body) do |current, overlay|
+          UI.overlay(current, overlay.render, top: overlay.top, left: overlay.left)
         end
+      end
 
-        # Sets the single root child. Raises ArgumentError when a child is already present.
-        def add_child(node)
-          raise ArgumentError, "screen_layout accepts one root layout node" if child
+      private
 
-          @child = node
-        end
+      # The screen, background style, the single child, and the list of overlays.
+      attr_reader :screen, :background, :child, :overlays
 
-        # Appends an overlay to be composited on top of the body, in registration order.
-        def add_overlay(node)
-          overlays << node
-        end
+      # Renders the child into a full-screen Rect, or returns an empty string when no child.
+      def render_child
+        return "" unless child
 
-        # Returns the focusable names from the child, or [] when no child has been added.
-        def focusable_names
-          child ? child.focusable_names : []
-        end
-
-        # Renders the child into the full-screen rect, then overlays each registered overlay
-        # on top in order.
-        def render
-          body = UI.place(render_child, width: screen.width, height: screen.height, background: background)
-
-          overlays.reduce(body) do |current, overlay|
-            UI.overlay(current, overlay.render, top: overlay.top, left: overlay.left)
-          end
-        end
-
-        private
-
-        # The screen, background style, the single child, and the list of overlays.
-        attr_reader :screen, :background, :child, :overlays
-
-        # Renders the child into a full-screen Rect, or returns an empty string when no child.
-        def render_child
-          return "" unless child
-
-          child.render(Rect.new(x: 0, y: 0, width: screen.width, height: screen.height))
-        end
+        child.render(Rect.new(x: 0, y: 0, width: screen.width, height: screen.height))
       end
     end
   end

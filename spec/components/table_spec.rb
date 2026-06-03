@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Components::Table do
+RSpec.describe Charming::Components::Table do
   def key(name)
     Charming::Events::KeyEvent.new(key: name)
   end

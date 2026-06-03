@@ -2,7 +2,7 @@
 
 module __APP_CLASS__
   module Home
-    class ShowView < Charming::Presentation::View
+    class ShowView < Charming::View
       def render
         column(title_line, help_line, gap: 1)
       end

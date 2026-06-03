@@ -55,12 +55,12 @@ module Charming
 
       # Resolves a template by *name* and returns a TemplateView bound to the application's namespace.
       def template_body(name, **assigns)
-        Presentation::TemplateView.new(template: resolve_template(name), namespace: template_namespace, **template_assigns(assigns))
+        TemplateView.new(template: resolve_template(name), namespace: template_namespace, **template_assigns(assigns))
       end
 
       # Looks up the template file under `app/views` relative to the application root.
       def resolve_template(name)
-        Presentation::Templates.resolve(name, root: application.class.root)
+        Templates.resolve(name, root: application.class.root)
       end
 
       # Returns the assigns hash passed to templates: `screen:`, `controller:`, `theme:` plus user *assigns*.

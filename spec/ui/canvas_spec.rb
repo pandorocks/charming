@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::UI::Canvas do
+RSpec.describe Charming::UI::Canvas do
   describe ".new" do
     it "builds a blank grid of the given dimensions" do
       canvas = described_class.new(3, 2)
@@ -54,7 +54,7 @@ RSpec.describe Charming::Presentation::UI::Canvas do
     end
 
     it "preserves ANSI styling on the base around the overlay" do
-      styled = Charming::Presentation::UI.style.faint.render(".....")
+      styled = Charming::UI.style.faint.render(".....")
       canvas = described_class.parse(styled)
 
       result = canvas.overlay("X", left: 2).to_s

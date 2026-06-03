@@ -3,7 +3,7 @@
 module Charming
   module Generators
     # ComponentGenerator implements `charming generate component NAME`. Writes a
-    # `Charming::Presentation::Component` subclass to `app/components/<name>_component.rb`.
+    # `Charming::Component` subclass to `app/components/<name>_component.rb`.
     class ComponentGenerator < AppFileGenerator
       # Writes the component file to the standard `app/components` path.
       def generate

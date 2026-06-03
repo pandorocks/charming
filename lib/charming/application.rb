@@ -37,9 +37,9 @@ module Charming
         raise ArgumentError, "theme expects either from: or built_in:, not both" if from && built_in
 
         themes[name.to_sym] = if built_in
-          Presentation::UI::Theme.load_builtin(built_in)
+          UI::Theme.load_builtin(built_in)
         else
-          Presentation::UI::Theme.load_file(resolve_theme_path(from))
+          UI::Theme.load_file(resolve_theme_path(from))
         end
       end
 
@@ -60,7 +60,7 @@ module Charming
       # built-in theme if no name is given and no default is registered.
       def theme_for(name = nil)
         theme_name = name || default_theme
-        return Presentation::UI::Theme.default unless theme_name
+        return UI::Theme.default unless theme_name
 
         themes.fetch(theme_name.to_sym)
       end
