@@ -36,9 +36,15 @@ module Charming
       end
 
       # Adds a Pane leaf node to the current scope. *name* (optional) is the focus slot name;
-      # *content* (or a *block*) is the body. *options* are forwarded to Pane.
+      # *content* (or a *block*) is the body. *options* are split into PaneGeometry,
+      # PaneStyle, and PaneBehavior keyword args.
       def pane(name = nil, content = nil, **options, &block)
-        node = Pane.new(name: name, content: content, block: block, view: view, **options)
+        node = Pane.new(
+          name: name, content: content, block: block, view: view,
+          geometry: PaneGeometry.build(**options.slice(:width, :height, :grow, :border, :padding)),
+          style: PaneStyle.build(**options.slice(:style, :focused_style)),
+          behavior: PaneBehavior.build(**options.slice(:focus, :scroll, :clip, :wrap))
+        )
         append(node)
         node
       end
