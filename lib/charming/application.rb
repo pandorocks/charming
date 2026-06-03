@@ -5,6 +5,7 @@ module Charming
   # terminal-based apps. It provides routing (via a DSL), session storage, and
   # task execution for managing async operations.
   class Application
+    LOGGER_READER = Object.new.freeze
     THEME_READER = Object.new.freeze
 
     class << self
@@ -20,6 +21,14 @@ module Charming
       # yields "Admin". Mirrors Rails' engine-style namespacing.
       def namespace
         ActiveSupport::Inflector.deconstantize(name.to_s)
+      end
+
+      # Returns or sets the app logger. Defaults to a null-device logger so app and framework code
+      # can safely call logging methods without writing into the terminal UI.
+      def logger(value = LOGGER_READER)
+        return configured_logger if value == LOGGER_READER
+
+        @logger = value
       end
 
       # Returns the app's filesystem root, used to resolve relative theme and template paths.
@@ -67,6 +76,13 @@ module Charming
 
       private
 
+      def configured_logger
+        return @logger if instance_variable_defined?(:@logger)
+        return superclass.logger if superclass.respond_to?(:logger)
+
+        @logger = Logger.new(File::NULL)
+      end
+
       # Expands a relative theme path against the app root (or the current working directory
       # when no root is configured). Returns *path* unchanged when it is already absolute.
       def resolve_theme_path(path)
@@ -76,11 +92,12 @@ module Charming
       end
     end
 
-    attr_accessor :task_executor
+    attr_accessor :logger, :task_executor
     attr_reader :session
 
     # Initializes an empty session hash for per-request state storage.
     def initialize
+      @logger = self.class.logger
       @session = {}
     end
 

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "stringio"
 require "tmpdir"
 
 RSpec.describe Charming::Application do
@@ -8,6 +9,36 @@ RSpec.describe Charming::Application do
     stub_const("NamespaceSpec::Application", Class.new(described_class))
 
     expect(NamespaceSpec::Application.namespace).to eq("NamespaceSpec")
+  end
+
+  it "provides a null logger by default" do
+    application = described_class.new
+
+    expect(application.logger).to be_a(Logger)
+    expect { application.logger.info("discarded") }.not_to raise_error
+  end
+
+  it "uses a configured class logger" do
+    output = StringIO.new
+    configured_logger = Logger.new(output)
+    application_class = Class.new(described_class) do
+      logger configured_logger
+    end
+
+    application_class.new.logger.info("configured")
+
+    expect(application_class.logger).to eq(configured_logger)
+    expect(output.string).to include("configured")
+  end
+
+  it "allows instance logger overrides" do
+    output = StringIO.new
+    application = described_class.new
+    application.logger = Logger.new(output)
+
+    application.logger.info("instance")
+
+    expect(output.string).to include("instance")
   end
 
   it "registers multiple themes and switches the active theme" do

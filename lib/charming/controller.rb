@@ -100,6 +100,12 @@ module Charming
       application.use_theme(name)
     end
 
+    # Returns the application logger. The default logger writes to File::NULL, so logging calls are
+    # safe in TUI code unless the app explicitly configures a file or custom logger.
+    def logger
+      application.logger
+    end
+
     # Opens the theme picker (a CommandPalette populated with the registered themes) and renders.
     def open_theme_palette
       session[:command_palette] = command_palette_state(:themes)
