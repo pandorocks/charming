@@ -34,7 +34,8 @@ RSpec.describe DemoApp::Home::ShowView do
 
       output = Charming::UI::Width.strip_ansi(view.render)
       expect(output).to include("Markdown Preview")
-      expect(output).to include("Charming renders Markdown with Kramdown and")
+      expect(output).to include("Charming renders Markdown with")
+      expect(output).to include("Commonmarker")
       expect(output).to include("Rouge:")
       expect(output).to include("render_component Charming::Components::Markdown.new")
     end

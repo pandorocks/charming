@@ -8,7 +8,7 @@ RSpec.describe Charming::Components::Markdown do
   it "renders markdown content as a component" do
     component = described_class.new(content: "# Hello\n\nWelcome to **Charming**.", width: 30)
 
-    expect(strip_ansi(component.render)).to eq("Hello\n\nWelcome to Charming.")
+    expect(strip_ansi(component.render)).to eq(" Hello \n\nWelcome to Charming.")
   end
 
   it "can be used as viewport content" do

@@ -56,7 +56,7 @@ module DemoApp
         <<~MARKDOWN
           ## Markdown Preview
 
-          Charming renders **Markdown** with `Kramdown` and Rouge:
+          Charming renders **Markdown** with `Commonmarker` and Rouge:
 
           ~~~ ruby
           render_component Charming::Components::Markdown.new(content: readme)
