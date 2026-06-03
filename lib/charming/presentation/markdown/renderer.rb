@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "commonmarker"
-require "uri"
 
 module Charming
   module Markdown
@@ -42,9 +41,7 @@ module Charming
       end
 
       def wrap(value, width:)
-        return value unless width
-
-        value.to_s.lines(chomp: true).map { |line| wrap_line(line, width) }.join("\n")
+        TextWrapper.new(width: width).wrap(value)
       end
 
       def style_for(name, fallback:)
@@ -214,15 +211,11 @@ module Charming
         rows = children_of(node).map do |row|
           children_of(row).map { |cell| render_inlines(children_of(cell), context: context.with(current_style: table_style)) }
         end
-        return "" if rows.empty?
 
-        widths = table_widths(rows)
-        rendered_rows = rows.each_with_index.map do |row, index|
-          line = table_row(row, widths, table_style)
-          index.zero? ? [line, table_separator(widths, table_style)].join("\n") : line
-        end
+        body = TableRenderer.new(rows: rows, style: table_style).render
+        return "" if body.empty?
 
-        render_block_with_style(table_style, rendered_rows.join("\n"))
+        render_block_with_style(table_style, body)
       end
 
       def render_html_block(_node, context:)
@@ -268,28 +261,6 @@ module Charming
         style.render(style.apply_block_layout(body))
       end
 
-      def table_widths(rows)
-        column_count = rows.map(&:length).max || 0
-        Array.new(column_count) do |index|
-          rows.map { |row| UI::Width.measure(row[index].to_s) }.max || 0
-        end
-      end
-
-      def table_row(row, widths, style)
-        separator = style.column_separator || "|"
-        cells = widths.each_with_index.map do |width, index|
-          value = row[index].to_s
-          " #{value}#{" " * [width - UI::Width.measure(value), 0].max} "
-        end
-        "#{separator}#{cells.join(separator)}#{separator}"
-      end
-
-      def table_separator(widths, style)
-        separator = style.column_separator || "|"
-        row = style.row_separator || "-"
-        "#{separator}#{widths.map { |table_width| row * (table_width + 2) }.join(separator)}#{separator}"
-      end
-
       def quote_indent_width(style)
         return 0 unless style.indent&.positive?
 
@@ -297,39 +268,11 @@ module Charming
       end
 
       def resolve_url(value, context:)
-        return value if context.base_url.to_s.empty? || value.empty?
-
-        uri = URI.parse(value)
-        return value if uri.absolute?
-
-        URI.join(context.base_url, value).to_s
-      rescue URI::InvalidURIError
-        value
+        URLResolver.new(base_url: context.base_url).resolve(value)
       end
 
       def children_of(node)
         node.each.to_a
-      end
-
-      def wrap_line(line, width)
-        return line if UI::Width.measure(line) <= width
-
-        lines = []
-        current = +""
-
-        line.split(/\s+/).each do |word|
-          candidate = current.empty? ? word : "#{current} #{word}"
-
-          if !current.empty? && UI::Width.measure(candidate) > width
-            lines << current.rstrip
-            current = word
-          else
-            current = candidate
-          end
-        end
-
-        lines << current.rstrip unless current.empty?
-        lines.join("\n")
       end
     end
   end

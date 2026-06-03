@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "unicode/display_width"
-
 module Charming
   module Components
     # Viewport is a scrollable region over multi-line content. Supports keyboard scrolling
@@ -11,9 +9,6 @@ module Charming
     # to the configured *width* before scrolling.
     class Viewport < Component
       include KeyboardHandler
-
-      # Matches an ANSI SGR escape sequence (e.g., "\e[31m" for red foreground).
-      ANSI_PATTERN = /\e\[[0-9;]*m/
 
       # Maps scroll keys to the instance methods that perform them via KeyboardHandler.
       KEY_ACTIONS = {
@@ -27,9 +22,6 @@ module Charming
         right: :scroll_right
       }.freeze
 
-      # The current top-visible row and left-visible column, respectively.
-      attr_reader :offset, :column
-
       # *content* may be a string, an array of lines, or any object responding to `render`.
       # *width* and *height* constrain the visible window; *offset* is the top-visible row
       # and *column* is the left-visible column. *wrap* enables soft-wrapping of long lines.
@@ -38,16 +30,25 @@ module Charming
         @content = content
         @width = width
         @height = height
-        @offset = offset
-        @column = column
+        @position = Position.new(offset: offset, column: column)
         @wrap = wrap
         @keymap = keymap
-        clamp_position
+        position.clamp(bounds)
       end
 
       # Renders the visible window of content as a multi-line string.
       def render
         visible_lines.map { |line| render_line(line) }.join("\n")
+      end
+
+      # The current top-visible row.
+      def offset
+        @position.offset
+      end
+
+      # The current left-visible column.
+      def column
+        @position.column
       end
 
       # Handles mouse events: scroll wheel adjusts the row offset, click moves the top
@@ -57,8 +58,7 @@ module Charming
 
         if event.scroll?
           scroll_delta = (event.button_name == :scroll_up) ? -1 : 1
-          @offset += scroll_delta
-          clamp_position
+          position.move_to(offset + scroll_delta, bounds)
           return :handled
         end
 
@@ -67,67 +67,52 @@ module Charming
         clicked_row = event.y
         return nil if clicked_row < offset || clicked_row >= offset + viewport_height
 
-        @offset = clicked_row
-        clamp_position
+        position.move_to(clicked_row, bounds)
         :handled
       end
 
       private
 
-      attr_reader :content, :width, :height
+      attr_reader :content, :width, :height, :position
 
       # Scrolls the viewport up by one row.
       def scroll_up
-        @offset -= 1
-        clamp_position
+        position.scroll_up(bounds)
       end
 
       # Scrolls the viewport down by one row.
       def scroll_down
-        @offset += 1
-        clamp_position
+        position.scroll_down(bounds)
       end
 
       # Scrolls up by one viewport page.
       def page_up
-        @offset -= page_size
-        clamp_position
+        position.page_up(page_size, bounds)
       end
 
       # Scrolls down by one viewport page.
       def page_down
-        @offset += page_size
-        clamp_position
+        position.page_down(page_size, bounds)
       end
 
       # Scrolls to the top-left of the content.
       def scroll_home
-        @offset = 0
-        @column = 0
+        position.home
       end
 
       # Scrolls to the bottom-right of the content.
       def scroll_end
-        @offset = max_offset
-        @column = max_column
+        position.end_at(bounds)
       end
 
       # Scrolls one column left.
       def scroll_left
-        @column -= 1
-        clamp_position
+        position.scroll_left(bounds)
       end
 
       # Scrolls one column right.
       def scroll_right
-        @column += 1
-        clamp_position
-      end
-
-      # Clamps both the row offset and the column to their valid ranges.
-      def clamp_position
-        @offset = offset.clamp(0, max_offset)
-        @column = column.clamp(0, max_column)
+        position.scroll_right(bounds)
       end
 
       # Returns the slice of content lines visible in the current viewport, padded to *height*.
@@ -141,89 +126,12 @@ module Charming
       # Renders a single line according to the configured width and wrap mode: clips to the
       # visible column window when not wrapping, otherwise wraps the line to the width.
       def render_line(line)
-        return line unless width
-        return pad_line(line, width) if wrap?
-
-        pad_line(clip_line(line), width)
-      end
-
-      # Clips *line* to the visible column window while preserving active ANSI styling.
-      def clip_line(line)
-        clipped = clip_tokens(line.to_s)
-        needs_reset?(clipped) ? "#{clipped}\e[0m" : clipped
-      end
-
-      # Walks *line* token-by-token, copying ANSI escapes through and emitting only the
-      # characters that fall inside the visible column window.
-      def clip_tokens(line)
-        state = {cursor: 0, output: +""}
-        line.scan(/#{ANSI_PATTERN}|./mo) do |token|
-          ansi?(token) ? append_ansi(state, token) : append_character(state, token)
-        end
-        state.fetch(:output)
-      end
-
-      # Appends an ANSI escape token to the output buffer unchanged.
-      def append_ansi(state, token)
-        state.fetch(:output) << token
-      end
-
-      # Appends a single character token to the output buffer when it falls inside the
-      # visible column window, advancing the visual cursor.
-      def append_character(state, char)
-        char_width = Unicode::DisplayWidth.of(char)
-        cursor = state.fetch(:cursor)
-        state.fetch(:output) << char if visible?(cursor, char_width)
-        state[:cursor] = cursor + char_width
-      end
-
-      # True when the character at *cursor* (with the given display *char_width*) is within
-      # the visible column window.
-      def visible?(cursor, char_width)
-        cursor >= column && cursor + char_width <= column + width
-      end
-
-      # True when *value* contains ANSI codes but does not end with a reset — needed because
-      # the clip may truncate styling in the middle of a styled run.
-      def needs_reset?(value)
-        value.match?(ANSI_PATTERN) && !value.end_with?("\e[0m")
-      end
-
-      # Pads *line* to *target_width* with trailing spaces, leaving the line itself unchanged.
-      def pad_line(line, target_width)
-        line + (" " * [target_width - UI::Width.measure(line), 0].max)
+        line_window.render(line)
       end
 
       # Returns the content lines, wrapped to *width* when wrap is enabled.
       def content_lines
-        return wrapped_content_lines if wrap?
-
-        rendered_content.lines(chomp: true)
-      end
-
-      # Wraps the content to *width* via UI::visible_slice, returning an array of wrapped lines.
-      def wrapped_content_lines
-        rendered_content.lines(chomp: true).flat_map { |line| wrap_line(line) }
-      end
-
-      # Wraps a single *line* into chunks of *width* display columns.
-      def wrap_line(line)
-        line_width = UI::Width.measure(line)
-        return [""] if line_width.zero?
-
-        start_column = 0
-        out = []
-        while start_column < line_width
-          out << UI.visible_slice(line, start_column, width)
-          start_column += width
-        end
-        out
-      end
-
-      # Returns the rendered content string, calling `render.to_s` on the content object when
-      # it responds to render.
-      def rendered_content
-        content.respond_to?(:render) ? content.render.to_s : content.to_s
+        content_source.lines
       end
 
       # Returns the visible row count (the configured *height* or the content's line count).
@@ -253,17 +161,24 @@ module Charming
 
       # Returns the maximum display width across all content lines.
       def content_width
-        content_lines.map { |line| UI::Width.measure(line) }.max || 0
+        content_source.display_width
       end
 
-      # True when *token* is an ANSI escape sequence.
-      def ansi?(token)
-        token.match?(ANSI_PATTERN)
+      def bounds
+        {max_offset: max_offset, max_column: max_column}
       end
 
       # True when soft-wrapping is enabled and a positive width is configured.
       def wrap?
         @wrap && width&.positive?
+      end
+
+      def line_window
+        LineWindow.new(width: width, column: column, wrap: wrap?)
+      end
+
+      def content_source
+        ContentLines.new(content: content, width: width, wrap: @wrap)
       end
     end
   end

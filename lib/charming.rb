@@ -15,7 +15,8 @@ loader.inflector.inflect(
   "erb_handler" => "ErbHandler",
   "key_normalizer" => "KeyNormalizer",
   "mouse_parser" => "MouseParser",
-  "tty_backend" => "TTYBackend"
+  "tty_backend" => "TTYBackend",
+  "url_resolver" => "URLResolver"
 )
 loader.collapse("#{__dir__}/charming/presentation")
 loader.setup

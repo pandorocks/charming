@@ -5,6 +5,10 @@ RSpec.describe Charming::Components::Viewport do
     Charming::Events::KeyEvent.new(key: name)
   end
 
+  def mouse(button, y: 0)
+    Charming::Events::MouseEvent.new(button: button, x: 0, y: y)
+  end
+
   it "renders content unchanged without dimensions" do
     viewport = described_class.new(content: "One\nTwo")
 
@@ -161,5 +165,31 @@ RSpec.describe Charming::Components::Viewport do
     viewport = described_class.new(content: "One")
 
     expect(viewport.handle_key(key(:enter))).to be_nil
+  end
+
+  it "scrolls vertically with mouse wheel events" do
+    viewport = described_class.new(content: "One\nTwo\nThree", height: 2)
+
+    expect(viewport.handle_mouse(mouse(65))).to eq(:handled)
+    expect(viewport.render).to eq("Two\nThree")
+
+    viewport.handle_mouse(mouse(64))
+    expect(viewport.render).to eq("One\nTwo")
+  end
+
+  it "moves the offset to clicked rows inside the viewport" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2)
+
+    expect(viewport.handle_mouse(mouse(0, y: 1))).to eq(:handled)
+
+    expect(viewport.offset).to eq(1)
+    expect(viewport.render).to eq("Two\nThree")
+  end
+
+  it "ignores mouse events outside the visible viewport" do
+    viewport = described_class.new(content: "One\nTwo\nThree", height: 2)
+
+    expect(viewport.handle_mouse(mouse(0, y: 2))).to be_nil
+    expect(viewport.offset).to eq(0)
   end
 end
