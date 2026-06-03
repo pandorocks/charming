@@ -29,20 +29,7 @@ Charming can also be added to an existing Ruby project with Bundler, but the pri
 
 ## Documentation
 
-| Guide | Purpose |
-|-------|---------|
-| [Docs Index](docs/README.md) | Suggested reading paths and all documentation links. |
-| [Getting Started](docs/getting_started.md) | Build and run a generated Charming app. |
-| [Core Concepts](docs/core_concepts.md) | App architecture, runtime flow, ephemeral controllers, and state. |
-| [Routing](docs/routing.md) | `root`, `screen`, dynamic params, route titles, and route order. |
-| [Controllers & Templates](docs/controllers_and_templates.md) | Actions, `render :show`, `render_template`, key bindings, commands, timers, and tasks. |
-| [Layouts](docs/layouts.md) | Template layouts, `yield_content`, split panes, overlays, responsive layouts, and styles. |
-| [State](docs/state.md) | `ApplicationState`, typed attributes, validations, and session-backed state. |
-| [Database](docs/database.md) | Optional SQLite persistence with Active Record models and migrations. |
-| [Components](docs/components.md) | Built-in components, custom components, and interaction return values. |
-| [Themes](docs/themes.md) | Theme registration, tokens, and runtime theme switching. |
-| [API Reference](docs/api.md) | Compact public API reference. |
-| [Testing](docs/testing.md) | Controller, template, component, runtime, timer, and task tests. |
+- [Docs](https://charming/sh)
 
 ## Generated App Structure
 
