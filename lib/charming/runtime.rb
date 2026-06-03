@@ -186,6 +186,7 @@ module Charming
     def setup_terminal
       @backend.enter_alt_screen
       @backend.hide_cursor
+      @backend.enable_mouse_tracking if @backend.respond_to?(:enable_mouse_tracking)
       @backend.install_resize_handler if @backend.respond_to?(:install_resize_handler)
     end
 
@@ -200,6 +201,7 @@ module Charming
     # the cursor, and leaves the alternative screen buffer.
     def restore_terminal
       @backend.restore_resize_handler if @backend.respond_to?(:restore_resize_handler)
+      @backend.disable_mouse_tracking if @backend.respond_to?(:disable_mouse_tracking)
       @backend.show_cursor
       @backend.leave_alt_screen
     end

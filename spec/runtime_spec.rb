@@ -80,6 +80,17 @@ RSpec.describe Charming::Runtime do
     expect(backend.raw_events).to include(:entered, [:write_frame, true], [:read_event, true], :left)
   end
 
+  it "enables and disables mouse tracking around the run loop" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::Events::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.operations).to include(:enable_mouse_tracking, :disable_mouse_tracking)
+    expect(backend.mouse_enabled?).to be(false)
+  end
+
   it "passes backend screen dimensions to controllers" do
     screen_controller = Class.new(Charming::Controller) do
       key "q", :quit

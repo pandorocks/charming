@@ -32,6 +32,13 @@ module Charming
         child ? child.focusable_names : []
       end
 
+      # Returns all named pane mouse targets for the full screen layout.
+      def mouse_targets
+        return [] unless child
+
+        child.mouse_targets(Rect.new(x: 0, y: 0, width: screen.width, height: screen.height))
+      end
+
       # Renders the child into the full-screen rect, then overlays each registered overlay
       # on top in order.
       def render

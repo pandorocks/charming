@@ -67,8 +67,11 @@ module Charming
     # Mouse event dispatcher: checks command palette (if open), sidebar (if focused).
     def dispatch_mouse
       return dispatch_command_palette_mouse if command_palette_open?
-      return dispatch_sidebar_mouse if sidebar_focused?
-      dispatch_component_mouse
+
+      mouse_response = dispatch_component_mouse
+      return mouse_response if mouse_response
+
+      dispatch_sidebar_mouse if sidebar_focused?
     end
 
     # Renders a body or template wrapped in the controller's layout.
