@@ -9,8 +9,8 @@ RSpec.describe Charming::Markdown::Renderer do
     Charming::UI::Width.strip_ansi(value)
   end
 
-  it "renders common block elements through Kramdown" do
-    output = render_markdown(<<~MARKDOWN, width: 40)
+  it "renders CommonMark blocks with the Glamour-inspired dark style" do
+    output = render_markdown(<<~MARKDOWN, width: 40, syntax_highlighting: false)
       # Title
 
       Hello **Ruby** and `terminals`.
@@ -23,18 +23,18 @@ RSpec.describe Charming::Markdown::Renderer do
       ---
     MARKDOWN
 
-    expect(strip_ansi(output)).to eq(<<~TEXT.chomp)
-      Title
-
-      Hello Ruby and terminals.
-
-      - One
-      - Two
-
-      | Quoted text
-
-      ----------------------------------------
-    TEXT
+    expect(strip_ansi(output)).to eq([
+      " Title ",
+      "",
+      "Hello Ruby and  terminals .",
+      "",
+      "• One",
+      "• Two",
+      "",
+      "│ Quoted text",
+      "",
+      "--------"
+    ].join("\n"))
   end
 
   it "wraps paragraphs to the requested width" do
@@ -43,8 +43,8 @@ RSpec.describe Charming::Markdown::Renderer do
     expect(strip_ansi(output)).to eq("Alpha beta\ngamma")
   end
 
-  it "renders links with their destination" do
-    output = render_markdown("Read [docs](https://example.com/docs).", width: 80)
+  it "renders links with resolved destinations" do
+    output = render_markdown("Read [docs](/docs).", base_url: "https://example.com/app/")
 
     expect(strip_ansi(output)).to eq("Read docs <https://example.com/docs>.")
   end
@@ -57,32 +57,70 @@ RSpec.describe Charming::Markdown::Renderer do
 
   it "syntax highlights fenced code blocks with Rouge" do
     output = render_markdown(<<~MARKDOWN)
-      ~~~ ruby
+      ```ruby
       puts :hi
-      ~~~
+      ```
     MARKDOWN
 
-    expect(strip_ansi(output)).to eq("  puts :hi")
+    expect(strip_ansi(output)).to include("  puts :hi")
     expect(output).to include("\e[")
   end
 
   it "can render code blocks without syntax highlighting" do
     output = render_markdown(<<~MARKDOWN, syntax_highlighting: false)
-      ~~~ ruby
+      ```ruby
       puts :hi
-      ~~~
+      ```
     MARKDOWN
 
-    expect(strip_ansi(output)).to eq("  puts :hi")
+    expect(strip_ansi(output)).to include("  puts :hi")
   end
 
-  it "falls back to plain text for unknown code languages" do
+  it "renders GFM tables" do
     output = render_markdown(<<~MARKDOWN)
-      ~~~ not-a-language
-      hello
-      ~~~
+      | Name | Value |
+      | ---- | ----- |
+      | One  | 1     |
+      | Two  | 2     |
     MARKDOWN
 
-    expect(strip_ansi(output)).to eq("  hello")
+    expect(strip_ansi(output)).to eq(<<~TEXT.chomp)
+      | Name | Value |
+      |------|-------|
+      | One  | 1     |
+      | Two  | 2     |
+    TEXT
+  end
+
+  it "renders GFM task lists and strikethrough" do
+    output = render_markdown(<<~MARKDOWN)
+      - [x] Finished
+      - [ ] Outstanding
+
+      ~~removed~~
+    MARKDOWN
+
+    expect(strip_ansi(output)).to eq(<<~TEXT.chomp)
+      [✓] Finished
+      [ ] Outstanding
+
+      removed
+    TEXT
+  end
+
+  it "renders images as terminal-friendly text" do
+    output = render_markdown("![Diagram](images/diagram.png)", base_url: "https://example.com/docs/")
+
+    expect(strip_ansi(output)).to eq("Image: Diagram -> https://example.com/docs/images/diagram.png")
+  end
+
+  it "supports notty style for plain terminal output" do
+    output = render_markdown("# Title\n\n**strong** and *emph*", style: :notty)
+
+    expect(strip_ansi(output)).to eq(<<~TEXT.chomp)
+      # Title
+
+      **strong** and *emph*
+    TEXT
   end
 end

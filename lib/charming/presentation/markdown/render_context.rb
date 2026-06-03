@@ -2,18 +2,36 @@
 
 module Charming
   module Markdown
-    # RenderContext carries the state needed to render nested Markdown blocks: the current
-    # list nesting depth (used for indentation) and the wrap width.
-    RenderContext = Data.define(:list_depth, :width) do
-      # Builds a new RenderContext with the given *width* and optional starting *list_depth*.
-      def self.from(width:, list_depth: 0)
-        new(list_depth: list_depth, width: width)
+    # RenderContext carries render-time state that needs to flow down the Markdown AST.
+    RenderContext = Data.define(:width, :list_depth, :style, :current_style, :base_url, :source_lines) do
+      def self.from(width:, style:, base_url: nil, source_lines: [], list_depth: 0, current_style: nil)
+        new(
+          width: width,
+          list_depth: list_depth,
+          style: style,
+          current_style: current_style || style[:document],
+          base_url: base_url,
+          source_lines: source_lines
+        )
       end
 
-      # Returns a derived context with the list depth incremented by *depth_increment*
-      # and the wrap width overridden to *width* (defaults to the current width).
-      def nested(depth_increment: 0, width: self.width)
-        self.class.new(list_depth: list_depth + depth_increment, width: width)
+      def with(width: self.width, list_depth: self.list_depth, current_style: self.current_style)
+        self.class.new(
+          width: width,
+          list_depth: list_depth,
+          style: style,
+          current_style: current_style,
+          base_url: base_url,
+          source_lines: source_lines
+        )
+      end
+
+      def nested_list(width: self.width)
+        with(width: width, list_depth: list_depth + 1)
+      end
+
+      def inherit(style_name)
+        current_style.inherit_visual(style[style_name])
       end
     end
   end

@@ -10,8 +10,9 @@ module Charming
     # base style (muted italic for comments, title for keywords, etc.).
     class SyntaxHighlighter
       # *theme* is the active Charming theme. Defaults to UI::Theme.default.
-      def initialize(theme: UI::Theme.default)
+      def initialize(theme: UI::Theme.default, style: nil)
         @theme = theme || UI::Theme.default
+        @style = style
       end
 
       # Highlights *code* (using Rouge) for the given *language* (auto-detected when nil)
@@ -27,7 +28,7 @@ module Charming
       private
 
       # The Charming theme used for token styling.
-      attr_reader :theme
+      attr_reader :theme, :style
 
       # Picks a Rouge lexer for *language* and *code*, falling back to plain text.
       def lexer_for(language, code)

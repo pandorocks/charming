@@ -2,17 +2,15 @@
 
 module Charming
   module Components
-    # Markdown renders Markdown source as ANSI-styled terminal text. Parsing is delegated to
-    # `Charming::Markdown::Renderer`; set *syntax_highlighting* to false to disable
-    # Rouge-backed code block highlighting.
+    # Markdown renders CommonMark/GFM source as ANSI-styled terminal text.
     class Markdown < Component
-      # *content* is the Markdown source string. *width* optionally sets the wrap width.
-      # *syntax_highlighting* enables Rouge for code blocks (defaults to true).
-      def initialize(content:, width: nil, theme: nil, syntax_highlighting: true)
+      def initialize(content:, width: nil, theme: nil, syntax_highlighting: true, style: :dark, base_url: nil)
         super(theme: theme)
         @content = content
         @width = width
         @syntax_highlighting = syntax_highlighting
+        @style = style
+        @base_url = base_url
       end
 
       # Renders the Markdown body to a styled, terminal-safe string.
@@ -21,7 +19,9 @@ module Charming
           content: @content,
           width: @width,
           theme: theme,
-          syntax_highlighting: @syntax_highlighting
+          syntax_highlighting: @syntax_highlighting,
+          style: @style,
+          base_url: @base_url
         ).render
       end
     end
