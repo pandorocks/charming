@@ -75,17 +75,17 @@ module Charming
     end
 
     # Routes `db:*` commands to either the install path (db:install) or the generic
-    # DatabaseCommands dispatcher.
+    # Database::Commands dispatcher.
     def database(command, args)
       if command == "db:install"
         database = args.shift || raise(Generators::Error, "Usage: charming db:install sqlite3")
         raise Generators::Error, "Usage: charming db:install sqlite3" if args.any?
 
-        DatabaseInstaller.new(database, out: out, destination: pwd).install
+        Generators::DatabaseInstaller.new(database, out: out, destination: pwd).install
       else
         raise Generators::Error, "Usage: charming #{command}" if args.any?
 
-        DatabaseCommands.new(command, out: out, destination: pwd).run
+        Database::Commands.new(command, out: out, destination: pwd).run
       end
       0
     end

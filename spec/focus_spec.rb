@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Focus do
+RSpec.describe Charming::Controller::Focus do
   let(:session) { {} }
   let(:controller_class) { Class.new { def self.name = "FocusSpecController" } }
 
