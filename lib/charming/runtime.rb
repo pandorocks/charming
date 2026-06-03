@@ -95,8 +95,12 @@ module Charming
     end
 
     # Dispatches a resize event: updates screen dimensions and re-renders the current action.
+    # The renderer's cached previous frame is invalidated and the backend is cleared so the
+    # new-dimension frame paints onto a clean alt-screen instead of overlaying stale rows.
     def dispatch_resize(event)
       @screen = Screen.new(width: event.width, height: event.height)
+      @renderer.invalidate if @renderer.respond_to?(:invalidate)
+      @backend.clear if @backend.respond_to?(:clear)
       dispatch(@route.action, event: event)
     end
 
