@@ -36,6 +36,35 @@ module Charming
     key = event.respond_to?(:key) ? event.key : event
     key.to_sym
   end
+
+  # Returns the key signature used for controller bindings, including modifier flags.
+  def self.key_signature(event)
+    key = key_of(event)
+    modifiers = []
+    modifiers << "ctrl" if event.respond_to?(:ctrl) && event.ctrl
+    modifiers << "alt" if event.respond_to?(:alt) && event.alt
+    modifiers << "shift" if event.respond_to?(:shift) && event.shift
+
+    return key if modifiers.empty?
+
+    :"#{modifiers.join("+")}+#{key}"
+  end
+
+  # Normalizes key declarations so `control+p` and `ctrl+p` resolve to the same binding.
+  def self.key_binding_name(name)
+    parts = name.to_s.split("+")
+    return name.to_sym if parts.size == 1
+
+    key = parts.pop.downcase
+    modifiers = parts.map do |part|
+      modifier = part.downcase
+      (modifier == "control") ? "ctrl" : modifier
+    end
+    ordered_modifiers = %w[ctrl alt shift].select { |modifier| modifiers.include?(modifier) }
+    ordered_modifiers += modifiers - ordered_modifiers
+
+    :"#{(ordered_modifiers + [key]).join("+")}"
+  end
 end
 
 Charming::Templates.register ".tui.erb", Charming::Templates::ErbHandler

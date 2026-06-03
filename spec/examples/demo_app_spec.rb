@@ -43,13 +43,13 @@ RSpec.describe "demo app example" do
     expect(frame).to include("Working Tree")
     expect(frame).to include("Recent Commits")
     expect(frame).to include("Diff")
-    expect(frame).to include("p commands")
+    expect(frame).to include("ctrl+p commands")
   end
 
   it "navigates to the LG layout demo from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :l, char: "l"),
         Charming::Events::KeyEvent.new(key: :g, char: "g"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
@@ -216,7 +216,7 @@ RSpec.describe "demo app example" do
   it "renders the command palette modal" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :escape),
         Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
@@ -227,10 +227,23 @@ RSpec.describe "demo app example" do
     expect(backend.frames.join("\n")).to include("Command palette")
   end
 
-  it "preserves command palette input between generated demo app dispatches" do
+  it "does not open the command palette from a printable p" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
         Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
+      ]
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend).run
+
+    expect(backend.frames.join("\n")).not_to include("Command palette")
+  end
+
+  it "preserves command palette input between generated demo app dispatches" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :q, char: "q"),
         Charming::Events::KeyEvent.new(key: :escape),
         Charming::Events::KeyEvent.new(key: :q, char: "q")
@@ -246,7 +259,7 @@ RSpec.describe "demo app example" do
   it "opens the generated demo app theme palette from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :t, char: "t"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
         Charming::Events::KeyEvent.new(key: :escape),
@@ -262,7 +275,7 @@ RSpec.describe "demo app example" do
   it "selects the bundled Phosphor theme from the command palette" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :t, char: "t"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
@@ -293,7 +306,7 @@ RSpec.describe "demo app example" do
   it "selects a command from the palette with enter" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [
-        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
         Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]

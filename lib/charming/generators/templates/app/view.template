@@ -14,7 +14,7 @@ module __APP_CLASS__
       end
 
       def help_line
-        text "Press p for commands, q to quit.", style: theme.muted
+        text "Press ctrl+p for commands, q to quit.", style: theme.muted
       end
     end
   end

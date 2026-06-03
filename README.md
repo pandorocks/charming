@@ -47,7 +47,7 @@ lib/my_app.rb                            # namespace loader (Zeitwerk)
 exe/my_app                               # executable entry point
 ```
 
-Generated apps include a sidebar/content layout, command palette, focus management, theme switching, and default key bindings for commands (`p`) and quit (`q`).
+Generated apps include a sidebar/content layout, command palette, focus management, theme switching, and default key bindings for commands (`ctrl+p`) and quit (`q`).
 
 ## Development
 

@@ -117,7 +117,7 @@ The public API should feel familiar to Rails developers: applications, routes, c
 - Generated apps now include:
   - namespaced application and home state
   - a centered home screen
-  - a default command palette opened with `p`
+  - a default command palette opened with `ctrl+p`
 - Added RSpec coverage for routing, controller dispatch, runtime behavior, backends, renderer, and UI styling/layout.
 
 ## Current Milestone

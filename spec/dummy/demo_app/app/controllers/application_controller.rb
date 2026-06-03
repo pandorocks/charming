@@ -5,7 +5,7 @@ module DemoApp
     layout Layouts::ApplicationLayout
     focus_ring :sidebar, :content
 
-    key "p", :open_command_palette, scope: :global
+    key "ctrl+p", :open_command_palette, scope: :global
     key "q", :quit, scope: :global
 
     command "Home" do

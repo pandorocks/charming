@@ -99,7 +99,7 @@ module DemoApp
       def help_panel
         row(
           text("tab focus", style: theme.muted),
-          text("p commands", style: theme.muted),
+          text("ctrl+p commands", style: theme.muted),
           text("q quit", style: theme.muted),
           text("/ filter", style: theme.muted),
           gap: 3

@@ -59,6 +59,45 @@ RSpec.describe Charming::Controller do
     expect(response.body).to eq("Count: 1")
   end
 
+  it "does not dispatch printable keys to modifier key bindings" do
+    controller = Class.new(described_class) do
+      key "ctrl+p", :control
+
+      def control
+        render "control"
+      end
+    end
+
+    printable_response = controller.new(
+      application: application,
+      event: Charming::Events::KeyEvent.new(key: :p, char: "p")
+    ).dispatch_key
+    control_response = controller.new(
+      application: application,
+      event: Charming::Events::KeyEvent.new(key: :p, ctrl: true)
+    ).dispatch_key
+
+    expect(printable_response).to be_nil
+    expect(control_response.body).to eq("control")
+  end
+
+  it "accepts control as a ctrl key binding alias" do
+    controller = Class.new(described_class) do
+      key "control+p", :control
+
+      def control
+        render "control"
+      end
+    end
+
+    response = controller.new(
+      application: application,
+      event: Charming::Events::KeyEvent.new(key: :p, ctrl: true)
+    ).dispatch_key
+
+    expect(response.body).to eq("control")
+  end
+
   it "auto-renders the configured action when an action produces no response" do
     controller = Class.new(described_class) do
       auto_render :show
@@ -696,10 +735,10 @@ RSpec.describe Charming::Controller do
 
     it "cumulates bindings across a three-level chain" do
       grandparent = Class.new(described_class) { key "g", :grand }
-      parent = Class.new(grandparent) { key "p", :parent }
+      parent = Class.new(grandparent) { key "m", :parent }
       child = Class.new(parent) { key "c", :child }
 
-      expect(child.key_bindings).to eq(g: :grand, p: :parent, c: :child)
+      expect(child.key_bindings).to eq(g: :grand, m: :parent, c: :child)
     end
 
     # Snapshot is taken on first read of #key_bindings (which the `key` class
