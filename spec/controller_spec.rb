@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "stringio"
+
 RSpec.describe Charming::Controller do
   let(:application) { Charming::Application.new }
 
@@ -28,6 +30,22 @@ RSpec.describe Charming::Controller do
     response = ControllerSpecController.new(application: application).dispatch(:show)
 
     expect(response.body).to eq("Count: 0")
+  end
+
+  it "delegates logger access to the application" do
+    output = StringIO.new
+    application.logger = Logger.new(output)
+    controller = Class.new(described_class) do
+      def show
+        logger.info("showing")
+        render "Rendered"
+      end
+    end
+
+    response = controller.new(application: application).dispatch(:show)
+
+    expect(response.body).to eq("Rendered")
+    expect(output.string).to include("showing")
   end
 
   it "dispatches key bindings to actions" do

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_support/inflector"
+require "logger"
 require "zeitwerk"
 
 loader = Zeitwerk::Loader.for_gem
