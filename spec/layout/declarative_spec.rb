@@ -140,6 +140,28 @@ RSpec.describe Charming::Layout::Builder do
     expect(layout.focusable_names).to eq(%i[left right])
   end
 
+  it "collects named pane mouse targets with outer and inner bounds" do
+    layout = described_class.build(screen: Charming::Screen.new(width: 12, height: 5), view: view) do
+      split :horizontal, gap: 1 do
+        pane(:left, width: 8, border: true, padding: 1) { "L" }
+        pane(:right, grow: 1) { "R" }
+      end
+    end
+
+    expect(layout.mouse_targets).to eq([
+      {
+        name: :left,
+        rect: Charming::Layout::Rect.new(x: 0, y: 0, width: 8, height: 5),
+        inner_rect: Charming::Layout::Rect.new(x: 2, y: 2, width: 4, height: 1)
+      },
+      {
+        name: :right,
+        rect: Charming::Layout::Rect.new(x: 9, y: 0, width: 3, height: 5),
+        inner_rect: Charming::Layout::Rect.new(x: 9, y: 0, width: 3, height: 5)
+      }
+    ])
+  end
+
   it "registers focusable panes and applies focused pane styling" do
     controller_class = Class.new(Charming::Controller)
     stub_const("LayoutFocusSpecController", controller_class)

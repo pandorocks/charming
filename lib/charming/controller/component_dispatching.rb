@@ -71,10 +71,54 @@ module Charming
         :handled
       end
 
-      # Default mouse dispatch hook: subclasses/components may override by including their own
-      # mouse logic via the controller's `dispatch_component_mouse` override.
+      # Hit-tests the current mouse event against named layout panes from the latest render.
+      # Clicks move focus to matching slots; components in clicked panes receive local coordinates.
       def dispatch_component_mouse
-        nil
+        target = mouse_target_for_event
+        return nil unless target
+
+        slot = target.fetch(:name)
+        previous_focus = focus.current
+        focus.focus(slot) if focusable_click?(slot)
+
+        result = dispatch_mouse_to_target_component(slot, target)
+        return response if result.nil? && previous_focus == focus.current
+
+        result ? dispatch_component_result(slot, result) : render_default_action
+        response
+      end
+
+      def mouse_target_for_event
+        mouse_targets.rfind { |target| target.fetch(:rect).cover?(event.x, event.y) }
+      end
+
+      def focusable_click?(slot)
+        event.respond_to?(:click?) && event.click? && focus.ring.include?(slot)
+      end
+
+      def dispatch_mouse_to_target_component(slot, target)
+        return nil unless respond_to?(slot, true)
+
+        component = send(slot)
+        return nil unless component.respond_to?(:handle_mouse)
+
+        local_event = local_mouse_event(target.fetch(:inner_rect))
+        return nil unless local_event
+
+        component.handle_mouse(local_event)
+      end
+
+      def local_mouse_event(rect)
+        return nil unless rect.cover?(event.x, event.y)
+
+        Events::MouseEvent.new(
+          button: event.button,
+          x: event.x - rect.x,
+          y: event.y - rect.y,
+          ctrl: event.ctrl,
+          alt: event.alt,
+          shift: event.shift
+        )
       end
     end
   end

@@ -139,6 +139,26 @@ RSpec.describe "demo app example" do
     expect(focused_content).not_to include("> ● Home")
   end
 
+  it "clicks content and sidebar panes to move focus" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::MouseEvent.new(button: 0, x: 25, y: 2),
+        Charming::Events::MouseEvent.new(button: 0, x: 2, y: 2),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
+      ],
+      width: 60,
+      height: 12
+    )
+
+    Charming::Runtime.new(DemoApp::Application.new, backend: backend, clock: -> { 0.0 }).run
+
+    content_focused = Charming::UI::Width.strip_ansi(backend.frames[1])
+    sidebar_focused = Charming::UI::Width.strip_ansi(backend.frames[2])
+    expect(content_focused).to include("  ● Home")
+    expect(content_focused).not_to include("> ● Home")
+    expect(sidebar_focused).to include("> ● Home")
+  end
+
   it "advances the loading progress while the async task is running" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [

@@ -32,6 +32,13 @@ module Charming
         children.flat_map(&:focusable_names)
       end
 
+      # Returns all named pane mouse targets in this split, preserving declaration order.
+      def mouse_targets(rect)
+        child_rects(rect).zip(children).flat_map do |child_rect, child|
+          child.respond_to?(:mouse_targets) ? child.mouse_targets(child_rect) : []
+        end
+      end
+
       # Renders each child into its own sub-rect, then overlays them on a blank canvas
       # of the parent's dimensions.
       def render(rect)

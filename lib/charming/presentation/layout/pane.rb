@@ -44,6 +44,13 @@ module Charming
         (focus && name) ? [name] : []
       end
 
+      # Returns the mouse target represented by this pane, if it has a name.
+      def mouse_targets(rect)
+        return [] unless name
+
+        [{name: name, rect: rect, inner_rect: inner_rect(rect)}]
+      end
+
       # Renders the pane into *rect*, applying the configured style, border, and padding
       # around the evaluated content.
       def render(rect)

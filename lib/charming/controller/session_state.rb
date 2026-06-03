@@ -11,6 +11,17 @@ module Charming
         application.session
       end
 
+      # Stores the named layout panes from the latest render so mouse events can be hit-tested
+      # against the same focus slots used by Tab traversal.
+      def register_mouse_targets(targets)
+        session[:mouse_targets] = targets
+      end
+
+      # Returns the named layout panes from the latest render.
+      def mouse_targets
+        session.fetch(:mouse_targets, [])
+      end
+
       # Returns the named session-backed state object, creating it on first access. *name* is a
       # symbol key under `session[:states]`. *state_class* is an ApplicationState subclass whose
       # constructor receives *attributes* on first creation. Subsequent calls return the same object.

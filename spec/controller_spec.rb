@@ -950,6 +950,88 @@ RSpec.describe Charming::Controller do
       expect(controller_class.new(application: application).focus.current).to eq(:content)
     end
 
+    it "moves focus to the clicked layout pane" do
+      view_class = Class.new(Charming::View) do
+        def render
+          screen_layout do
+            split :horizontal do
+              pane(:sidebar, width: 10) { "sidebar" }
+              pane(:content, grow: 1) { "content" }
+            end
+          end
+        end
+      end
+      stub_const("MouseFocusView", view_class)
+      controller_class = Class.new(described_class) do
+        focus_ring :sidebar, :content
+
+        def show
+          render_view MouseFocusView
+        end
+      end
+      stub_const("MouseFocusController", controller_class)
+
+      controller_class.new(
+        application: application,
+        screen: Charming::Screen.new(width: 20, height: 3)
+      ).dispatch(:show)
+      controller_class.new(
+        application: application,
+        event: Charming::Events::MouseEvent.new(button: 0, x: 12, y: 1),
+        screen: Charming::Screen.new(width: 20, height: 3)
+      ).dispatch_mouse
+
+      expect(controller_class.new(application: application).focus.current).to eq(:content)
+    end
+
+    it "passes mouse events to clicked components using pane-local coordinates" do
+      mouse_component = Class.new do
+        attr_reader :received
+
+        def initialize
+          @received = []
+        end
+
+        def handle_mouse(event)
+          received << event
+          :handled
+        end
+      end
+      view_class = Class.new(Charming::View) do
+        def render
+          screen_layout do
+            pane(:widget, width: 10, height: 5, border: true, padding: 1) { "widget" }
+          end
+        end
+      end
+      stub_const("MouseComponentView", view_class)
+      controller_class = Class.new(described_class) do
+        focus_ring :widget
+
+        def show
+          render_view MouseComponentView
+        end
+
+        define_method(:widget) { session[:widget] ||= mouse_component.new }
+      end
+      stub_const("MouseComponentController", controller_class)
+
+      controller_class.new(
+        application: application,
+        screen: Charming::Screen.new(width: 10, height: 5)
+      ).dispatch(:show)
+      controller_class.new(
+        application: application,
+        event: Charming::Events::MouseEvent.new(button: 0, x: 3, y: 2),
+        screen: Charming::Screen.new(width: 10, height: 5)
+      ).dispatch_mouse
+
+      received = application.session[:widget].received.first
+      expect(received.x).to eq(1)
+      expect(received.y).to eq(0)
+      expect(received.button_name).to eq(:left)
+    end
+
     it "does not dispatch content-scoped key bindings while the sidebar is focused" do
       controller_class = focus_controller(
         component_class,

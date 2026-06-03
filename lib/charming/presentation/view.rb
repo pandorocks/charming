@@ -81,6 +81,7 @@ module Charming
     def screen_layout(background: nil, &)
       layout = Layout::Builder.build(screen: layout_screen, view: self, background: background, &)
       register_layout_focus(layout)
+      register_layout_mouse_targets(layout)
       layout.render
     end
 
@@ -128,6 +129,12 @@ module Charming
       return unless assigns[:controller]
 
       assigns[:controller].focus.define_layout(layout.focusable_names)
+    end
+
+    def register_layout_mouse_targets(layout)
+      return unless assigns[:controller]
+
+      assigns[:controller].register_mouse_targets(layout.mouse_targets)
     end
   end
 end
