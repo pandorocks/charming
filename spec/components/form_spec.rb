@@ -85,14 +85,15 @@ RSpec.describe Charming::Components::Form do
     expect(state[:values][:bio]).to eq("")
   end
 
-  it "inserts textarea newlines with shift-enter and ctrl-j" do
+  it "inserts textarea newlines with shift-enter, ctrl-j, and ctrl-n" do
     state = {}
     form = described_class.new(fields: [described_class::Textarea.new(:bio)], state: state)
 
     expect(form.handle_key(key(:enter, char: "\n", shift: true))).to eq(:handled)
     expect(form.handle_key(key(:j, ctrl: true))).to eq(:handled)
+    expect(form.handle_key(key(:n, ctrl: true))).to eq(:handled)
 
-    expect(state[:values][:bio]).to eq("\n\n")
+    expect(state[:values][:bio]).to eq("\n\n\n")
   end
 
   it "submits with ctrl-s from a textarea" do

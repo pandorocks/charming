@@ -3,7 +3,7 @@
 module Charming
   module Components
     # TextArea is a multi-line text editor component. Supports character insertion (with
-    # newline insertion via Shift+Enter or Ctrl+J), cursor movement (left/right/up/down,
+    # newline insertion via Shift+Enter, Ctrl+J, or Ctrl+N), cursor movement (left/right/up/down,
     # home/end, page up/down), deletion (backspace/delete), and scrolling for long buffers.
     # Vertical movement preserves a "preferred column" so left/right navigation feels stable.
     class TextArea < Component
@@ -62,11 +62,13 @@ module Charming
 
       attr_reader :placeholder, :width, :height
 
-      # True when the event represents an explicit newline request: Shift+Enter or Ctrl+J.
+      # True when the event represents an explicit newline request. Shift+Enter and Ctrl+J
+      # are ambiguous in many terminals, so Ctrl+N is the preferred TTY-safe shortcut.
       def newline_event?(event)
         key = Charming.key_of(event)
         return true if key == :enter && event.respond_to?(:shift) && event.shift
         return true if key == :j && event.respond_to?(:ctrl) && event.ctrl
+        return true if key == :n && event.respond_to?(:ctrl) && event.ctrl
 
         false
       end
