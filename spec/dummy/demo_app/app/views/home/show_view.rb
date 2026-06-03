@@ -16,7 +16,7 @@ module DemoApp
       end
 
       def help_line
-        text "Tab content, r async task. p commands, q quit.", style: theme.muted
+        text "Tab content, r async task. ctrl+p commands, q quit.", style: theme.muted
       end
 
       def status_line

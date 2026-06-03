@@ -12,6 +12,11 @@ module Charming
         Charming.key_of(event)
       end
 
+      # Returns the normalized key signature for controller-declared bindings.
+      def binding_key_name
+        Charming.key_signature(event)
+      end
+
       # Calls the auto-render action if one is configured. No-op when the action method is undefined.
       def render_default_action
         action = self.class.auto_render_action || :show
@@ -49,9 +54,9 @@ module Charming
       # Looks up the current key in the class bindings and returns the action only if its
       # registered scope matches *scope*. Returns nil otherwise.
       def key_action_for_scope(scope)
-        action = self.class.key_bindings[key_name]
+        action = self.class.key_bindings[binding_key_name]
         return nil unless action
-        return nil unless self.class.key_binding_scopes.fetch(key_name, :content) == scope
+        return nil unless self.class.key_binding_scopes.fetch(binding_key_name, :content) == scope
 
         action
       end

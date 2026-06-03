@@ -16,7 +16,7 @@ RSpec.describe DemoApp::Lg::ShowView do
       expect(output).to include("Files")
       expect(output).to include("Recent Commits")
       expect(output).to include("Diff")
-      expect(output).to include("p commands")
+      expect(output).to include("ctrl+p commands")
     end
 
     it "aligns left and right pane row boundaries" do

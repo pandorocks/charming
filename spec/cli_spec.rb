@@ -57,7 +57,7 @@ RSpec.describe Charming::CLI do
         "focus_ring :sidebar, :content"
       )
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
-        'key "p", :open_command_palette, scope: :global'
+        'key "ctrl+p", :open_command_palette, scope: :global'
       )
       expect(File.read(File.join(app_root, "app/controllers/application_controller.rb"))).to include(
         'key "q", :quit, scope: :global'
@@ -98,7 +98,7 @@ RSpec.describe Charming::CLI do
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :escape),
           Charming::Events::KeyEvent.new(key: :q, char: "q")
         ],
@@ -106,7 +106,7 @@ RSpec.describe Charming::CLI do
         height: 12
       )
       Charming::Runtime.new(WeatherTui::Application.new, backend: backend).run
-      expect(backend.frames.first).to include("p commands")
+      expect(backend.frames.first).to include("ctrl+p commands")
       expect(backend.frames.first).to include("q quit")
       expect(backend.frames.first).to include("> \u{25cf} Home")
       expect(backend.frames.first).not_to match(/\e\[\d+;\d+H/)
@@ -115,7 +115,7 @@ RSpec.describe Charming::CLI do
 
       theme_backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :t, char: "t"),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
@@ -301,7 +301,7 @@ RSpec.describe Charming::CLI do
       require File.join(app_root, "lib/nav_tui")
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :escape),
           Charming::Events::KeyEvent.new(key: :q, char: "q")
         ]
@@ -363,7 +363,7 @@ RSpec.describe Charming::CLI do
 
       backend = Charming::Internal::Terminal::MemoryBackend.new(
         events: [
-          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :s, char: "s"),
           Charming::Events::KeyEvent.new(key: :e, char: "e"),
           Charming::Events::KeyEvent.new(key: :t, char: "t"),
@@ -373,7 +373,7 @@ RSpec.describe Charming::CLI do
           Charming::Events::KeyEvent.new(key: :g, char: "g"),
           Charming::Events::KeyEvent.new(key: :s, char: "s"),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
-          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
           Charming::Events::KeyEvent.new(key: :q, char: "q")
         ]

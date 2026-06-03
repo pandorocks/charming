@@ -68,7 +68,7 @@ module DemoApp
       end
 
       def shortcuts
-        text "tab focus\np commands\nq quit", style: theme.muted
+        text "tab focus\nctrl+p commands\nq quit", style: theme.muted
       end
 
       def sidebar_style

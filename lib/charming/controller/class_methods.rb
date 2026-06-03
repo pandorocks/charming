@@ -11,7 +11,7 @@ module Charming
       # shortcuts that fire regardless of focus. Raises ArgumentError for any other scope.
       def key(name, action, scope: :content)
         normalized_scope = validate_key_scope(scope)
-        key_name = name.to_sym
+        key_name = Charming.key_binding_name(name)
         key_bindings[key_name] = action
         key_binding_scopes[key_name] = normalized_scope
       end
