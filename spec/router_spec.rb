@@ -34,6 +34,22 @@ RSpec.describe Charming::Router do
     expect(route.action).to eq(:show)
   end
 
+  it "resolves nested controller paths inside a namespace" do
+    stub_const("RouterSpecApp", Module.new)
+    stub_const("RouterSpecApp::Admin", Module.new)
+    stub_const("RouterSpecApp::Admin::UsersController", Class.new(Charming::Controller))
+    router = described_class.new(namespace: "RouterSpecApp")
+
+    router.draw do
+      screen "/admin/users", to: "admin/users#show"
+    end
+
+    route = router.resolve("/admin/users")
+
+    expect(route.controller_class).to eq(RouterSpecApp::Admin::UsersController)
+    expect(route.action).to eq(:show)
+  end
+
   it "resolves dynamic route params with symbol keys" do
     router = described_class.new
 

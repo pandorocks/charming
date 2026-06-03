@@ -96,12 +96,9 @@ module Charming
       def conventional_view_constant_path(name)
         parts = name.to_s.split("/")
         action = parts.pop
-        parts.map { |part| camelize(part) } + ["#{camelize(action)}View"]
-      end
+        view_name = "#{ActiveSupport::Inflector.camelize(action.to_s)}View"
 
-      # Converts a snake_case string to CamelCase. Used to build conventional view constant names.
-      def camelize(value)
-        value.to_s.split("_").map(&:capitalize).join
+        parts.map { |part| ActiveSupport::Inflector.camelize(part) } + [view_name]
       end
 
       # Returns the default template path for a given *action* (e.g., "home/show" for HomeController#show).
@@ -111,16 +108,8 @@ module Charming
 
       # Returns the underscored controller path (e.g., "home" for HomeController) used for view lookup.
       def controller_template_path
-        underscore(self.class.name.split("::").last.delete_suffix("Controller"))
-      end
-
-      # Converts CamelCase to snake_case.
-      def underscore(value)
-        value
-          .gsub(/([A-Z]+)([A-Z][a-z])/, "\\1_\\2")
-          .gsub(/([a-z\d])([A-Z])/, "\\1_\\2")
-          .tr("-", "_")
-          .downcase
+        controller_name = ActiveSupport::Inflector.demodulize(self.class.name).delete_suffix("Controller")
+        ActiveSupport::Inflector.underscore(controller_name)
       end
     end
   end
