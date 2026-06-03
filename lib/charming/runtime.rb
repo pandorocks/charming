@@ -26,19 +26,21 @@ module Charming
     # restores terminal state on exit.
     def run
       setup_terminal
-      render(resolve_response(dispatch(@route.action)))
-      loop do
-        event = next_task_event || next_timer_event || @backend.read_event(timeout: read_timeout)
-        next unless event
+      with_raw_input do
+        render(resolve_response(dispatch(@route.action)))
+        loop do
+          event = next_task_event || next_timer_event || @backend.read_event(timeout: read_timeout)
+          next unless event
 
-        response = dispatch_event(event)
-        next unless response
-        break if response.quit?
+          response = dispatch_event(event)
+          next unless response
+          break if response.quit?
 
-        response = resolve_response(response)
-        break if response.quit?
+          response = resolve_response(response)
+          break if response.quit?
 
-        render(response)
+          render(response)
+        end
       end
     ensure
       @task_executor&.shutdown(timeout: 0.0)
@@ -181,6 +183,13 @@ module Charming
       @backend.enter_alt_screen
       @backend.hide_cursor
       @backend.install_resize_handler if @backend.respond_to?(:install_resize_handler)
+    end
+
+    # Keeps input raw/no-echo across rendering and dispatch, not just during reads.
+    def with_raw_input(&block)
+      return yield unless @backend.respond_to?(:with_raw_input)
+
+      @backend.with_raw_input(&block)
     end
 
     # Restores terminal state: reinstalls any previous resize handler, shows

@@ -44,6 +44,42 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["Count: 0", "Count: 1"])
   end
 
+  it "keeps raw input active while rendering and reading events" do
+    raw_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      attr_reader :raw_events
+
+      def initialize(**)
+        super
+        @raw_input_active = false
+        @raw_events = []
+      end
+
+      def with_raw_input
+        @raw_events << :entered
+        @raw_input_active = true
+        yield
+      ensure
+        @raw_input_active = false
+        @raw_events << :left
+      end
+
+      def write_frame(frame)
+        @raw_events << [:write_frame, @raw_input_active]
+        super
+      end
+
+      def read_event(timeout: nil)
+        @raw_events << [:read_event, @raw_input_active]
+        super
+      end
+    end
+    backend = raw_backend.new(events: [Charming::Events::KeyEvent.new(key: :q)])
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.raw_events).to include(:entered, [:write_frame, true], [:read_event, true], :left)
+  end
+
   it "passes backend screen dimensions to controllers" do
     screen_controller = Class.new(Charming::Controller) do
       key "q", :quit
@@ -506,9 +542,25 @@ RSpec.describe Charming::Runtime do
         root "failing_runtime_spec#show"
       end
     end
-    backend = Charming::Internal::Terminal::MemoryBackend.new
+    raw_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      attr_reader :raw_events
+
+      def initialize(**)
+        super
+        @raw_events = []
+      end
+
+      def with_raw_input
+        @raw_events << :entered
+        yield
+      ensure
+        @raw_events << :left
+      end
+    end
+    backend = raw_backend.new
 
     expect { described_class.new(failing_app.new, backend: backend).run }.to raise_error("boom")
+    expect(backend.raw_events).to eq(%i[entered left])
     expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
   end
 end
