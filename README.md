@@ -29,7 +29,7 @@ Charming can also be added to an existing Ruby project with Bundler, but the pri
 
 ## Documentation
 
-- [Docs](https://charming/sh)
+- [Docs](https://charming.sh)
 
 ## Generated App Structure
 
