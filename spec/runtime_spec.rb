@@ -133,6 +133,36 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(%w[80x24 100x40])
   end
 
+  it "clears and full-repaints after resize instead of overlaying a sparse diff" do
+    screen_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+
+      def show
+        render "#{screen.width}x#{screen.height}"
+      end
+    end
+    stub_const("ResizeInvalidateRuntimeSpecController", screen_controller)
+    screen_app = Class.new(Charming::Application) do
+      routes do
+        root "resize_invalidate_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::ResizeEvent.new(width: 100, height: 40),
+        Charming::Events::KeyEvent.new(key: :q)
+      ],
+      width: 80,
+      height: 24
+    )
+
+    described_class.new(screen_app.new, backend: backend).run
+
+    write_ops = backend.operations.select { |op| op.is_a?(Array) && %i[write_frame write_lines].include?(op.first) }
+    expect(write_ops).to eq([[:write_frame, "80x24"], [:write_frame, "100x40"]])
+    expect(backend.operations.count(:clear)).to eq(3)
+  end
+
   it "navigates to routed screens" do
     home_controller = Class.new(Charming::Controller) do
       key "s", :settings

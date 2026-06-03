@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Components::EmptyState do
+RSpec.describe Charming::Components::EmptyState do
   it "renders a muted empty message" do
     state = described_class.new(message: "No stories loaded.")
 

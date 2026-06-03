@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Component do
+RSpec.describe Charming::Component do
   it "inherits view assigns" do
     component = Class.new(described_class) do
       def render
@@ -22,25 +22,25 @@ RSpec.describe Charming::Presentation::Component do
   end
 
   # Pins down Component as a distinct class even before it grows behavior
-  # of its own. Catches a revert to `Component = Charming::Presentation::View` (an alias),
+  # of its own. Catches a revert to `Component = Charming::View` (an alias),
   # which would still pass every other spec but would silently break `is_a?`
   # checks and any future Component-specific behavior.
   describe "identity" do
     it "is a distinct class object, not an alias for View" do
-      expect(described_class).not_to equal(Charming::Presentation::View)
+      expect(described_class).not_to equal(Charming::View)
     end
 
-    it "is named Charming::Presentation::Component" do
-      expect(described_class.name).to eq("Charming::Presentation::Component")
+    it "is named Charming::Component" do
+      expect(described_class.name).to eq("Charming::Component")
     end
 
-    it "inherits from Charming::Presentation::View" do
-      expect(described_class.ancestors).to include(Charming::Presentation::View)
-      expect(described_class.superclass).to eq(Charming::Presentation::View)
+    it "inherits from Charming::View" do
+      expect(described_class.ancestors).to include(Charming::View)
+      expect(described_class.superclass).to eq(Charming::View)
     end
 
     it "produces instances that are also View instances" do
-      expect(described_class.new).to be_a(Charming::Presentation::View)
+      expect(described_class.new).to be_a(Charming::View)
     end
   end
 end

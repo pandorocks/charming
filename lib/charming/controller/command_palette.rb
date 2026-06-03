@@ -70,7 +70,7 @@ module Charming
 
       # Constructs the CommandPalette widget with a *commands* list and persisted *state* hash.
       def build_command_palette_with_state(commands, state, placeholder: "Search commands", height: nil)
-        Presentation::Components::CommandPalette.new(
+        Components::CommandPalette.new(
           commands: commands,
           placeholder: placeholder,
           height: height,
@@ -112,7 +112,7 @@ module Charming
       # Returns the theme-switching commands used by the theme picker palette.
       def theme_commands
         application.class.themes.keys.map do |name|
-          Presentation::Components::CommandPalette::Command.new(label: theme_label(name), value: -> { use_theme(name) })
+          Components::CommandPalette::Command.new(label: theme_label(name), value: -> { use_theme(name) })
         end
       end
 

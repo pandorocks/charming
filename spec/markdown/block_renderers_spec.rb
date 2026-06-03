@@ -2,12 +2,12 @@
 
 require "kramdown"
 
-RSpec.describe Charming::Presentation::Markdown::BlockRenderer do
-  let(:renderer) { Charming::Presentation::Markdown::Renderer.new(content: "", width: 40) }
+RSpec.describe Charming::Markdown::BlockRenderer do
+  let(:renderer) { Charming::Markdown::Renderer.new(content: "", width: 40) }
   let(:subject_instance) { described_class.new(renderer: renderer) }
 
   def context(width: 40)
-    Charming::Presentation::Markdown::RenderContext.from(width: width)
+    Charming::Markdown::RenderContext.from(width: width)
   end
 
   def first_block(markdown)
@@ -16,7 +16,7 @@ RSpec.describe Charming::Presentation::Markdown::BlockRenderer do
   end
 
   def strip_ansi(value)
-    Charming::Presentation::UI::Width.strip_ansi(value.to_s)
+    Charming::UI::Width.strip_ansi(value.to_s)
   end
 
   describe "paragraphs" do
@@ -100,7 +100,7 @@ RSpec.describe Charming::Presentation::Markdown::BlockRenderer do
     end
 
     it "renders fenced code without syntax highlighting when disabled" do
-      no_highlight = Charming::Presentation::Markdown::Renderer
+      no_highlight = Charming::Markdown::Renderer
         .new(content: "~~~ ruby\nputs :hi\n~~~", width: 40, syntax_highlighting: false)
       block_renderer = described_class.new(renderer: no_highlight)
       cb = first_block("~~~ ruby\nputs :hi\n~~~")

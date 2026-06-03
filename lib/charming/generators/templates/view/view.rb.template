@@ -2,7 +2,7 @@
 
 module __APP_CLASS__
   module __RESOURCE_MODULE__
-    class __ACTION_VIEW_CLASS__View < Charming::Presentation::View
+    class __ACTION_VIEW_CLASS__View < Charming::View
       def render
         "__RESOURCE_NAME__"
       end

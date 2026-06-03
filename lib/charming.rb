@@ -17,6 +17,7 @@ loader.inflector.inflect(
   "mouse_parser" => "MouseParser",
   "tty_backend" => "TTYBackend"
 )
+loader.collapse("#{__dir__}/charming/presentation")
 loader.setup
 
 module Charming
@@ -37,5 +38,5 @@ module Charming
   end
 end
 
-Charming::Presentation::Templates.register ".tui.erb", Charming::Presentation::Templates::ErbHandler
-Charming::Presentation::Templates.register ".txt.erb", Charming::Presentation::Templates::ErbHandler
+Charming::Templates.register ".tui.erb", Charming::Templates::ErbHandler
+Charming::Templates.register ".txt.erb", Charming::Templates::ErbHandler

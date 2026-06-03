@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Components::CommandPaletteModal do
+RSpec.describe Charming::Components::CommandPaletteModal do
   it "renders command palette content with default modal chrome" do
     modal = described_class.new(content: "Top\nNew")
-    plain = Charming::Presentation::UI::Width.strip_ansi(modal.render)
+    plain = Charming::UI::Width.strip_ansi(modal.render)
 
     expect(plain).to include("Command palette")
     expect(plain).to include("Type to filter. Enter selects. Escape closes.")
@@ -13,7 +13,7 @@ RSpec.describe Charming::Presentation::Components::CommandPaletteModal do
 
   it "allows modal defaults to be overridden" do
     modal = described_class.new(content: "Body", title: "Commands", help: "Pick one", width: 24)
-    plain = Charming::Presentation::UI::Width.strip_ansi(modal.render)
+    plain = Charming::UI::Width.strip_ansi(modal.render)
 
     expect(plain).to include("Commands")
     expect(plain).to include("Pick one")

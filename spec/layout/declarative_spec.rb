@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Layout::Builder do
+RSpec.describe Charming::Layout::Builder do
   let(:screen) { Charming::Screen.new(width: 10, height: 3) }
-  let(:view) { Charming::Presentation::View.new(screen: screen) }
+  let(:view) { Charming::View.new(screen: screen) }
 
   def build_layout(screen: self.screen, view: self.view, &)
     described_class.build(screen: screen, view: view, &).render
@@ -79,8 +79,8 @@ RSpec.describe Charming::Presentation::Layout::Builder do
     layout.render
 
     expect(rects).to eq([
-      Charming::Presentation::Layout::Rect.new(x: 0, y: 0, width: 3, height: 3),
-      Charming::Presentation::Layout::Rect.new(x: 4, y: 0, width: 6, height: 3)
+      Charming::Layout::Rect.new(x: 0, y: 0, width: 3, height: 3),
+      Charming::Layout::Rect.new(x: 4, y: 0, width: 6, height: 3)
     ])
   end
 
@@ -107,7 +107,7 @@ RSpec.describe Charming::Presentation::Layout::Builder do
   end
 
   it "is available as a view helper" do
-    view_class = Class.new(Charming::Presentation::View) do
+    view_class = Class.new(Charming::View) do
       def render
         screen_layout do
           split :horizontal do
@@ -144,7 +144,7 @@ RSpec.describe Charming::Presentation::Layout::Builder do
     controller_class = Class.new(Charming::Controller)
     stub_const("LayoutFocusSpecController", controller_class)
     controller = LayoutFocusSpecController.new(application: Charming::Application.new)
-    view_class = Class.new(Charming::Presentation::View) do
+    view_class = Class.new(Charming::View) do
       def render
         screen_layout do
           split :horizontal do

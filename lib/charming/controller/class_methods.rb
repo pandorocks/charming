@@ -19,7 +19,7 @@ module Charming
       # Adds a CommandPalette entry with the given *label*. *action* is a method name to send on
       # the controller, or a block to instance_exec when selected.
       def command(label, action = nil, &block)
-        command_bindings << Presentation::Components::CommandPalette::Command.new(label: label, value: block || action)
+        command_bindings << Components::CommandPalette::Command.new(label: label, value: block || action)
       end
 
       # Declares a timer that fires every *every* seconds and dispatches *action* on the controller.
@@ -49,7 +49,7 @@ module Charming
       end
 
       # Sets or returns the controller's layout. Pass a layout class (instantiated per request),
-      # a String/Symbol template name (resolved through Presentation::Templates), or `false` to
+      # a String/Symbol template name (resolved through Templates), or `false` to
       # disable inherited layout wrapping. Called with no arguments returns the resolved layout.
       def layout(layout_class = :__charming_layout_reader__)
         return resolved_layout if layout_class == :__charming_layout_reader__

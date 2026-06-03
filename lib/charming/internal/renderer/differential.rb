@@ -27,6 +27,12 @@ module Charming
           render_changes(frame)
         end
 
+        # Discards the cached previous frame so the next render performs a full repaint.
+        # Call this when the screen contents are no longer trustworthy (e.g. terminal resize).
+        def invalidate
+          @previous_frame = nil
+        end
+
         private
 
         # Performs the initial full repaint and records the first frame.

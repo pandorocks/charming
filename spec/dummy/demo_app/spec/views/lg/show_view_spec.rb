@@ -10,7 +10,7 @@ RSpec.describe DemoApp::Lg::ShowView do
         theme: DemoApp::Application.new.theme
       )
 
-      output = Charming::Presentation::UI::Width.strip_ansi(view.render)
+      output = Charming::UI::Width.strip_ansi(view.render)
 
       expect(output).to include("Working Tree")
       expect(output).to include("Files")
@@ -25,7 +25,7 @@ RSpec.describe DemoApp::Lg::ShowView do
         theme: DemoApp::Application.new.theme
       )
 
-      lines = Charming::Presentation::UI::Width.strip_ansi(view.render).lines(chomp: true)
+      lines = Charming::UI::Width.strip_ansi(view.render).lines(chomp: true)
       top_row_bottom = lines.find { |line| line.include?("╰") && line.scan("╰").length == 2 }
 
       expect(top_row_bottom).to eq("╰──────────────────────────────╯ ╰───────────────────────────────────────────────────────╯")

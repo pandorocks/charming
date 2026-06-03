@@ -25,7 +25,7 @@ module Charming
       def form(name, &block)
         session[:forms] ||= {}
         form_state = session[:forms][name.to_sym] ||= {}
-        builder = Presentation::Components::Form::Builder.new(theme: theme)
+        builder = Components::Form::Builder.new(theme: theme)
         block.arity.zero? ? builder.instance_eval(&block) : block.call(builder)
         builder.build(state: form_state, theme: theme)
       end

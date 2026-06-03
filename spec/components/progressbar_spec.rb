@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::Components::Progressbar do
+RSpec.describe Charming::Components::Progressbar do
   describe "#initialize" do
     it "defaults current to 0" do
       pb = described_class.new(total: 10)

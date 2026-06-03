@@ -54,4 +54,24 @@ RSpec.describe Charming::Internal::Renderer::Differential do
     expect(backend.frames.last).to eq("one")
     expect(backend.operations.last).to eq([:write_lines, [[2, ""], [3, ""]]])
   end
+
+  it "full repaints the next frame after invalidate" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new
+    renderer = described_class.new(backend)
+
+    renderer.render("hello")
+    renderer.invalidate
+    renderer.render("hello")
+
+    expect(backend.operations).to eq(
+      [
+        :clear,
+        [:move_cursor, 1, 1],
+        [:write_frame, "hello"],
+        :clear,
+        [:move_cursor, 1, 1],
+        [:write_frame, "hello"]
+      ]
+    )
+  end
 end

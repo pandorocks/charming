@@ -12,7 +12,7 @@ RSpec.describe DemoApp::Home::ShowView do
 
       expect(view.render).to include("DemoApp")
       expect(view.render).to include("Status: Idle")
-      expect(Charming::Presentation::UI::Width.strip_ansi(view.render)).to include("Markdown Preview")
+      expect(Charming::UI::Width.strip_ansi(view.render)).to include("Markdown Preview")
     end
 
     it "renders visible progress while loading" do
@@ -21,7 +21,7 @@ RSpec.describe DemoApp::Home::ShowView do
         theme: DemoApp::Application.new.theme
       )
 
-      output = Charming::Presentation::UI::Width.strip_ansi(view.render)
+      output = Charming::UI::Width.strip_ansi(view.render)
       expect(output).to include("[===                             ] Working")
       expect(output).to include("f27^_E#cB4A&8F0d$5C+b=3@&AF89*@3 Working.")
     end
@@ -32,11 +32,11 @@ RSpec.describe DemoApp::Home::ShowView do
         theme: DemoApp::Application.new.theme
       )
 
-      output = Charming::Presentation::UI::Width.strip_ansi(view.render)
+      output = Charming::UI::Width.strip_ansi(view.render)
       expect(output).to include("Markdown Preview")
       expect(output).to include("Charming renders Markdown with Kramdown and")
       expect(output).to include("Rouge:")
-      expect(output).to include("render_component Charming::Presentation::Components::Markdown.new")
+      expect(output).to include("render_component Charming::Components::Markdown.new")
     end
   end
 

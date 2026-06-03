@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::UI::Width do
+RSpec.describe Charming::UI::Width do
   it "measures Unicode display width" do
     expect(described_class.measure("界")).to eq(2)
   end

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Presentation::UI::BorderPainter do
-  let(:normal_border) { Charming::Presentation::UI::Border.fetch(:normal) }
-  let(:rounded_border) { Charming::Presentation::UI::Border.fetch(:rounded) }
+RSpec.describe Charming::UI::BorderPainter do
+  let(:normal_border) { Charming::UI::Border.fetch(:normal) }
+  let(:rounded_border) { Charming::UI::Border.fetch(:rounded) }
 
   describe "#paint" do
     it "draws all four sides of a normal border" do
