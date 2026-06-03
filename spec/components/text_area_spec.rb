@@ -28,14 +28,15 @@ RSpec.describe Charming::Components::TextArea do
     expect(area.value).to eq("abc")
   end
 
-  it "inserts newlines with shift-enter or ctrl-j" do
+  it "inserts newlines with shift-enter, ctrl-j, or ctrl-n" do
     area = described_class.new
 
     expect(area.handle_key(key(:enter, char: "\n", shift: true))).to eq(:handled)
     expect(area.handle_key(key(:j, ctrl: true))).to eq(:handled)
+    expect(area.handle_key(key(:n, ctrl: true))).to eq(:handled)
 
-    expect(area.value).to eq("\n\n")
-    expect(area.render).to eq("\n\n|")
+    expect(area.value).to eq("\n\n\n")
+    expect(area.render).to eq("\n\n\n|")
   end
 
   it "moves left and right across line boundaries" do
