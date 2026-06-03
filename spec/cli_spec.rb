@@ -109,7 +109,7 @@ RSpec.describe Charming::CLI do
       expect(backend.frames.first).to include("p commands")
       expect(backend.frames.first).to include("q quit")
       expect(backend.frames.first).to include("> \u{25cf} Home")
-      expect(backend.frames.first).not_to include('#{cursor}')
+      expect(backend.frames.first).not_to include(cursor.to_s)
       expect(backend.frames.join("\n")).to include("Command palette")
       expect(backend.frames.first.lines.count).to eq(12)
 
