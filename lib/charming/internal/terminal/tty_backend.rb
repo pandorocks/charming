@@ -51,6 +51,20 @@ module Charming
           nil
         end
 
+        # Keeps terminal input in raw/no-echo mode for the duration of a TUI run. Reading a
+        # single keypress in raw mode is not enough: keys pressed while rendering or dispatching
+        # events can otherwise be echoed into the alternate screen before the next read.
+        def with_raw_input
+          return yield unless @input.respond_to?(:tty?) && @input.tty?
+          return yield unless @input.respond_to?(:raw) && @input.respond_to?(:noecho)
+
+          @input.raw do
+            @input.noecho do
+              yield
+            end
+          end
+        end
+
         # Installs a SIGWINCH handler that sets the internal `@resized` flag, returning
         # the previous handler so it can be restored on teardown.
         def install_resize_handler
