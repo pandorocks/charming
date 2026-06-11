@@ -202,7 +202,10 @@ module Charming
 
       def render_rule(context:)
         rule_style = context.current_style.inherit_visual(context.style[:hr])
-        body = rule_style.format.empty? ? "-" * (context.width || DEFAULT_RULE_WIDTH) : rule_style.format
+        available_width = context.width || DEFAULT_RULE_WIDTH
+        padding = rule_style.indent.to_i * 2
+        rule_width = [available_width - padding, 1].max
+        body = repeat_to_width(rule_style.format.empty? ? "-" : rule_style.format, rule_width)
         render_block_with_style(rule_style, body)
       end
 
@@ -259,6 +262,13 @@ module Charming
 
       def render_block_with_style(style, body)
         style.render(style.apply_block_layout(body))
+      end
+
+      def repeat_to_width(value, width)
+        token = value.to_s
+        token_width = [UI::Width.measure(token), 1].max
+        repeated = token * ((width.to_i + token_width - 1) / token_width)
+        UI.visible_slice(repeated, 0, width)
       end
 
       def quote_indent_width(style)

@@ -43,10 +43,11 @@ module Charming
         key_action_for_scope(:content)
       end
 
-      # Returns false when the controller declared a content focus ring slot and the sidebar
-      # is currently focused. Otherwise true (the default behavior for non-declarative controllers).
+      # Returns false when the focus ring includes a content slot that isn't currently
+      # focused (e.g., the sidebar has focus). Controllers whose ring has no :content slot
+      # always have content keys active.
       def content_key_scope_active?
-        return content_focused? if focus_ring_slot?(:content)
+        return content_focused? if focus.ring.include?(:content)
 
         true
       end

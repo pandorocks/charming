@@ -278,6 +278,11 @@ RSpec.describe "demo app example" do
         Charming::Events::KeyEvent.new(key: :p, ctrl: true),
         Charming::Events::KeyEvent.new(key: :t, char: "t"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+        # Several built-in themes ship now — filter the picker down to Phosphor first.
+        Charming::Events::KeyEvent.new(key: :p, char: "p"),
+        Charming::Events::KeyEvent.new(key: :h, char: "h"),
+        Charming::Events::KeyEvent.new(key: :o, char: "o"),
+        Charming::Events::KeyEvent.new(key: :s, char: "s"),
         Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
         Charming::Events::KeyEvent.new(key: :q, char: "q")
       ]
@@ -320,7 +325,7 @@ RSpec.describe "demo app example" do
   def completed_task_executor(value)
     lambda do |queue|
       Class.new do
-        define_method(:submit) do |name|
+        define_method(:submit) do |name, timeout: nil|
           queue << Charming::Events::TaskEvent.new(name: name, value: value)
           nil
         end
@@ -333,7 +338,7 @@ RSpec.describe "demo app example" do
 
   def pending_task_executor
     Class.new do
-      def submit(name, &)
+      def submit(name, timeout: nil, &)
         nil
       end
 

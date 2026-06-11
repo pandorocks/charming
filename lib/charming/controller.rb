@@ -9,6 +9,7 @@ module Charming
     TaskBinding = Data.define(:name, :action)
 
     extend ClassMethods
+    include ActionHooks
     include Rendering
     include SessionState
     include FocusManagement
@@ -30,9 +31,10 @@ module Charming
       @response = nil
     end
 
-    # Dispatches a named action on this controller (e.g. :show).
+    # Dispatches a named action on this controller (e.g. :show), running all
+    # before/around/after hooks and rescue_from handlers.
     def dispatch(action)
-      public_send(action)
+      run_action_with_hooks(action)
       render_default_action if response.nil? && auto_render_after?(action)
       response || render("")
     end
@@ -64,14 +66,37 @@ module Charming
       b ? dispatch(b.action) : nil
     end
 
-    # Mouse event dispatcher: checks command palette (if open), sidebar (if focused).
+    # Task progress dispatcher: looks up the handler in task progress bindings.
+    def dispatch_task_progress
+      b = self.class.task_progress_bindings[event.name.to_sym]
+      b ? dispatch(b.action) : nil
+    end
+
+    # Paste event dispatcher: forwards pasted text to the focused component's
+    # `handle_paste` (TextInput, TextArea, and form fields support it).
+    def dispatch_paste
+      slot = focus.current
+      return nil unless slot && respond_to?(slot, true)
+
+      component = send(slot)
+      return nil unless component.respond_to?(:handle_paste)
+
+      result = component.handle_paste(event)
+      return nil if result.nil?
+
+      dispatch_component_result(slot, result)
+      response
+    end
+
+    # Mouse event dispatcher: command palette (if open) wins, then sidebar clicks
+    # (route rows navigate directly), then named layout panes/components.
     def dispatch_mouse
       return dispatch_command_palette_mouse if command_palette_open?
 
-      mouse_response = dispatch_component_mouse
-      return mouse_response if mouse_response
+      sidebar_response = dispatch_sidebar_mouse
+      return sidebar_response if sidebar_response
 
-      dispatch_sidebar_mouse if sidebar_focused?
+      dispatch_component_mouse
     end
 
     # Renders a body or template wrapped in the controller's layout.

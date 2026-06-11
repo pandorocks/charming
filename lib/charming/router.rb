@@ -47,7 +47,7 @@ module Charming
       route = Route.new(
         path: path,
         controller_class: constantize(controller_constant_name(controller_name)),
-        action: action.to_sym,
+        action: (action || "show").to_sym,
         title: title || derive_title(path),
         params: {}
       )

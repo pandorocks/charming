@@ -36,7 +36,7 @@ RSpec.describe Charming::UI::Theme do
   it "loads the bundled Phosphor theme" do
     theme = described_class.load_builtin("phosphor")
 
-    expect(described_class.built_in_names).to eq(["phosphor"])
+    expect(described_class.built_in_names).to include("phosphor")
     expect(theme.title.render("Hi")).to eq("\e[1;38;2;255;179;71;48;2;17;26;44mHi\e[0m")
     expect(theme.selected.render("Hi")).to eq("\e[1;38;2;159;232;176;48;2;24;35;61mHi\e[0m")
   end

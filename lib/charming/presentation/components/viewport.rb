@@ -65,9 +65,9 @@ module Charming
         return nil unless event.click?
 
         clicked_row = event.y
-        return nil if clicked_row < offset || clicked_row >= offset + viewport_height
+        return nil if clicked_row < 0 || clicked_row >= viewport_height
 
-        position.move_to(clicked_row, bounds)
+        position.move_to(offset + clicked_row, bounds)
         :handled
       end
 

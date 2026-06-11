@@ -52,6 +52,14 @@ module Charming
         :handled
       end
 
+      # Inserts pasted text at the cursor. Newlines are preserved; other control
+      # characters (and CRLF carriage returns) are stripped. Returns :handled.
+      def handle_paste(event)
+        sanitized = event.text.to_s.tr("\r", "").gsub(/[^[:print:]\n]/, "")
+        insert(sanitized) unless sanitized.empty?
+        :handled
+      end
+
       # Renders the visible portion of the text buffer (scrolled to `offset`), with each
       # visible line either clipped to `width` or padded to it.
       def render
@@ -164,12 +172,13 @@ module Charming
       end
 
       # Moves the cursor vertically by *delta* rows. Stays within the line count and uses
-      # `preferred_column` so up/down movement feels stable on short lines.
+      # `preferred_column` (in display columns) so up/down movement feels stable on short lines.
       def move_vertical(delta)
         row, column = cursor_position
         target_row = (row + delta).clamp(0, lines.length - 1)
         @preferred_column ||= column
-        @cursor = line_start(target_row) + [@preferred_column, line_length(target_row)].min
+        target_line = lines.fetch(target_row, "")
+        @cursor = line_start(target_row) + char_offset_at_display_col(target_line, @preferred_column)
         ensure_cursor_visible
       end
 
@@ -179,12 +188,14 @@ module Charming
       end
 
       # Returns the cursor's current position as `[row, column]`, where row is the zero-based
-      # line index and column is the character offset within that line.
+      # line index and column is the *display-column* offset within that line (wide characters
+      # such as emoji or CJK occupy two display columns each).
       def cursor_position
         before = value[0...cursor].to_s
         row = before.count("\n")
         last_newline = before.rindex("\n")
-        column = last_newline ? before.length - last_newline - 1 : before.length
+        line_before_cursor = last_newline ? before[(last_newline + 1)..] : before
+        column = UI::Width.measure(line_before_cursor)
         [row, column]
       end
 
@@ -196,6 +207,17 @@ module Charming
       # Returns the character length of the line at *row* (empty string when row is past the end).
       def line_length(row)
         lines.fetch(row, "").length
+      end
+
+      # Returns the character offset within *line* where the display column reaches *display_col*.
+      # Stops at the last character when the line is shorter than *display_col*.
+      def char_offset_at_display_col(line, display_col)
+        col = 0
+        line.each_char.with_index do |char, idx|
+          return idx if col >= display_col
+          col += UI::Width.measure(char)
+        end
+        line.length
       end
 
       # Splits the value into an array of lines (preserving trailing empty lines).

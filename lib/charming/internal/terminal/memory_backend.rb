@@ -33,6 +33,12 @@ module Charming
           @events.shift
         end
 
+        # True when every pre-seeded event has been consumed. The Runtime stops its loop
+        # on an exhausted backend so tests can't hang waiting for input that never comes.
+        def exhausted?
+          @events.empty?
+        end
+
         # Stores *frame* as the current frame and appends it to `frames`.
         def write_frame(frame)
           @current_frame = frame

@@ -33,7 +33,9 @@ RSpec.describe Charming::Markdown::Renderer do
       "",
       "│ Quoted text",
       "",
-      "--------"
+      "",
+      "  #{"─" * 36}",
+      ""
     ].join("\n"))
   end
 
@@ -55,6 +57,32 @@ RSpec.describe Charming::Markdown::Renderer do
     expect(strip_ansi(output)).to eq("Tom & Jerry")
   end
 
+  it "renders thematic breaks as inset section separators" do
+    output = render_markdown(<<~MARKDOWN, width: 20)
+      Before
+
+      ---
+
+      After
+    MARKDOWN
+
+    expect(strip_ansi(output)).to eq([
+      "Before",
+      "",
+      "",
+      "  #{"─" * 16}",
+      "",
+      "",
+      "After"
+    ].join("\n"))
+  end
+
+  it "renders notty thematic breaks with ASCII fill" do
+    output = render_markdown("---", width: 10, style: :notty)
+
+    expect(strip_ansi(output)).to eq("\n  ------")
+  end
+
   it "syntax highlights fenced code blocks with Rouge" do
     output = render_markdown(<<~MARKDOWN)
       ```ruby
@@ -64,6 +92,18 @@ RSpec.describe Charming::Markdown::Renderer do
 
     expect(strip_ansi(output)).to include("  puts :hi")
     expect(output).to include("\e[")
+  end
+
+  it "preserves newlines between highlighted Ruby tokens" do
+    output = render_markdown(<<~MARKDOWN)
+      ```ruby
+      def hello
+        puts "World"
+      end
+      ```
+    MARKDOWN
+
+    expect(strip_ansi(output)).to include("  def hello\n    puts \"World\"\n  end")
   end
 
   it "can render code blocks without syntax highlighting" do

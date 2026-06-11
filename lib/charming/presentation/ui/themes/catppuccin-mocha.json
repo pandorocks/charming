@@ -1,0 +1,35 @@
+{
+  "name": "Catppuccin Mocha",
+  "id": "catppuccin-mocha",
+  "background": "background",
+  "palette": {
+    "text": "#CDD6F4",
+    "subtext": "#A6ADC8",
+    "overlay": "#6C7086",
+    "background": "#1E1E2E",
+    "surface": "#313244",
+    "mauve": "#CBA6F7",
+    "peach": "#FAB387",
+    "sky": "#89DCEB",
+    "lavender": "#B4BEFE",
+    "green": "#A6E3A1",
+    "yellow": "#F9E2AF",
+    "red": "#F38BA8"
+  },
+  "styles": {
+    "text": {"foreground": "text", "background": "background"},
+    "muted": {"foreground": "subtext", "background": "background"},
+    "title": {"foreground": "mauve", "background": "background", "bold": true},
+    "selected": {"foreground": "text", "background": "surface", "bold": true},
+    "header": {"foreground": "text", "background": "background", "border": {"style": "normal", "sides": ["bottom"], "foreground": "overlay"}, "padding": [0, 1]},
+    "header_accent": {"foreground": "mauve", "background": "background", "bold": true},
+    "sidebar": {"background": "background", "border": {"style": "normal", "sides": ["right"], "foreground": "overlay"}, "padding": [1, 1]},
+    "main": {"foreground": "text", "background": "background", "padding": [1, 2]},
+    "footer": {"foreground": "overlay", "background": "background", "border": {"style": "normal", "sides": ["top"], "foreground": "overlay"}, "padding": [0, 1]},
+    "modal": {"foreground": "text", "background": "background", "border": {"style": "rounded", "foreground": "lavender"}, "padding": [1, 2]},
+    "palette_accent": {"foreground": "mauve", "background": "background", "bold": true},
+    "border": {"foreground": "overlay", "background": "background"},
+    "info": {"foreground": "sky", "background": "background"},
+    "warn": {"foreground": "peach", "background": "background"}
+  }
+}

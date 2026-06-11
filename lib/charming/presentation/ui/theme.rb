@@ -109,6 +109,13 @@ module Charming
       end
       alias_method :[], :style
 
+      # Returns a new Theme with *overrides* (token name → style spec hash) merged over
+      # this theme's tokens. Override colors are literal (hex strings, named symbols, or
+      # 256 indexes) — the parent's palette names are already resolved.
+      def merge(overrides, background: @background)
+        self.class.new(@tokens.merge(symbolize_keys(overrides.to_h)), background: background)
+      end
+
       def method_missing(name, ...)
         return style(name) if @tokens.key?(name)
 

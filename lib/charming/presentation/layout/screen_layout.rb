@@ -39,12 +39,12 @@ module Charming
         child.mouse_targets(Rect.new(x: 0, y: 0, width: screen.width, height: screen.height))
       end
 
-      # Renders the child into the full-screen rect, then overlays each registered overlay
-      # on top in order.
+      # Renders the child into the full-screen rect, then composites each overlay on top —
+      # ordered by z_index (higher paints last), with registration order breaking ties.
       def render
         body = UI.place(render_child, width: screen.width, height: screen.height, background: background)
 
-        overlays.reduce(body) do |current, overlay|
+        stacked_overlays.reduce(body) do |current, overlay|
           UI.overlay(current, overlay.render, top: overlay.top, left: overlay.left)
         end
       end
@@ -59,6 +59,15 @@ module Charming
         return "" unless child
 
         child.render(Rect.new(x: 0, y: 0, width: screen.width, height: screen.height))
+      end
+
+      # Overlays sorted by z_index (stable: registration order breaks ties). Overlays
+      # without a z_index reader (custom nodes) sort at 0.
+      def stacked_overlays
+        overlays.each_with_index.sort_by do |overlay, index|
+          z = overlay.respond_to?(:z_index) ? overlay.z_index.to_i : 0
+          [z, index]
+        end.map(&:first)
       end
     end
   end

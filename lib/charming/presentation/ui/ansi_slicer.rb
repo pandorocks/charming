@@ -81,7 +81,7 @@ module Charming
         if token.include?("[0m")
           active.clear
         else
-          active << token
+          active << token unless active.include?(token)
         end
       end
 

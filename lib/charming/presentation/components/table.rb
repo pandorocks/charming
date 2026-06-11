@@ -16,7 +16,9 @@ module Charming
         up: :move_up,
         down: :move_down,
         home: :move_home,
-        end: :move_end
+        end: :move_end,
+        page_up: :page_up,
+        page_down: :page_down
       }.freeze
 
       # Number of terminal rows occupied by the table's top border and header line. Used by
@@ -29,12 +31,15 @@ module Charming
       # *header* is an array of column labels. *rows* is the array of body rows (each either a
       # String, an Array, or a Hash of column-value pairs). *selected_index* defaults to 0.
       # *keymap* selects the keybinding style (`:vim` enables h/j/k/l → left/down/up/right).
-      def initialize(header:, rows: [], selected_index: 0, keymap: :vim)
-        super()
+      # *height* optionally limits the visible body rows; the window auto-scrolls to keep
+      # the selection in view, and page up/down move by a full window.
+      def initialize(header:, rows: [], selected_index: 0, keymap: :vim, theme: nil, height: nil)
+        super(theme: theme)
         @header = Array(header).map(&:to_s)
         @rows = Array(rows)
         @selected_index = clamp_index(selected_index)
         @keymap = keymap
+        @height = height
       end
 
       # Handles key events. Returns `[:selected, row]` on Enter; otherwise delegates to the
@@ -48,16 +53,17 @@ module Charming
         end
       end
 
-      # Handles mouse events: a click within the body area selects the clicked row.
+      # Handles mouse events: a click within the body area selects the clicked row
+      # (relative to the visible window when a height is set).
       # Returns :handled on a successful click.
       def handle_mouse(event)
         return nil if rows.empty?
         return nil unless event.respond_to?(:click?) && event.click?
 
         clicked = event.y - HEADER_HEIGHT
-        return nil if clicked.negative? || clicked >= rows.length
+        return nil if clicked.negative? || clicked >= visible_row_count
 
-        @selected_index = clicked
+        @selected_index = viewport_start + clicked
         :handled
       end
 
@@ -95,7 +101,8 @@ module Charming
         kept + [merged]
       end
 
-      # Applies the selected-row highlight and trims unused body rows below the actual row count.
+      # Applies the selected-row highlight, windows the body to the configured height,
+      # and trims unused body rows below the actual row count.
       def compact_layout(lines)
         return lines.join("\n") if lines.length < 4
 
@@ -103,11 +110,35 @@ module Charming
         body = rest.first(rows.length)
         bottom = rest[rows.length]
 
-        highlighted = body.each_with_index.map do |line, index|
-          (index == selected_index) ? "\e[7m#{line}\e[m" : line
+        window = body[viewport_start, visible_row_count] || []
+        highlighted = window.each_with_index.map do |line, index|
+          ((viewport_start + index) == selected_index) ? theme.selected.render(line) : line
         end
 
         [top, header_line, *highlighted, bottom].compact.join("\n")
+      end
+
+      # The top body row of the visible window (0 when no height is set), keeping the
+      # selection in view.
+      def viewport_start
+        return 0 unless @height
+
+        Layout.selected_window_start(selected_index: selected_index, item_count: rows.length, window_size: @height)
+      end
+
+      # The number of body rows shown at once.
+      def visible_row_count
+        @height ? [@height, rows.length].min : rows.length
+      end
+
+      # Moves the selection up by one window.
+      def page_up
+        @selected_index = [selected_index - visible_row_count, 0].max
+      end
+
+      # Moves the selection down by one window.
+      def page_down
+        @selected_index = [selected_index + visible_row_count, rows.length - 1].min
       end
 
       # Moves the selection up one row.

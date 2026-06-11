@@ -4,41 +4,32 @@ module Charming
   class Controller
     # Sidebar-navigation helpers mixed into Controller. Tracks the sidebar's current route index,
     # routes j/k/enter/tab keys when the sidebar is focused, and exposes `sidebar_focused?` for views.
+    #
+    # Sidebar/content focus is driven entirely by the controller's Focus object. Controllers
+    # that want Tab-driven sidebar navigation declare `focus_ring :sidebar, :content` (generated
+    # apps do); without those slots in the ring, `focus_sidebar`/`focus_content` are no-ops.
     module SidebarNavigation
-      # Moves focus to the sidebar. When the controller declared a focus ring, the focus object
-      # is updated; otherwise a fallback session key tracks focus.
+      # Moves focus to the sidebar slot and remembers the highlighted route.
       def focus_sidebar
-        if focus_ring_slot?(:sidebar)
-          focus.focus(:sidebar)
-        else
-          session[:focus] = :sidebar
-        end
+        focus.focus(:sidebar)
         session[:sidebar_index] ||= current_route_index
         render_default_action
       end
 
-      # Moves focus to the content pane (the inverse of `focus_sidebar`).
+      # Moves focus to the content slot (the inverse of `focus_sidebar`).
       def focus_content
-        if focus_ring_slot?(:content)
-          focus.focus(:content)
-        else
-          session[:focus] = :content
-        end
+        focus.focus(:content)
         render_default_action
       end
 
-      # True when the sidebar is the current focus target. Uses the focus ring when defined.
+      # True when the sidebar slot is the current focus target.
       def sidebar_focused?
-        return focused?(:sidebar) if focus_ring_slot?(:sidebar)
-
-        session[:focus] == :sidebar
+        focused?(:sidebar)
       end
 
-      # True when the content pane is the current focus target. Uses the focus ring when defined.
+      # True when the content slot is the current focus target.
       def content_focused?
-        return focused?(:content) if focus_ring_slot?(:content)
-
-        session[:focus] == :content
+        focused?(:content)
       end
 
       # Returns the index of the currently selected route in `sidebar_routes`, defaulting to the
@@ -82,9 +73,43 @@ module Charming
         response
       end
 
-      # Mouse dispatch for the sidebar. Reserved for future use; returns nil.
+      # Mouse dispatch for the sidebar: a click on a route row selects it and navigates
+      # immediately; a click elsewhere in the sidebar pane focuses the sidebar. Uses the
+      # :sidebar pane's inner rect from the latest render to translate screen coordinates
+      # to nav rows. Returns nil when the click missed the sidebar entirely.
       def dispatch_sidebar_mouse
-        nil
+        return nil unless event.respond_to?(:click?) && event.click?
+
+        row = sidebar_row_at(event.x, event.y)
+        return nil unless row
+
+        if row.between?(0, sidebar_routes.length - 1)
+          session[:sidebar_index] = row
+          sidebar_select
+        else
+          focus.focus(:sidebar)
+          render_default_action
+        end
+        response
+      end
+
+      # The number of rows above the first nav item inside the sidebar pane's content
+      # area (the generated layout renders the app title plus a blank gap line).
+      # Override in controllers whose sidebar layout differs.
+      def sidebar_nav_offset
+        2
+      end
+
+      # Maps screen coordinates to a nav-row index inside the :sidebar pane's inner
+      # rect, or nil when the click missed the sidebar.
+      def sidebar_row_at(x, y)
+        target = mouse_targets.find { |candidate| candidate[:name] == :sidebar }
+        return nil unless target
+
+        inner = target.fetch(:inner_rect)
+        return nil unless inner.cover?(x, y)
+
+        y - inner.y - sidebar_nav_offset
       end
 
       # Moves the sidebar cursor by *delta* positions, clamped to the route list bounds.
@@ -99,11 +124,7 @@ module Charming
       # Selects the route currently highlighted in the sidebar and navigates to it.
       def sidebar_select
         route = sidebar_routes[sidebar_index]
-        if focus_ring_slot?(:content)
-          focus.focus(:content)
-        else
-          session[:focus] = :content
-        end
+        focus.focus(:content)
         route ? navigate_to(route.path) : render_default_action
       end
     end

@@ -21,7 +21,7 @@ module Charming
       def render(code, language: nil)
         lexer = lexer_for(language, code)
         lexer.lex(code.to_s).map do |token, value|
-          style_for(token).render(value)
+          render_token(token, value)
         end.join
       end
 
@@ -29,6 +29,16 @@ module Charming
 
       # The Charming theme used for token styling.
       attr_reader :theme, :style
+
+      def render_token(token, value)
+        token_style = style_for(token)
+        value.to_s.each_line(chomp: false).map do |line|
+          next "\n" if line == "\n"
+          next token_style.render(line.chomp("\n")) + "\n" if line.end_with?("\n")
+
+          token_style.render(line)
+        end.join
+      end
 
       # Picks a Rouge lexer for *language* and *code*, falling back to plain text.
       def lexer_for(language, code)

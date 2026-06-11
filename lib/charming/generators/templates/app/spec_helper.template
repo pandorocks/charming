@@ -1,3 +1,4 @@
 # frozen_string_literal: true
 
-require "__APP_SNAKE__"
+__ENV_SETUP__require "__APP_SNAKE__"
+__DATABASE_SPEC_SETUP__

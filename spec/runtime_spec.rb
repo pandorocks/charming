@@ -600,7 +600,12 @@ RSpec.describe Charming::Runtime do
     end
     backend = raw_backend.new
 
-    expect { described_class.new(failing_app.new, backend: backend).run }.to raise_error("boom")
+    # Controller exceptions no longer crash the runtime — they render an error
+    # screen — but terminal state must still be restored when the loop ends.
+    described_class.new(failing_app.new, backend: backend).run
+
+    expect(backend.frames.last).to include("RuntimeError")
+    expect(backend.frames.last).to include("boom")
     expect(backend.raw_events).to eq(%i[entered left])
     expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
   end

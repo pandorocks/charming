@@ -227,31 +227,38 @@ RSpec.describe Charming::Components::Table do
   end
 
   describe "#render selection highlighting" do
-    it "highlights the selected row with reverse-video codes" do
+    let(:theme) { Charming::UI::Theme.default }
+
+    it "highlights the selected row using the theme's selected style" do
       table = described_class.new(
         header: %w[Name Age],
         rows: %w[a b c],
-        selected_index: 1
+        selected_index: 1,
+        theme: theme
       )
 
       output = table.render
       lines = output.lines(chomp: true)
-      # Find the line containing "b" should have reverse codes
       b_line = lines.find { |l| l.include?("b") && !l.strip.match?(/┌|└|├|┤/) }
-      expect(b_line).to include("\e[7m")
+      selected_render = theme.selected.render("b")
+      # The row for "b" should contain the theme-styled version of "b"
+      expect(b_line).to include(selected_render[0, 4])
     end
 
-    it "does not highlight non-selected rows" do
+    it "highlights exactly one row when selected_index is set" do
       table = described_class.new(
         header: %w[Name Age],
         rows: %w[a b c],
-        selected_index: 0
+        selected_index: 0,
+        theme: theme
       )
 
+      # The selected row should be styled differently from unselected ones
       output = table.render
-      highlighted = output.lines(chomp: true).select { |l| l.include?("\e[7m") }
-      expect(highlighted.length).to eq(1)
-      expect(highlighted.first).to include("a")
+      selected_rendered = theme.selected.render("a")
+      lines_with_selected = output.lines(chomp: true).select { |l| l.include?(selected_rendered[0, 4]) }
+      expect(lines_with_selected.length).to eq(1)
+      expect(lines_with_selected.first).to include("a")
     end
   end
 

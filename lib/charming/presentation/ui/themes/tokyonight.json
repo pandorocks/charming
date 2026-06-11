@@ -1,0 +1,34 @@
+{
+  "name": "Tokyo Night",
+  "id": "tokyonight",
+  "background": "background",
+  "palette": {
+    "fg": "#C0CAF5",
+    "comment": "#565F89",
+    "background": "#1A1B26",
+    "surface": "#292E42",
+    "blue": "#7AA2F7",
+    "cyan": "#7DCFFF",
+    "yellow": "#E0AF68",
+    "magenta": "#BB9AF7",
+    "green": "#9ECE6A",
+    "red": "#F7768E",
+    "orange": "#FF9E64"
+  },
+  "styles": {
+    "text": {"foreground": "fg", "background": "background"},
+    "muted": {"foreground": "comment", "background": "background"},
+    "title": {"foreground": "blue", "background": "background", "bold": true},
+    "selected": {"foreground": "fg", "background": "surface", "bold": true},
+    "header": {"foreground": "fg", "background": "background", "border": {"style": "normal", "sides": ["bottom"], "foreground": "comment"}, "padding": [0, 1]},
+    "header_accent": {"foreground": "magenta", "background": "background", "bold": true},
+    "sidebar": {"background": "background", "border": {"style": "normal", "sides": ["right"], "foreground": "comment"}, "padding": [1, 1]},
+    "main": {"foreground": "fg", "background": "background", "padding": [1, 2]},
+    "footer": {"foreground": "comment", "background": "background", "border": {"style": "normal", "sides": ["top"], "foreground": "comment"}, "padding": [0, 1]},
+    "modal": {"foreground": "fg", "background": "background", "border": {"style": "rounded", "foreground": "magenta"}, "padding": [1, 2]},
+    "palette_accent": {"foreground": "magenta", "background": "background", "bold": true},
+    "border": {"foreground": "comment", "background": "background"},
+    "info": {"foreground": "cyan", "background": "background"},
+    "warn": {"foreground": "yellow", "background": "background"}
+  }
+}

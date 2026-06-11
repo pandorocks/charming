@@ -90,8 +90,10 @@ module Charming
       end
 
       # Computes the size of each child along the *axis* given the *available* cells.
-      # Subtracts the total gap, allocates fixed sizes first, and distributes the remainder
-      # among flexible (non-fixed) children by their grow weights.
+      # Subtracts the total gap, allocates fixed sizes first, distributes the remainder
+      # among flexible (non-fixed) children by their grow weights, then clamps every
+      # child to its min/max constraints (re-balancing the difference onto flexible
+      # children with remaining slack).
       def child_sizes(axis:, available:)
         gap_size = gap * [children.length - 1, 0].max
         available_for_children = [available - gap_size, 0].max
@@ -100,7 +102,39 @@ module Charming
         sizes = fixed.map { |size| size&.to_i }
         remaining = [available_for_children - sizes.compact.sum, 0].max
 
-        distribute_remaining(sizes, flexible_indexes, remaining)
+        sizes = distribute_remaining(sizes, flexible_indexes, remaining)
+        apply_constraints(sizes, flexible_indexes, axis, available_for_children)
+      end
+
+      # Clamps each child's size to its min/max constraints, then pushes the resulting
+      # surplus or deficit onto the last flexible child that can absorb it without
+      # violating its own constraints.
+      def apply_constraints(sizes, flexible_indexes, axis, available)
+        constrained = sizes.each_with_index.map { |size, index| clamp_size(size, children[index], axis) }
+        difference = available - constrained.sum
+        return constrained if difference.zero?
+
+        absorber = flexible_indexes.rfind do |index|
+          adjusted = constrained[index] + difference
+          adjusted >= 0 && adjusted == clamp_size(adjusted, children[index], axis)
+        end
+        constrained[absorber] += difference if absorber
+        constrained
+      end
+
+      # Clamps *size* to the child's min/max constraint along *axis* (when declared).
+      def clamp_size(size, child, axis)
+        min = constraint(child, (axis == :horizontal) ? :min_width : :min_height)
+        max = constraint(child, (axis == :horizontal) ? :max_width : :max_height)
+        size = [size, min].max if min
+        size = [size, max].min if max
+        size
+      end
+
+      # Reads a constraint reader from *child* when it responds to it (Panes do, nested
+      # Splits currently don't).
+      def constraint(child, name)
+        child.respond_to?(name) ? child.public_send(name) : nil
       end
 
       # Returns the fixed size of *child* along *axis* (`:horizontal` reads width, `:vertical` reads height).

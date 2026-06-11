@@ -457,7 +457,7 @@ RSpec.describe Charming::Controller do
       executor = Class.new do
         attr_reader :name, :block
 
-        def submit(name, &block)
+        def submit(name, timeout: nil, &block)
           @name = name
           @block = block
           nil
@@ -1187,16 +1187,18 @@ RSpec.describe Charming::Controller do
       expect(controller.sidebar_routes.map(&:path)).to eq(["/other"])
     end
 
-    it "preserves session focus fallback when no focus_ring slot is declared" do
+    it "does not track sidebar/content focus when no focus_ring is declared" do
       controller_class = Class.new(described_class) { def show = render("ok") }
-      stub_const("SessionFocusFallbackController", controller_class)
+      stub_const("NoFocusRingController", controller_class)
 
       controller_class.new(application: application).focus_content
       controller = controller_class.new(application: application)
 
+      # Without :sidebar/:content in a focus ring, focus calls are no-ops and
+      # content keys stay active (content_key_scope_active? defaults to true).
       expect(controller.sidebar_focused?).to be(false)
-      expect(controller.content_focused?).to be(true)
-      expect(application.session[:focus]).to eq(:content)
+      expect(controller.content_focused?).to be(false)
+      expect(application.session[:focus]).to be_nil
     end
   end
 

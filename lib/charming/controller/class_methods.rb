@@ -25,6 +25,8 @@ module Charming
       # Declares a timer that fires every *every* seconds and dispatches *action* on the controller.
       # The runtime builds a TimerEvent and routes it to the active controller's dispatch_timer.
       def timer(name, every:, action:)
+        raise ArgumentError, "timer interval must be positive (got #{every.inspect})" unless every.is_a?(Numeric) && every.positive?
+
         timer_bindings[name.to_sym] = TimerBinding.new(name: name.to_sym, interval: every, action: action)
       end
 
@@ -32,6 +34,13 @@ module Charming
       # a TaskEvent with the matching name, the runtime dispatches *action* on the controller.
       def on_task(name, action:)
         task_bindings[name.to_sym] = TaskBinding.new(name: name.to_sym, action: action)
+      end
+
+      # Declares a progress handler for a task: while `run_task(:name)` runs, each
+      # `progress.report(...)` dispatches *action* on the controller (the event is
+      # available as `event` — a TaskProgressEvent with current/total/message).
+      def on_task_progress(name, action:)
+        task_progress_bindings[name.to_sym] = TaskBinding.new(name: name.to_sym, action: action)
       end
 
       # Sets the action that the controller should auto-render after a non-rendering action runs.
@@ -91,6 +100,11 @@ module Charming
       # Hash of task name => TaskBinding, inherited from superclass when undefined.
       def task_bindings
         @task_bindings ||= superclass.respond_to?(:task_bindings) ? superclass.task_bindings.dup : {}
+      end
+
+      # Hash of task name => TaskBinding for progress handlers, inherited from superclass.
+      def task_progress_bindings
+        @task_progress_bindings ||= superclass.respond_to?(:task_progress_bindings) ? superclass.task_progress_bindings.dup : {}
       end
 
       private

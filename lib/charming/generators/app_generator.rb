@@ -98,8 +98,45 @@ module Charming
           controller_actions: controller_actions,
           controller_helpers: controller_helpers,
           database_require: database_require,
-          model_loader: model_loader
+          model_loader: model_loader,
+          env_setup: env_setup,
+          database_spec_setup: database_spec_setup
         }
+      end
+
+      # Pins CHARMING_ENV to "test" before the app (and its database config) loads, so
+      # specs hit db/test.sqlite3. Empty for non-database apps.
+      def env_setup
+        return "" unless database?
+
+        "ENV[\"CHARMING_ENV\"] ||= \"test\"\n\n"
+      end
+
+      # Prepares the test database schema before the suite and rolls back each example's
+      # writes in a transaction. Empty for non-database apps.
+      def database_spec_setup
+        return "" unless database?
+
+        <<~RUBY
+
+          # Prepare the test database, preferring the dumped schema over replaying migrations.
+          schema = File.expand_path("../db/schema.rb", __dir__)
+          if File.exist?(schema)
+            load schema
+          else
+            ActiveRecord::MigrationContext.new(File.expand_path("../db/migrate", __dir__)).migrate
+          end
+
+          RSpec.configure do |config|
+            # Roll back database writes after each example so tests stay isolated.
+            config.around(:each) do |example|
+              ActiveRecord::Base.transaction(requires_new: true) do
+                example.run
+                raise ActiveRecord::Rollback
+              end
+            end
+          end
+        RUBY
       end
 
       # The `Gem::Specification` attributes block (indented two spaces to match the wrapping

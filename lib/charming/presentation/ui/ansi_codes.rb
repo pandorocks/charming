@@ -56,8 +56,11 @@ module Charming
         @attributes.map { |attribute| ATTRIBUTES.fetch(attribute) }
       end
 
+      # Resolves *color* to SGR codes, downconverting to the terminal's capability
+      # (see UI::ColorSupport): truecolor → 256 → 16 → none.
       def color_codes(color, foreground:)
         return [] unless color
+        return [] if ColorSupport.level == :none
         return indexed_color_code(color, foreground: foreground) if color.is_a?(Integer)
         return named_color_code(color, foreground: foreground) if COLORS.key?(color.to_sym)
         return truecolor_codes(color, foreground: foreground) if color.to_s.start_with?("#")
@@ -72,6 +75,7 @@ module Charming
 
       def indexed_color_code(color, foreground:)
         raise ArgumentError, "indexed color must be between 0 and 255" unless color.between?(0, 255)
+        return basic_color_code(ColorSupport.index_to_16(color), foreground: foreground) unless ColorSupport.at_least?(:color256)
 
         [foreground ? 38 : 48, 5, color]
       end
@@ -79,8 +83,15 @@ module Charming
       def truecolor_codes(color, foreground:)
         hex = color.to_s.delete_prefix("#")
         raise ArgumentError, "truecolor must be #rrggbb" unless hex.match?(/\A[0-9a-fA-F]{6}\z/)
+        return [foreground ? 38 : 48, 5, ColorSupport.hex_to_256(hex)] if ColorSupport.level == :color256
+        return basic_color_code(ColorSupport.hex_to_16(hex), foreground: foreground) if ColorSupport.level == :color16
 
         [foreground ? 38 : 48, 2, hex[0..1].to_i(16), hex[2..3].to_i(16), hex[4..5].to_i(16)]
+      end
+
+      # Wraps a basic SGR foreground code (30-37/90-97) for the requested plane.
+      def basic_color_code(code, foreground:)
+        [foreground ? code : code + 10]
       end
     end
   end

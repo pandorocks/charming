@@ -18,13 +18,6 @@ module Charming
       def focused?(slot)
         focus.focused?(slot)
       end
-
-      private
-
-      # True when the controller class declared *slot* as part of its focus_ring DSL.
-      def focus_ring_slot?(slot)
-        self.class.focus_ring_slots.include?(slot)
-      end
     end
   end
 end

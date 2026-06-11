@@ -1,0 +1,33 @@
+{
+  "name": "Gruvbox Dark",
+  "id": "gruvbox-dark",
+  "background": "background",
+  "palette": {
+    "fg": "#EBDBB2",
+    "gray": "#928374",
+    "background": "#282828",
+    "surface": "#3C3836",
+    "yellow": "#FABD2F",
+    "orange": "#FE8019",
+    "aqua": "#8EC07C",
+    "blue": "#83A598",
+    "green": "#B8BB26",
+    "red": "#FB4934"
+  },
+  "styles": {
+    "text": {"foreground": "fg", "background": "background"},
+    "muted": {"foreground": "gray", "background": "background"},
+    "title": {"foreground": "yellow", "background": "background", "bold": true},
+    "selected": {"foreground": "fg", "background": "surface", "bold": true},
+    "header": {"foreground": "fg", "background": "background", "border": {"style": "normal", "sides": ["bottom"], "foreground": "gray"}, "padding": [0, 1]},
+    "header_accent": {"foreground": "orange", "background": "background", "bold": true},
+    "sidebar": {"background": "background", "border": {"style": "normal", "sides": ["right"], "foreground": "gray"}, "padding": [1, 1]},
+    "main": {"foreground": "fg", "background": "background", "padding": [1, 2]},
+    "footer": {"foreground": "gray", "background": "background", "border": {"style": "normal", "sides": ["top"], "foreground": "gray"}, "padding": [0, 1]},
+    "modal": {"foreground": "fg", "background": "background", "border": {"style": "rounded", "foreground": "yellow"}, "padding": [1, 2]},
+    "palette_accent": {"foreground": "orange", "background": "background", "bold": true},
+    "border": {"foreground": "gray", "background": "background"},
+    "info": {"foreground": "blue", "background": "background"},
+    "warn": {"foreground": "orange", "background": "background"}
+  }
+}

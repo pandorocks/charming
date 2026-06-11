@@ -6,6 +6,10 @@ module Charming
     # cursor movement (left/right/home/end), and deletion (backspace/delete). The component
     # exposes its `value` and `cursor` positions as reader methods; when an explicit `width:`
     # is given, the rendered output is padded to that width via a UI::Style.
+    #
+    # Options:
+    # - `masked: true` renders every character as `*` (password entry)
+    # - `history: [...]` enables REPL-style recall — up/down cycle through prior values
     class TextInput < Component
       include KeyboardHandler
 
@@ -26,21 +30,37 @@ module Charming
 
       # *value* is the initial text. *placeholder* is shown when the value is empty.
       # *width* optionally constrains the rendered output width; *cursor* defaults to the end.
-      def initialize(value: "", placeholder: "", width: nil, cursor: nil)
+      # *masked* renders characters as `*`. *history* is an array of prior values cycled
+      # with up/down (most recent last, like a shell).
+      def initialize(value: "", placeholder: "", width: nil, cursor: nil, masked: false, history: nil)
         super()
         @value = value.dup
         @placeholder = placeholder
         @width = width
         @cursor = cursor || @value.length
+        @masked = masked
+        @history = history
+        @history_index = nil
+        @draft = nil
         clamp_position
       end
 
-      # Handles key events. Inserts printable characters, otherwise dispatches via KEY_ACTIONS.
+      # Handles key events. Inserts printable characters, recalls history on up/down
+      # (when enabled), otherwise dispatches via KEY_ACTIONS.
       # Returns :handled when the event was consumed, nil otherwise.
       def handle_key(event)
         return :handled if character_event?(event) && insert(event.char)
+        return :handled if history_event(Charming.key_of(event))
 
         super
+      end
+
+      # Inserts pasted text at the cursor (newlines and control characters are
+      # stripped — this is a single-line input). Returns :handled.
+      def handle_paste(event)
+        sanitized = event.text.to_s.gsub(/[[:cntrl:]]/, "")
+        insert(sanitized) unless sanitized.empty?
+        :handled
       end
 
       # Renders the value with a cursor marker. When *width* was given at construction, the
@@ -105,12 +125,62 @@ module Charming
         @value = value[0...cursor] + value[(cursor + 1)..]
       end
 
+      # Cycles through history on :up / :down. Returns true when the event was consumed.
+      def history_event(key)
+        return false unless @history && !@history.empty?
+
+        case key
+        when :up then recall_previous
+        when :down then recall_next
+        else false
+        end
+      end
+
+      # Steps back through history (saving the in-progress draft first).
+      def recall_previous
+        if @history_index.nil?
+          @draft = value
+          @history_index = @history.length - 1
+        elsif @history_index.positive?
+          @history_index -= 1
+        end
+        replace_value(@history[@history_index])
+        true
+      end
+
+      # Steps forward through history; past the newest entry restores the draft.
+      def recall_next
+        return false if @history_index.nil?
+
+        @history_index += 1
+        if @history_index >= @history.length
+          @history_index = nil
+          replace_value(@draft.to_s)
+        else
+          replace_value(@history[@history_index])
+        end
+        true
+      end
+
+      # Replaces the value and moves the cursor to the end.
+      def replace_value(new_value)
+        @value = new_value.dup
+        @cursor = @value.length
+      end
+
       # Renders the value with a "|" cursor marker at the current position. When the value is
-      # empty, the placeholder is rendered instead, preceded by the cursor marker.
+      # empty, the placeholder is rendered instead, preceded by the cursor marker. Masked
+      # inputs render `*` per character.
       def render_value
         return cursor_marker + placeholder if value.empty?
 
-        value[0...cursor] + cursor_marker + value[cursor..]
+        shown = display_value
+        shown[0...cursor] + cursor_marker + shown[cursor..]
+      end
+
+      # The value as displayed: masked inputs substitute `*` for every character.
+      def display_value
+        @masked ? "*" * value.length : value
       end
 
       # The literal character used to mark the cursor position in `render`.

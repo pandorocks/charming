@@ -3,14 +3,11 @@ PATH
   specs:
     charming (0.2.0)
       activemodel (~> 8.1, >= 8.1.2)
-      activerecord (~> 8.1, >= 8.1.2)
       activesupport (~> 8.1, >= 8.1.2)
       commonmarker (~> 2.0)
       logger (~> 1.7)
       rouge (~> 5.0)
-      sqlite3 (~> 2.0)
       tty-cursor (~> 0.7)
-      tty-progressbar (~> 0.18)
       tty-reader (~> 0.9)
       tty-screen (~> 0.8)
       tty-table (~> 0.12)
@@ -156,11 +153,6 @@ GEM
     tsort (0.2.0)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
-    tty-progressbar (0.18.3)
-      strings-ansi (~> 0.2)
-      tty-cursor (~> 0.7)
-      tty-screen (~> 0.8)
-      unicode-display_width (>= 1.6, < 3.0)
     tty-reader (0.9.0)
       tty-cursor (~> 0.7)
       tty-screen (~> 0.8)
@@ -183,11 +175,13 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activerecord (~> 8.1, >= 8.1.2)
   charming!
   irb
   rake (~> 13.0)
   rspec (~> 3.13)
   ruby-lsp
+  sqlite3 (~> 2.0)
   standard (>= 1.35.1)
 
 CHECKSUMS
@@ -253,7 +247,6 @@ CHECKSUMS
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   tty-color (0.6.0) sha256=6f9c37ca3a4e2367fb2e6d09722762647d6f455c111f05b59f35730eeb24332a
   tty-cursor (0.7.1) sha256=79534185e6a777888d88628b14b6a1fdf5154a603f285f80b1753e1908e0bf48
-  tty-progressbar (0.18.3) sha256=6cbb4260e55e74a9180d502143eb6a467d2c8e51bf5f3c9509fb5cacc3d4a5f6
   tty-reader (0.9.0) sha256=c62972c985c0b1566f0e56743b6a7882f979d3dc32ff491ed490a076f899c2b1
   tty-screen (0.8.2) sha256=c090652115beae764336c28802d633f204fb84da93c6a968aa5d8e319e819b50
   tty-table (0.12.0) sha256=fdc27a4750835c1a16efe19a0b857e3ced3652cc7aceafe6dca94908965b9939

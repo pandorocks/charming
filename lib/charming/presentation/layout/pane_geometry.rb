@@ -2,19 +2,25 @@
 
 module Charming
   module Layout
-    # PaneGeometry holds a Pane's sizing (width, height, grow) and inset
-    # configuration (border + padding). It knows how to inset a Rect for the
+    # PaneGeometry holds a Pane's sizing (width, height, grow, min/max constraints)
+    # and inset configuration (border + padding). It knows how to inset a Rect for the
     # content area and how to expand CSS-style 1/2/4-value padding.
     class PaneGeometry
-      attr_reader :width, :height, :grow, :border, :padding
+      attr_reader :width, :height, :grow, :border, :padding,
+        :min_width, :max_width, :min_height, :max_height
 
-      def self.build(width: nil, height: nil, grow: nil, border: nil, padding: nil)
+      def self.build(width: nil, height: nil, grow: nil, border: nil, padding: nil,
+        min_width: nil, max_width: nil, min_height: nil, max_height: nil)
         new(width: width, height: height, grow: grow,
-          border: (border == true) ? :normal : border, padding: padding)
+          border: (border == true) ? :normal : border, padding: padding,
+          min_width: min_width, max_width: max_width,
+          min_height: min_height, max_height: max_height)
       end
 
-      def initialize(width:, height:, grow:, border:, padding:)
+      def initialize(width:, height:, grow:, border:, padding:,
+        min_width: nil, max_width: nil, min_height: nil, max_height: nil)
         @width, @height, @grow, @border, @padding = width, height, grow, border, padding
+        @min_width, @max_width, @min_height, @max_height = min_width, max_width, min_height, max_height
         @padding_values = padding ? expand_padding(Array(padding)) : [0, 0, 0, 0]
         freeze
       end
@@ -22,12 +28,14 @@ module Charming
       def ==(other)
         other.is_a?(PaneGeometry) &&
           width == other.width && height == other.height && grow == other.grow &&
-          border == other.border && padding == other.padding
+          border == other.border && padding == other.padding &&
+          min_width == other.min_width && max_width == other.max_width &&
+          min_height == other.min_height && max_height == other.max_height
       end
       alias_method :eql?, :==
 
       def hash
-        [width, height, grow, border, padding].hash
+        [width, height, grow, border, padding, min_width, max_width, min_height, max_height].hash
       end
 
       def border_top = border ? 1 : 0

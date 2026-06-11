@@ -100,22 +100,11 @@ module Charming
         content.sub(%(  spec.add_dependency "charming"\n), %(  spec.add_dependency "charming"\n#{dependency}\n))
       end
 
-      # The contents of the new `config/database.rb` (establishes an SQLite connection to
-      # `db/development.sqlite3`).
+      # The contents of the new `config/database.rb` — read from the shared app template so
+      # `charming new --database` and `charming db:install` stay in sync. Environment-aware:
+      # the database file is `db/<CHARMING_ENV>.sqlite3`.
       def database_config
-        %(# frozen_string_literal: true
-
-require "active_record"
-require "fileutils"
-
-database_path = File.expand_path("../db/development.sqlite3", __dir__)
-FileUtils.mkdir_p(File.dirname(database_path))
-
-ActiveRecord::Base.establish_connection(
-  adapter: "sqlite3",
-  database: database_path
-)
-)
+        File.read(File.join(__dir__, "templates", "app", "database_config.template"))
       end
 
       # The contents of the new `app/models/application_record.rb` (abstract ActiveRecord base).

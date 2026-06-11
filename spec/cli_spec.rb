@@ -118,6 +118,11 @@ RSpec.describe Charming::CLI do
           Charming::Events::KeyEvent.new(key: :p, ctrl: true),
           Charming::Events::KeyEvent.new(key: :t, char: "t"),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
+          # Several built-in themes ship now — filter the picker down to Phosphor.
+          Charming::Events::KeyEvent.new(key: :p, char: "p"),
+          Charming::Events::KeyEvent.new(key: :h, char: "h"),
+          Charming::Events::KeyEvent.new(key: :o, char: "o"),
+          Charming::Events::KeyEvent.new(key: :s, char: "s"),
           Charming::Events::KeyEvent.new(key: :enter, char: "\n"),
           Charming::Events::KeyEvent.new(key: :q, char: "q")
         ],

@@ -3,7 +3,9 @@
 require "active_record"
 require "fileutils"
 
-database_path = File.expand_path("../db/development.sqlite3", __dir__)
+# The database file is selected by CHARMING_ENV (development, test, production).
+environment = ENV["CHARMING_ENV"] || "development"
+database_path = File.expand_path("../db/#{environment}.sqlite3", __dir__)
 FileUtils.mkdir_p(File.dirname(database_path))
 
 ActiveRecord::Base.establish_connection(

@@ -13,10 +13,10 @@ Ruby TUI framework for Ruby 4+. Track of work to make this a proper production-r
 
 - [x] Add Table component — most requested widget in TUI frameworks
 - [x] Add Progressbar component
-- [ ] Add missing common widgets: checkbox, tabs, status bar
+- [x] Add missing common widgets: checkbox (MultiSelectList), tabs (TabBar), status bar (StatusBar) — plus Tree, Toast, Badge, Breadcrumbs, HelpOverlay, Autocomplete
 - [x] Add formal backend interface module instead of duck-typing
 - [ ] Separate view state from application state (don't store Viewport/Spinner in session)
-- [ ] Expand layout features: wrapping, clipping, vertical alignment, min/max dimensions
+- [ ] Expand layout features: wrapping, clipping, vertical alignment — min/max dimensions done
 
 ## Priority 3 — Minor
 
@@ -24,7 +24,7 @@ Ruby TUI framework for Ruby 4+. Track of work to make this a proper production-r
 - [ ] Fix generator templates — use template engine instead of string concatenation
 - [x] Add CI/CD with GitHub Actions
 - [x] Explicitly define `module Charming` in `lib/charming.rb`
-- [ ] Add fuzzy search to command palette
+- [x] Add fuzzy search to command palette (FuzzyMatcher, fzf-style scoring)
 - [ ] Add property-based tests for UI styling system
 - [ ] Add visual regression tests for rendered output
 - [ ] Fill out `sig/charming.rbs` beyond `VERSION`

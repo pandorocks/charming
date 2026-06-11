@@ -8,7 +8,8 @@ module Charming
     # focusable slots in the controller's focus ring.
     class Pane
       attr_reader :name
-      delegate :width, :height, :grow, to: :geometry
+      delegate :width, :height, :grow,
+        :min_width, :max_width, :min_height, :max_height, to: :geometry
 
       # *name* is the focus slot identifier. *content* (or a *block*) is the body; *view*
       # is the view used for instance_exec when the block is given. *geometry*, *style*, and

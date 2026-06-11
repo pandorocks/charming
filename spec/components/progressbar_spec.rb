@@ -31,7 +31,7 @@ RSpec.describe Charming::Components::Progressbar do
     context "determinate" do
       it "renders bar at 0%" do
         pb = described_class.new(total: 10)
-        expect(pb.render).to eq("[" + " " * 9 + "]")
+        expect(pb.render).to eq("[" + " " * 10 + "]")
       end
 
       it "renders bar at 50%" do

@@ -46,7 +46,6 @@ module Charming
         width = [@total, 1].max
         completed = completed_width(width)
         incomplete = width - completed
-        incomplete -= 1 if @current.zero?
         bar = (@complete * completed) + (@incomplete * incomplete)
         result = "[" + bar + "]"
 

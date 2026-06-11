@@ -104,14 +104,12 @@ module Charming
         List.new(items: filtered_commands, selected_index: selected_index, height: height, label: :label.to_proc, theme: theme)
       end
 
-      # Returns the full commands array when input value is empty; otherwise a subset whose labels match case-insensitively
-      # against the current TextInput value. Used to drive the fuzzy search behavior. Returns an Array of Command entries.
+      # Returns the full commands array when input value is empty; otherwise the commands
+      # fuzzy-matched against the typed value, best matches first (see FuzzyMatcher).
       def filtered_commands
         return commands if input.value.empty?
 
-        commands.select do |command|
-          command.label.downcase.include?(input.value.downcase)
-        end
+        FuzzyMatcher.filter(input.value, commands) { |command| command.label.to_s }
       end
     end
   end

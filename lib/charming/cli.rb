@@ -23,6 +23,7 @@ module Charming
       case command
       when "new" then new_app(args)
       when "generate", "g" then generate(args)
+      when "console", "c" then console(args)
       when /^db:/ then database(command, args)
       else usage(1)
       end
@@ -63,19 +64,76 @@ module Charming
       generator_class(type).new(name, args, out: out, destination: pwd, force: force)
     end
 
-    # Returns the generator class for a *type* string (controller, model, screen, view, component).
+    # Returns the generator class for a *type* string (controller, model, screen, view,
+    # component, migration).
     def generator_class(type)
       {
         "controller" => Generators::ControllerGenerator,
         "model" => Generators::ModelGenerator,
         "screen" => Generators::ScreenGenerator,
         "view" => Generators::ViewGenerator,
-        "component" => Generators::ComponentGenerator
+        "component" => Generators::ComponentGenerator,
+        "migration" => Generators::MigrationGenerator
       }.fetch(type) { raise Generators::Error, "Unknown generator: #{type}" }
     end
 
+    # Handles `charming console`: loads the app (root file, which sets up Zeitwerk and the
+    # database when configured), prints a banner, and opens IRB with `app` available.
+    def console(args)
+      raise Generators::Error, "Usage: charming console" if args.any?
+
+      root_file = app_root_file
+      raise Generators::Error, "Run this command from a Charming app root" unless root_file
+
+      require "irb"
+      require root_file
+      out.puts "Loading #{Charming.env} environment (Charming #{Charming::VERSION})"
+      app_class = console_application_class(root_file)
+      ConsoleContext.start(app_class)
+      0
+    end
+
+    # The app's root loader (`lib/<gemspec name>.rb`), or nil when not in an app root.
+    def app_root_file
+      gemspec = Dir.glob(File.join(pwd, "*.gemspec")).first
+      return nil unless gemspec
+
+      path = File.join(pwd, "lib", "#{File.basename(gemspec, ".gemspec")}.rb")
+      File.exist?(path) ? path : nil
+    end
+
+    # Resolves `<AppModule>::Application` from the root file name, or nil.
+    def console_application_class(root_file)
+      module_name = ActiveSupport::Inflector.camelize(File.basename(root_file, ".rb"))
+      ActiveSupport::Inflector.constantize("#{module_name}::Application")
+    rescue NameError
+      nil
+    end
+
+    # ConsoleContext is the binding IRB starts in: `app` returns a memoized application
+    # instance when the app class was resolvable.
+    class ConsoleContext
+      def self.start(app_class)
+        new(app_class).start
+      end
+
+      def initialize(app_class)
+        @app_class = app_class
+      end
+
+      def app
+        @app ||= @app_class&.new
+      end
+
+      def start
+        IRB.setup(nil)
+        workspace = IRB::WorkSpace.new(binding)
+        IRB::Irb.new(workspace).run(IRB.conf)
+      end
+    end
+
     # Routes `db:*` commands to either the install path (db:install) or the generic
-    # Database::Commands dispatcher.
+    # Database::Commands dispatcher. Extra arguments (e.g., `STEP=2`) are passed through.
     def database(command, args)
       if command == "db:install"
         database = args.shift || raise(Generators::Error, "Usage: charming db:install sqlite3")
@@ -83,9 +141,7 @@ module Charming
 
         Generators::DatabaseInstaller.new(database, out: out, destination: pwd).install
       else
-        raise Generators::Error, "Usage: charming #{command}" if args.any?
-
-        Database::Commands.new(command, out: out, destination: pwd).run
+        Database::Commands.new(command, args: args, out: out, destination: pwd).run
       end
       0
     end
@@ -112,7 +168,7 @@ module Charming
 
     # Prints a usage banner to stderr and returns *status* (1 for unknown commands).
     def usage(status)
-      err.puts "Usage: charming new NAME | charming generate TYPE NAME [args] | charming db:COMMAND"
+      err.puts "Usage: charming new NAME | charming generate TYPE NAME [args] | charming console | charming db:COMMAND"
       status
     end
   end

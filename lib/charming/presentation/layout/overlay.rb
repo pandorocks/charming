@@ -8,13 +8,14 @@ module Charming
     # with an outer *style*.
     class Overlay
       # The vertical and horizontal offset (cell count or `:center`) of the overlay
-      # within the parent canvas.
-      attr_reader :top, :left
+      # within the parent canvas, and its stacking order (higher paints later/on top).
+      attr_reader :top, :left, :z_index
 
       # *content* (or a *block*) provides the body. *top*/*left* default to :center.
       # *width*/*height* fix the overlay's dimensions; when unset, the content's natural
-      # size is used. *style* wraps the rendered content in a UI::Style.
-      def initialize(content: nil, block: nil, view: nil, top: :center, left: :center, width: nil, height: nil, style: nil)
+      # size is used. *style* wraps the rendered content in a UI::Style. *z_index*
+      # controls stacking: higher values composite on top (ties keep registration order).
+      def initialize(content: nil, block: nil, view: nil, top: :center, left: :center, width: nil, height: nil, style: nil, z_index: 0)
         @content = content
         @block = block
         @view = view
@@ -23,6 +24,7 @@ module Charming
         @width = width
         @height = height
         @style = style
+        @z_index = z_index
       end
 
       # Renders the overlay's content; when *width* or *height* is set, places the rendered

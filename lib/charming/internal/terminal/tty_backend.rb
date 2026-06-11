@@ -22,6 +22,19 @@ module Charming
         AUTO_WRAP_OFF = "\e[?7l"
         AUTO_WRAP_ON = "\e[?7h"
 
+        # Escape sequences for enabling/disabling bracketed-paste mode, and the markers
+        # the terminal wraps around pasted text.
+        BRACKETED_PASTE_ON = "\e[?2004h"
+        BRACKETED_PASTE_OFF = "\e[?2004l"
+        PASTE_START = "\e[200~"
+        PASTE_END = "\e[201~"
+
+        # Escape sequences for terminal focus reporting and the focus-in/out markers.
+        FOCUS_REPORTING_ON = "\e[?1004h"
+        FOCUS_REPORTING_OFF = "\e[?1004l"
+        FOCUS_IN = "\e[I"
+        FOCUS_OUT = "\e[O"
+
         # *input* and *output* default to `$stdin`/`$stdout` for normal terminal use;
         # tests can inject IO objects. *reader* is a TTY::Reader instance (created from
         # *input*/*output* when nil). *cursor* is the TTY::Cursor class used for cursor control.
@@ -37,18 +50,54 @@ module Charming
         end
 
         # Reads the next event. If a SIGWINCH was received, returns a ResizeEvent with the
-        # current terminal dimensions. Mouse escape sequences are parsed by MouseParser;
-        # other input is normalized via KeyNormalizer. Returns nil on timeout.
+        # current terminal dimensions. Bracketed pastes return a PasteEvent; mouse escape
+        # sequences are parsed by MouseParser; other input is normalized via KeyNormalizer.
+        # Returns nil on timeout.
         def read_event(timeout: nil)
           return resize_event if resized?
 
           raw = @reader.read_keypress(echo: false, raw: true, nonblock: timeout)
           return nil unless raw
+          return Events::FocusEvent.new(focused: true) if raw == FOCUS_IN
+          return Events::FocusEvent.new(focused: false) if raw == FOCUS_OUT
+          return paste_event(raw) if raw.start_with?(PASTE_START)
           return MouseParser.parse(raw) if MouseParser.sequence?(raw)
 
           @key_normalizer.normalize(raw)
         rescue Errno::EAGAIN, IO::WaitReadable
           nil
+        end
+
+        # Emits the ANSI sequence enabling terminal focus reporting. Idempotent.
+        def enable_focus_reporting
+          return if @focus_reporting
+
+          write_control(FOCUS_REPORTING_ON)
+          @focus_reporting = true
+        end
+
+        # Emits the ANSI sequence disabling terminal focus reporting. Idempotent.
+        def disable_focus_reporting
+          return unless @focus_reporting
+
+          write_control(FOCUS_REPORTING_OFF)
+          @focus_reporting = false
+        end
+
+        # Emits the ANSI sequence enabling bracketed-paste mode. Idempotent.
+        def enable_bracketed_paste
+          return if @bracketed_paste
+
+          write_control(BRACKETED_PASTE_ON)
+          @bracketed_paste = true
+        end
+
+        # Emits the ANSI sequence disabling bracketed-paste mode. Idempotent.
+        def disable_bracketed_paste
+          return unless @bracketed_paste
+
+          write_control(BRACKETED_PASTE_OFF)
+          @bracketed_paste = false
         end
 
         # Keeps terminal input in raw/no-echo mode for the duration of a TUI run. Reading a
@@ -183,6 +232,19 @@ module Charming
           @resized = false
           width, height = size
           Events::ResizeEvent.new(width: width, height: height)
+        end
+
+        # Builds a PasteEvent from a bracketed-paste chunk, reading further keypresses
+        # until the paste-end marker arrives (large pastes can span multiple reads).
+        def paste_event(raw)
+          buffer = raw.delete_prefix(PASTE_START)
+          until buffer.include?(PASTE_END)
+            chunk = @reader.read_keypress(echo: false, raw: true, nonblock: 0.2)
+            break unless chunk
+
+            buffer << chunk
+          end
+          Events::PasteEvent.new(text: buffer.sub(/#{Regexp.escape(PASTE_END)}.*\z/mo, ""))
         end
 
         # Writes a raw escape *sequence* to the output stream and flushes.

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "fileutils"
+require "json"
+
 module Charming
   # Application is a lightweight, Rails-inspired application base for building
   # terminal-based apps. It provides routing (via a DSL), session storage, and
@@ -39,13 +42,27 @@ module Charming
         @root = File.expand_path(path)
       end
 
-      # Registers a named theme. Provide either *from:* (path to a JSON file relative to the app root)
-      # or *built_in:* (name of a bundled theme such as "phosphor"). Raises when neither or both are given.
-      def theme(name, from: nil, built_in: nil)
-        raise ArgumentError, "theme expects from: or built_in:" unless from || built_in
-        raise ArgumentError, "theme expects either from: or built_in:, not both" if from && built_in
+      # Registers a named theme. Provide one of:
+      # - *from:* — path to a JSON theme file relative to the app root
+      # - *built_in:* — name of a bundled theme ("phosphor", "catppuccin-mocha",
+      #   "catppuccin-latte", "gruvbox-dark", "nord", "tokyonight")
+      # - *extends:* — name of an already-registered theme to derive from, with
+      #   *overrides:* (token name → style spec) merged on top:
+      #
+      #     theme :dark, built_in: "tokyonight"
+      #     theme :high_contrast, extends: :dark, overrides: {text: {foreground: "#ffffff"}}
+      def theme(name, from: nil, built_in: nil, extends: nil, overrides: nil)
+        sources = [from, built_in, extends].compact
+        raise ArgumentError, "theme expects from:, built_in:, or extends:" if sources.empty?
+        raise ArgumentError, "theme expects only one of from:, built_in:, or extends:" if sources.length > 1
+        raise ArgumentError, "overrides: requires extends:" if overrides && !extends
 
-        themes[name.to_sym] = if built_in
+        themes[name.to_sym] = if extends
+          parent = themes.fetch(extends.to_sym) do
+            raise ArgumentError, "unknown parent theme: #{extends.inspect} (register it before extending)"
+          end
+          parent.merge(overrides || {})
+        elsif built_in
           UI::Theme.load_builtin(built_in)
         else
           UI::Theme.load_file(resolve_theme_path(from))
@@ -74,6 +91,23 @@ module Charming
         themes.fetch(theme_name.to_sym)
       end
 
+      # Opts into session persistence: the session hash is serialized as JSON to *to*
+      # when the app quits and reloaded on boot. Only JSON-safe values survive the
+      # round-trip (hash keys come back as symbols); non-serializable entries (state
+      # objects, procs) are skipped with a warning in the log.
+      def persist_session(to:)
+        @session_path = to
+      end
+
+      # The configured session file path, walking the superclass chain. Nil when
+      # persistence is not enabled.
+      def session_path
+        return @session_path if instance_variable_defined?(:@session_path)
+        return superclass.session_path if superclass.respond_to?(:session_path)
+
+        nil
+      end
+
       private
 
       def configured_logger
@@ -95,10 +129,24 @@ module Charming
     attr_accessor :logger, :task_executor
     attr_reader :session
 
-    # Initializes an empty session hash for per-request state storage.
+    # Initializes the session hash for per-request state storage, restoring a
+    # previously persisted session when `persist_session` is configured.
     def initialize
       @logger = self.class.logger
-      @session = {}
+      @session = load_session
+    end
+
+    # Serializes the session to the configured `persist_session` path. Entries that
+    # don't survive a JSON round-trip (state objects, procs, focus scopes) are skipped.
+    # No-op when persistence isn't configured. Called by the Runtime on exit.
+    def save_session
+      path = self.class.session_path
+      return unless path
+
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, JSON.generate(serializable_session))
+    rescue => e
+      logger.warn("session not saved: #{e.class}: #{e.message}")
     end
 
     # Delegates to the class-level Router, providing instance access to route definitions.
@@ -113,6 +161,40 @@ module Charming
     def use_theme(name)
       self.class.theme_for(name)
       session[:theme] = name.to_sym
+    end
+
+    private
+
+    # Loads the persisted session JSON (symbolizing keys), or {} when absent/invalid.
+    def load_session
+      path = self.class.session_path
+      return {} unless path && File.exist?(path)
+
+      JSON.parse(File.read(path), symbolize_names: true)
+    rescue JSON::ParserError => e
+      logger.warn("session not restored: #{e.message}")
+      {}
+    end
+
+    # The subset of session entries that survive a JSON round-trip: nil, booleans,
+    # numbers, strings, symbols, and arrays/hashes of those. State objects, procs,
+    # and other rich values are skipped (symbols come back as symbols via
+    # symbolize_names; symbol *values* come back as strings).
+    def serializable_session
+      session.select { |_key, value| json_safe?(value) }
+    end
+
+    def json_safe?(value)
+      case value
+      when nil, true, false, String, Symbol, Integer, Float
+        true
+      when Array
+        value.all? { |item| json_safe?(item) }
+      when Hash
+        value.all? { |key, item| (key.is_a?(String) || key.is_a?(Symbol)) && json_safe?(item) }
+      else
+        false
+      end
     end
   end
 end

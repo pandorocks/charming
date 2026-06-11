@@ -41,7 +41,10 @@ module Charming
       def pane(name = nil, content = nil, **options, &block)
         node = Pane.new(
           name: name, content: content, block: block, view: view,
-          geometry: PaneGeometry.build(**options.slice(:width, :height, :grow, :border, :padding)),
+          geometry: PaneGeometry.build(**options.slice(
+            :width, :height, :grow, :border, :padding,
+            :min_width, :max_width, :min_height, :max_height
+          )),
           style: PaneStyle.build(**options.slice(:style, :focused_style)),
           behavior: PaneBehavior.build(**options.slice(:focus, :scroll, :clip, :wrap))
         )
