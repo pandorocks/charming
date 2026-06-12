@@ -47,6 +47,11 @@ module Charming
         matches.first(@max_suggestions)
       end
 
+      # Free-typed characters belong to this component while it is focused.
+      def captures_text?
+        true
+      end
+
       # Enter submits, Escape cancels, up/down move the highlight, everything else
       # edits the text (resetting the highlight).
       def handle_key(event)

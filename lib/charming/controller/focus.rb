@@ -83,6 +83,15 @@ module Charming
         current == slot
       end
 
+      # True when the topmost scope is an overlay (modal, command palette, or any
+      # pushed scope) rather than the structural ring/layout. While an overlay scope
+      # is active, the controller routes keys to the focused component instead of
+      # content/sidebar key bindings.
+      def overlay?
+        scope = top
+        !!scope && !%i[ring layout].include?(scope[:origin])
+      end
+
       private
 
       # Returns the topmost scope hash (the last entry pushed onto `@state[:scopes]`).

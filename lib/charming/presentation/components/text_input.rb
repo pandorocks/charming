@@ -45,6 +45,11 @@ module Charming
         clamp_position
       end
 
+      # Free-typed characters belong to this component while it is focused.
+      def captures_text?
+        true
+      end
+
       # Handles key events. Inserts printable characters, recalls history on up/down
       # (when enabled), otherwise dispatches via KEY_ACTIONS.
       # Returns :handled when the event was consumed, nil otherwise.

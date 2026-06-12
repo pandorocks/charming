@@ -25,6 +25,26 @@ RSpec.describe "Session persistence" do
     end
   end
 
+  it "never persists framework-internal session keys" do
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "session.json")
+      app_class = app_class_with(path)
+
+      app = app_class.new
+      app.session[:focus_state] = {"SomeController" => {scopes: [{ring: [:content], current: :content, origin: :ring}]}}
+      app.session[:command_palette] = {type: :commands, value: "", cursor: 0, selected_index: 0}
+      app.session[:mouse_targets] = []
+      app.session[:theme] = :nord
+      app.save_session
+
+      restored = app_class.new
+      expect(restored.session).not_to have_key(:focus_state)
+      expect(restored.session).not_to have_key(:command_palette)
+      expect(restored.session).not_to have_key(:mouse_targets)
+      expect(restored.session[:theme]).to eq("nord")
+    end
+  end
+
   it "skips entries that don't serialize to JSON" do
     Dir.mktmpdir do |dir|
       path = File.join(dir, "session.json")

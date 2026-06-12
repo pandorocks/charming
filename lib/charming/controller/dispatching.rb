@@ -61,6 +61,26 @@ module Charming
 
         action
       end
+
+      # True when the current event is a plain printable character: a single
+      # non-control char with no ctrl/alt modifier (ctrl+p etc. stay shortcuts).
+      def printable_text_event?
+        return false unless event.respond_to?(:char) && event.char
+        return false if event.respond_to?(:ctrl) && event.ctrl
+        return false if event.respond_to?(:alt) && event.alt
+
+        event.char.length == 1 && !event.char.match?(/[[:cntrl:]]/)
+      end
+
+      # True when the focus ring's current slot resolves to a component that accepts
+      # free-typed text (see Component#captures_text?).
+      def focused_component_captures_text?
+        slot = focus.current
+        return false unless slot && respond_to?(slot, true)
+
+        component = send(slot)
+        component.respond_to?(:captures_text?) && component.captures_text?
+      end
     end
   end
 end

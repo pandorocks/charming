@@ -81,24 +81,29 @@ module Charming
 end
 
 if defined?(RSpec)
+  # Both matchers compare against the ANSI-stripped body: styled output interleaves
+  # escape codes mid-phrase (each styled segment emits its own codes), so raw
+  # substring matching would fail on any text spanning two styles.
   RSpec::Matchers.define :render_text do |expected|
     match do |response|
-      response.respond_to?(:body) && response.body.to_s.include?(expected)
+      response.respond_to?(:body) &&
+        Charming::UI::Width.strip_ansi(response.body.to_s).include?(expected)
     end
 
     failure_message do |response|
-      body = response.respond_to?(:body) ? response.body.to_s : response.inspect
+      body = response.respond_to?(:body) ? Charming::UI::Width.strip_ansi(response.body.to_s) : response.inspect
       "expected response body to include #{expected.inspect}, got:\n#{body}"
     end
   end
 
   RSpec::Matchers.define :render_match do |pattern|
     match do |response|
-      response.respond_to?(:body) && response.body.to_s.match?(pattern)
+      response.respond_to?(:body) &&
+        Charming::UI::Width.strip_ansi(response.body.to_s).match?(pattern)
     end
 
     failure_message do |response|
-      body = response.respond_to?(:body) ? response.body.to_s : response.inspect
+      body = response.respond_to?(:body) ? Charming::UI::Width.strip_ansi(response.body.to_s) : response.inspect
       "expected response body to match #{pattern.inspect}, got:\n#{body}"
     end
   end

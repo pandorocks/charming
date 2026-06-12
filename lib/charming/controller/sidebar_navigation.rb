@@ -16,9 +16,12 @@ module Charming
         render_default_action
       end
 
-      # Moves focus to the content slot (the inverse of `focus_sidebar`).
+      # Moves focus to the content side (the inverse of `focus_sidebar`). "Content" is
+      # the :content slot when the ring declares one, otherwise the first non-sidebar
+      # slot — so `focus_ring :sidebar, :entries` works without a literal :content.
       def focus_content
-        focus.focus(:content)
+        slot = content_slot
+        focus.focus(slot) if slot
         render_default_action
       end
 
@@ -27,9 +30,10 @@ module Charming
         focused?(:sidebar)
       end
 
-      # True when the content slot is the current focus target.
+      # True when focus is on the content side: any current slot other than :sidebar.
       def content_focused?
-        focused?(:content)
+        current = focus.current
+        !current.nil? && current != :sidebar
       end
 
       # Returns the index of the currently selected route in `sidebar_routes`, defaulting to the
@@ -121,10 +125,20 @@ module Charming
         render_default_action
       end
 
+      # The slot focus_content targets: :content when declared, else the first
+      # non-sidebar slot in the active ring.
+      def content_slot
+        ring = focus.ring
+        return :content if ring.include?(:content)
+
+        ring.find { |slot| slot != :sidebar }
+      end
+
       # Selects the route currently highlighted in the sidebar and navigates to it.
       def sidebar_select
         route = sidebar_routes[sidebar_index]
-        focus.focus(:content)
+        slot = content_slot
+        focus.focus(slot) if slot
         route ? navigate_to(route.path) : render_default_action
       end
     end

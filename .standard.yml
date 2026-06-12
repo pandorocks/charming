@@ -1,0 +1,4 @@
+# Example apps are standalone projects with their own bundles; the framework's
+# linter only covers the framework itself.
+ignore:
+  - "examples/**/*"

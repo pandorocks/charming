@@ -2,10 +2,11 @@
 
 module Charming
   module Components
-    # TextArea is a multi-line text editor component. Supports character insertion (with
-    # newline insertion via Shift+Enter, Ctrl+J, or Ctrl+N), cursor movement (left/right/up/down,
-    # home/end, page up/down), deletion (backspace/delete), and scrolling for long buffers.
-    # Vertical movement preserves a "preferred column" so left/right navigation feels stable.
+    # TextArea is a multi-line text editor component. Supports character insertion, newline
+    # insertion (plain Enter by default, plus Shift+Enter/Ctrl+J/Ctrl+N), cursor movement
+    # (left/right/up/down, home/end, page up/down), deletion (backspace/delete), and scrolling
+    # for long buffers. Vertical movement preserves a "preferred column" so left/right
+    # navigation feels stable.
     class TextArea < Component
       # The current text value, cursor byte offset, top-visible row offset, and remembered
       # column for vertical navigation, respectively.
@@ -15,7 +16,9 @@ module Charming
       # *height* constrain the rendered output. *cursor* defaults to the end of the value.
       # *offset* is the top-visible row. *preferred_column* is the column to resume at on
       # vertical movement (defaults to the current column on first use).
-      def initialize(value: "", placeholder: "", width: nil, height: nil, cursor: nil, offset: 0, preferred_column: nil)
+      # *enter_newline* (default true) makes plain Enter insert a newline — set false when a
+      # host widget wants Enter for itself (the key then falls through unhandled).
+      def initialize(value: "", placeholder: "", width: nil, height: nil, cursor: nil, offset: 0, preferred_column: nil, enter_newline: true)
         super()
         @value = value.dup
         @placeholder = placeholder
@@ -24,8 +27,14 @@ module Charming
         @cursor = cursor || @value.length
         @offset = offset
         @preferred_column = preferred_column
+        @enter_newline = enter_newline
         clamp_position
         ensure_cursor_visible
+      end
+
+      # Free-typed characters belong to this component while it is focused.
+      def captures_text?
+        true
       end
 
       # Routes key events to the appropriate cursor/text mutation. Returns :handled when the
@@ -70,10 +79,14 @@ module Charming
 
       attr_reader :placeholder, :width, :height
 
-      # True when the event represents an explicit newline request. Shift+Enter and Ctrl+J
-      # are ambiguous in many terminals, so Ctrl+N is the preferred TTY-safe shortcut.
+      # True when the event represents a newline request. Plain Enter inserts a newline
+      # by default (the natural expectation in a text editor); Shift+Enter, Ctrl+J, and
+      # Ctrl+N always work, even when `enter_newline: false` reserves plain Enter for the
+      # host widget. (Shift+Enter is indistinguishable from Enter in many terminals, so
+      # Ctrl+N remains the TTY-safe fallback in that mode.)
       def newline_event?(event)
         key = Charming.key_of(event)
+        return true if key == :enter && @enter_newline
         return true if key == :enter && event.respond_to?(:shift) && event.shift
         return true if key == :j && event.respond_to?(:ctrl) && event.ctrl
         return true if key == :n && event.respond_to?(:ctrl) && event.ctrl

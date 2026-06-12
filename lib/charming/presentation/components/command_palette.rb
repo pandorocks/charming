@@ -43,6 +43,11 @@ module Charming
         }
       end
 
+      # Free-typed characters belong to this component while it is focused.
+      def captures_text?
+        true
+      end
+
       # Handles key events by routing them to the appropriate sub-component: Escape kills the
       # palette returning :cancelled; up/down/home/end keys go to the List selection handler
       # via handle_list_key; all other keys (including typed characters) are passed to the TextInput

@@ -72,7 +72,7 @@ RSpec.describe Charming::Components::Form do
     expect(plain(described_class.new(fields: [described_class::Textarea.new(:bio, height: 2)], state: state).render)).to include("  b|")
   end
 
-  it "advances instead of inserting a newline on plain enter in a textarea" do
+  it "inserts a newline on plain enter in a textarea (leave the field with tab)" do
     state = {}
     form = described_class.new(
       fields: [described_class::Textarea.new(:bio), described_class::Input.new(:name)],
@@ -80,9 +80,22 @@ RSpec.describe Charming::Components::Form do
     )
 
     expect(form.handle_key(key(:enter, char: "\n"))).to eq(:handled)
+    expect(state[:focus_index]).to eq(0)
+    expect(state[:values][:bio]).to eq("\n")
 
+    expect(form.handle_key(key(:tab))).to eq(:handled)
     expect(state[:focus_index]).to eq(1)
-    expect(state[:values][:bio]).to eq("")
+  end
+
+  it "creates a blank line from two enters in a textarea" do
+    state = {}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio)], state: state)
+
+    form.handle_key(key(:a, char: "a"))
+    2.times { form.handle_key(key(:enter, char: "\n")) }
+    form.handle_key(key(:b, char: "b"))
+
+    expect(state[:values][:bio]).to eq("a\n\nb")
   end
 
   it "inserts textarea newlines with shift-enter, ctrl-j, and ctrl-n" do
@@ -158,7 +171,7 @@ RSpec.describe Charming::Components::Form do
     state = {values: {bio: "  \n  "}}
     form = described_class.new(fields: [described_class::Textarea.new(:bio, required: true)], state: state)
 
-    expect(form.handle_key(key(:enter))).to eq(:handled)
+    expect(form.handle_key(key(:s, ctrl: true))).to eq(:handled)
 
     expect(state[:errors]).to eq(bio: ["is required"])
   end

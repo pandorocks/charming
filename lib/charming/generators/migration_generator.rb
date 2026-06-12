@@ -105,9 +105,11 @@ module Charming
         File.exist?(File.join(destination, "config", "database.rb"))
       end
 
-      # The current UTC timestamp in the format ActiveRecord uses for migration filenames.
+      # A migration timestamp in ActiveRecord's filename format, bumped past any
+      # existing migration's version so two generators run in the same second
+      # can't produce colliding versions.
       def timestamp
-        Time.now.utc.strftime("%Y%m%d%H%M%S")
+        MigrationTimestamp.next(File.join(destination, "db", "migrate"))
       end
     end
   end

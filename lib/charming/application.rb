@@ -176,12 +176,17 @@ module Charming
       {}
     end
 
+    # Framework-internal session keys that must not be persisted: their values carry
+    # symbols in *values* (which JSON round-trips into strings, corrupting focus rings
+    # and palette state) and they describe transient UI state anyway.
+    INTERNAL_SESSION_KEYS = %i[focus_state mouse_targets command_palette].freeze
+
     # The subset of session entries that survive a JSON round-trip: nil, booleans,
     # numbers, strings, symbols, and arrays/hashes of those. State objects, procs,
-    # and other rich values are skipped (symbols come back as symbols via
-    # symbolize_names; symbol *values* come back as strings).
+    # framework-internal keys, and other rich values are skipped (hash keys come back
+    # as symbols via symbolize_names; symbol *values* come back as strings).
     def serializable_session
-      session.select { |_key, value| json_safe?(value) }
+      session.except(*INTERNAL_SESSION_KEYS).select { |_key, value| json_safe?(value) }
     end
 
     def json_safe?(value)

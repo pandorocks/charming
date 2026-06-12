@@ -236,6 +236,18 @@ RSpec.describe Charming::Database::Commands do
       end
     end
 
+    it "bumps the version when generating two migrations in the same second" do
+      Dir.mktmpdir do |dir|
+        app_root = build_app(dir, "mig_collide_tui")
+
+        cli(app_root).call(%w[g migration create_alphas label:string])
+        cli(app_root).call(%w[g migration create_betas label:string])
+
+        versions = Dir.glob(File.join(app_root, "db/migrate/*.rb")).map { |p| File.basename(p)[/\A\d{14}/] }
+        expect(versions.uniq.length).to eq(versions.length)
+      end
+    end
+
     it "rejects migration generation without database support" do
       Dir.mktmpdir do |dir|
         cli(dir).call(%w[new plain_tui])

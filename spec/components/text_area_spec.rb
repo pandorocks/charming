@@ -21,15 +21,31 @@ RSpec.describe Charming::Components::TextArea do
     expect(area.render).to eq("ab|c")
   end
 
-  it "does not handle plain enter" do
+  it "inserts a newline on plain enter by default" do
     area = described_class.new(value: "abc")
+
+    expect(area.handle_key(key(:enter, char: "\n"))).to eq(:handled)
+    expect(area.value).to eq("abc\n")
+  end
+
+  it "creates blank lines from consecutive enters" do
+    area = described_class.new(value: "para one")
+
+    2.times { area.handle_key(key(:enter, char: "\n")) }
+    area.handle_key(key(:p, char: "p"))
+
+    expect(area.value).to eq("para one\n\np")
+  end
+
+  it "leaves plain enter unhandled when enter_newline is disabled" do
+    area = described_class.new(value: "abc", enter_newline: false)
 
     expect(area.handle_key(key(:enter, char: "\n"))).to be_nil
     expect(area.value).to eq("abc")
   end
 
-  it "inserts newlines with shift-enter, ctrl-j, or ctrl-n" do
-    area = described_class.new
+  it "inserts newlines with shift-enter, ctrl-j, or ctrl-n regardless of enter_newline" do
+    area = described_class.new(enter_newline: false)
 
     expect(area.handle_key(key(:enter, char: "\n", shift: true))).to eq(:handled)
     expect(area.handle_key(key(:j, ctrl: true))).to eq(:handled)

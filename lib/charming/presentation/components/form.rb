@@ -7,6 +7,9 @@ module Charming
     # and bound to a per-form mutable state hash. Tab/Shift+Tab cycles focus through
     # focusable fields, Enter advances to the next field (or submits on the last), Escape
     # cancels, and Ctrl+S submits from any field.
+    #
+    # Exception: inside a Textarea field, Enter inserts a newline (it's a text editor) —
+    # leave it with Tab and submit with Ctrl+S, matching charm.sh's huh behavior.
     class Form < Component
       # The list of field objects and the mutable state hash the form is bound to.
       attr_reader :fields, :state
@@ -33,6 +36,12 @@ module Charming
         return result if result
 
         advance_or_submit if key == :enter
+      end
+
+      # Forms accept free-typed text (their input/textarea fields do), so printable
+      # characters route here before global/content key bindings.
+      def captures_text?
+        true
       end
 
       # Returns a hash of `{field_name => value}` for the current field values.

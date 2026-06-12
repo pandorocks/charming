@@ -33,6 +33,11 @@ module Charming
         @width = width
       end
 
+      # Free-typed characters belong to this component while it is focused.
+      def captures_text?
+        true
+      end
+
       # Any key dismisses the overlay.
       def handle_key(_event)
         :cancelled
