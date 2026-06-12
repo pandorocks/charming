@@ -30,6 +30,7 @@ module Charming
           code: {block_prefix: "`", block_suffix: "`"},
           code_block: {margin: 1},
           table: {column_separator: "|", row_separator: "-"},
+          definition_description: {indent: 4},
           image_text: {format: "Image: {{text}} ->"}
         },
         dark: {
@@ -56,7 +57,9 @@ module Charming
           image_text: {color: "243", format: "Image: {{text}} ->"},
           code: {prefix: " ", suffix: " ", color: "203", background_color: "236"},
           code_block: {color: "244", margin: 1},
-          table: {column_separator: "|", row_separator: "-"}
+          table: {column_separator: "|", row_separator: "-"},
+          definition_term: {bold: true},
+          definition_description: {indent: 4, color: "244"}
         },
         light: {
           document: {color: "236"},
@@ -82,7 +85,9 @@ module Charming
           image_text: {color: "244", format: "Image: {{text}} ->"},
           code: {prefix: " ", suffix: " ", color: "161", background_color: "255"},
           code_block: {color: "244", margin: 1},
-          table: {column_separator: "|", row_separator: "-"}
+          table: {column_separator: "|", row_separator: "-"},
+          definition_term: {bold: true},
+          definition_description: {indent: 4, color: "244"}
         }
       }.freeze
 

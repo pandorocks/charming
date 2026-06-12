@@ -8,15 +8,19 @@ module Charming
     class Renderer
       DEFAULT_RULE_WIDTH = 40
 
-      attr_reader :content, :width, :theme, :syntax_highlighting, :style, :base_url
+      attr_reader :content, :width, :theme, :syntax_highlighting, :style, :base_url, :hyperlinks
 
-      def initialize(content:, width: nil, theme: UI::Theme.default, syntax_highlighting: true, style: :dark, base_url: nil)
+      # *hyperlinks* (default false) wraps links in OSC 8 escape sequences so modern
+      # terminals make them clickable; the ` <url>` suffix is omitted since the target
+      # is embedded in the escape.
+      def initialize(content:, width: nil, theme: UI::Theme.default, syntax_highlighting: true, style: :dark, base_url: nil, hyperlinks: false)
         @content = content
         @width = width
         @theme = theme || UI::Theme.default
         @syntax_highlighting = syntax_highlighting
         @style = StyleConfig.from(style)
         @base_url = base_url
+        @hyperlinks = hyperlinks
       end
 
       def render
@@ -96,6 +100,10 @@ module Charming
           render_rule(context: context)
         when :table
           render_table(node, context: context)
+        when :description_list
+          render_definition_list(node, context: context)
+        when :footnote_definition
+          render_footnote_definition(node, context: context)
         when :html_block
           render_html_block(node, context: context)
         else
@@ -123,6 +131,8 @@ module Charming
           render_link(node, context: context)
         when :image
           render_image(node, context: context)
+        when :footnote_reference
+          render_footnote_reference(node, context: context)
         when :html_inline
           ""
         else
@@ -182,9 +192,15 @@ module Charming
         checked_task?(node, context: context) ? (task_style.ticked || "[x] ") : (task_style.unticked || "[ ] ")
       end
 
+      # Matches a checked task marker anchored to the list-item prefix, so prose that
+      # merely mentions "[x]" can't check the box.
+      TASK_CHECKED_PATTERN = /\A\s*(?:[-*+]|\d+[.)])\s+\[[xX]\]/
+
+      # Commonmarker exposes no checked-state accessor on taskitem nodes, so the
+      # original source line is inspected instead.
       def checked_task?(node, context:)
         line = context.source_lines[node.source_position[:start_line].to_i - 1].to_s
-        line.match?(/\[[xX]\]/)
+        line.match?(TASK_CHECKED_PATTERN)
       end
 
       def render_code_block(node, context:)
@@ -221,6 +237,65 @@ module Charming
         render_block_with_style(table_style, body)
       end
 
+      # Renders `Term / : definition` description lists: terms in the definition_term
+      # style, details indented per the definition_description style.
+      def render_definition_list(node, context:)
+        children_of(node).map { |item| render_definition_item(item, context: context) }.join("\n")
+      end
+
+      def render_definition_item(node, context:)
+        parts = children_of(node).map do |child|
+          case child.type
+          when :description_term
+            render_definition_term(child, context: context)
+          when :description_details
+            render_definition_details(child, context: context)
+          else
+            render_block(child, context: context)
+          end
+        end
+        parts.reject { |part| part.to_s.empty? }.join("\n")
+      end
+
+      def render_definition_term(node, context:)
+        term_style = context.current_style.inherit_visual(context.style[:definition_term])
+        term_style.render(render_inlines(children_of(node), context: context.with(current_style: term_style)))
+      end
+
+      def render_definition_details(node, context:)
+        details_style = context.current_style.inherit_visual(context.style[:definition_description])
+        indent = " " * (details_style.indent || 4)
+        details_width = context.width ? [context.width - indent.length, 1].max : nil
+        body = render_blocks(children_of(node), context: context.with(width: details_width, current_style: details_style))
+        body.lines(chomp: true).map { |line| "#{indent}#{line}" }.join("\n")
+      end
+
+      # Renders an inline `[^name]` reference as a bracketed label in the link style.
+      def render_footnote_reference(node, context:)
+        context.inherit(:link).render("[#{footnote_name(node)}]")
+      end
+
+      # Renders a footnote definition as a labeled block with hanging indentation.
+      def render_footnote_definition(node, context:)
+        label_style = context.current_style.inherit_visual(context.style[:link_text])
+        label = "[#{footnote_name(node)}]: "
+        indent = " " * UI::Width.measure(label)
+        body_width = context.width ? [context.width - UI::Width.measure(label), 1].max : nil
+        body = render_blocks(children_of(node), context: context.with(width: body_width))
+        lines = body.lines(chomp: true)
+        return label_style.render(label.rstrip) if lines.empty?
+
+        first = "#{label_style.render(label)}#{lines.first}"
+        rest = lines.drop(1).map { |line| "#{indent}#{line}" }
+        [first, *rest].join("\n")
+      end
+
+      # Commonmarker exposes no name accessor on footnote nodes; the round-tripped
+      # commonmark source (`"[^name]\n"` / `"[^name]:\n..."`) carries the label.
+      def footnote_name(node)
+        node.to_commonmark[/\A\[\^(.+?)\]/, 1].to_s
+      end
+
       def render_html_block(_node, context:)
         html_style = context.current_style.inherit_visual(context.style[:html_block])
         return "" if html_style.format.empty?
@@ -238,12 +313,20 @@ module Charming
         text_style = context.inherit(:link_text)
         link_style = context.inherit(:link)
         label = render_inlines(children_of(node), context: context.with(current_style: text_style))
+        return osc8_hyperlink(href, link_style.render(label)) if hyperlinks && !href.empty?
+
         rendered = if href.empty? || UI::Width.strip_ansi(label) == href
           label
         else
           "#{label} <#{href}>"
         end
         link_style.render(rendered)
+      end
+
+      # Wraps *rendered* in an OSC 8 hyperlink to *href*. Modern terminals make the
+      # text clickable; the sequence is invisible to width math (UI::Width strips OSC).
+      def osc8_hyperlink(href, rendered)
+        "\e]8;;#{href}\e\\#{rendered}\e]8;;\e\\"
       end
 
       def render_image(node, context:)
