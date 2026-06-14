@@ -609,4 +609,103 @@ RSpec.describe Charming::Runtime do
     expect(backend.raw_events).to eq(%i[entered left])
     expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
   end
+
+  describe "input coalescing (held-key auto-repeat)" do
+    let(:counter_controller) do
+      Class.new(Charming::Controller) do
+        key "up", :increment
+        key "down", :decrement
+        key "q", :quit
+
+        def show
+          session[:count] ||= 0
+          render "Count: #{session[:count]}"
+        end
+
+        def increment
+          session[:count] += 1
+          render "Count: #{session[:count]}"
+        end
+
+        def decrement
+          session[:count] -= 1
+          render "Count: #{session[:count]}"
+        end
+      end
+    end
+
+    let(:counter_app) do
+      Class.new(Charming::Application) do
+        coalesce_input true
+        routes { root "coalesce_spec#show" }
+      end
+    end
+
+    before do
+      stub_const("CoalesceSpecController", counter_controller)
+      stub_const("CoalesceSpecApp", counter_app)
+    end
+
+    it "collapses a burst of identical key events into a single dispatch" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :q)
+        ]
+      )
+
+      described_class.new(CoalesceSpecApp.new, backend: backend).run
+
+      # Initial "Count: 0" then ONE increment — the three :up repeats collapse to one.
+      expect(backend.frames).to eq(["Count: 0", "Count: 1"])
+    end
+
+    it "does not drop a different key queued behind a repeat burst" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :down),
+          Charming::Events::KeyEvent.new(key: :q)
+        ]
+      )
+
+      described_class.new(CoalesceSpecApp.new, backend: backend).run
+
+      # Two :up collapse to one (+1), then the distinct :down still fires (-1).
+      expect(backend.frames).to eq(["Count: 0", "Count: 1", "Count: 0"])
+    end
+
+    it "dispatches a lone key normally" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :q)
+        ]
+      )
+
+      described_class.new(CoalesceSpecApp.new, backend: backend).run
+
+      expect(backend.frames).to eq(["Count: 0", "Count: 1"])
+    end
+
+    it "is off by default: identical repeats each dispatch" do
+      stub_const("NoCoalesceApp", Class.new(Charming::Application) do
+        routes { root "coalesce_spec#show" }
+      end)
+      backend = Charming::Internal::Terminal::MemoryBackend.new(
+        events: [
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :up),
+          Charming::Events::KeyEvent.new(key: :q)
+        ]
+      )
+
+      described_class.new(NoCoalesceApp.new, backend: backend).run
+
+      expect(backend.frames).to eq(["Count: 0", "Count: 1", "Count: 2"])
+    end
+  end
 end

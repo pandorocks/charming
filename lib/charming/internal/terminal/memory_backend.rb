@@ -39,6 +39,12 @@ module Charming
           @events.empty?
         end
 
+        # True when a pre-seeded event is still queued (mirrors a TTY with bytes ready). Lets
+        # the runtime's held-key coalescing drain seeded repeats in specs.
+        def input_pending?
+          !@events.empty?
+        end
+
         # Stores *frame* as the current frame and appends it to `frames`.
         def write_frame(frame)
           @current_frame = frame

@@ -68,6 +68,13 @@ module Charming
           nil
         end
 
+        # True when stdin has bytes ready to read right now — a genuine nonblocking check (0s
+        # wait), unlike read_event whose tty-reader nonblock path waits up to 0.1s. Lets the
+        # runtime drain buffered key auto-repeat and stop the instant the buffer empties.
+        def input_pending?
+          resized? || !@input.wait_readable(0).nil?
+        end
+
         # Emits the ANSI sequence enabling terminal focus reporting. Idempotent.
         def enable_focus_reporting
           return if @focus_reporting
