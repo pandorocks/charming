@@ -50,12 +50,17 @@ module Charming
         true
       end
 
-      # Handles key events. Inserts printable characters, recalls history on up/down
-      # (when enabled), otherwise dispatches via KEY_ACTIONS.
-      # Returns :handled when the event was consumed, nil otherwise.
+      # Handles key events. Inserts printable characters, submits on Enter
+      # (returning `[:submitted, value]` so a focused slot dispatches
+      # `<slot>_submitted(value)`), recalls history on up/down (when enabled),
+      # otherwise dispatches via KEY_ACTIONS.
+      # Returns :handled or `[:submitted, value]` when the event was consumed, nil otherwise.
       def handle_key(event)
         return :handled if character_event?(event) && insert(event.char)
-        return :handled if history_event(Charming.key_of(event))
+
+        key = Charming.key_of(event)
+        return [:submitted, value] if key == :enter
+        return :handled if history_event(key)
 
         super
       end
