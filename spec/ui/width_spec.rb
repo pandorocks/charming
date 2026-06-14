@@ -9,6 +9,26 @@ RSpec.describe Charming::UI::Width do
     expect(described_class.measure("\e[31mHi\e[0m")).to eq(2)
   end
 
+  it "measures single-codepoint emoji as a double-width cell" do
+    expect(described_class.measure("🧱")).to eq(2)
+  end
+
+  it "measures variation-selector emoji as double-width despite the Unicode tables" do
+    # The unicode-display_width data reports "⚔️" as 1 and "🛡️" as 1, but
+    # terminals render the VS16 emoji presentation as a 2-column glyph.
+    expect(described_class.measure("⚔️")).to eq(2)
+    expect(described_class.measure("🛡️")).to eq(2)
+  end
+
+  it "measures a ZWJ emoji sequence as a single double-width cell" do
+    # "🧙‍♂️" is four codepoints the tables sum to 3; it is one terminal glyph.
+    expect(described_class.measure("🧙‍♂️")).to eq(2)
+  end
+
+  it "measures mixed emoji-and-text lines by grapheme" do
+    expect(described_class.measure(" 🛡️ : armor")).to eq(11)
+  end
+
   it "ignores OSC 8 hyperlink sequences (ST-terminated)" do
     linked = "\e]8;;https://example.com\e\\Docs\e]8;;\e\\"
     expect(described_class.measure(linked)).to eq(4)

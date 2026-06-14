@@ -62,6 +62,28 @@ RSpec.describe Charming::UI::Canvas do
       expect(result).to eq("\e[2m..\e[0mX\e[2m..\e[0m")
     end
 
+    it "keeps the row exactly canvas-width when overlaying onto double-width glyphs" do
+      canvas = described_class.parse("🧱🧱🧱🧱🧱")
+
+      result = canvas.overlay("X", top: 0, left: 3).to_s
+
+      # The glyph cut by the overlay's left edge becomes a space, so the row
+      # stays 10 columns wide and the "X" sits at its requested column.
+      expect(result).to eq("🧱 X🧱🧱🧱")
+      expect(Charming::UI::Width.measure(result)).to eq(10)
+    end
+
+    it "aligns a bordered overlay on an emoji grid with every row at canvas width" do
+      canvas = described_class.parse((["🧙🧱🧪🪜👺"] * 3).join("\n"))
+
+      result = canvas.overlay("┌──┐\n│ok│\n└──┘").to_s
+
+      expect(result).to eq("🧙 ┌──┐ 👺\n🧙 │ok│ 👺\n🧙 └──┘ 👺")
+      result.lines(chomp: true).each do |line|
+        expect(Charming::UI::Width.measure(line)).to eq(10)
+      end
+    end
+
     it "clips overlay lines that extend past the canvas height" do
       canvas = described_class.parse("...\n...")
 

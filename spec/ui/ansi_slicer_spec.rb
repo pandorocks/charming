@@ -28,6 +28,35 @@ RSpec.describe Charming::UI::ANSISlicer do
       expect(described_class.slice("ＡＢＣ", 2, 2)).to eq("Ｂ")
     end
 
+    it "renders the in-range columns of a boundary-straddling wide glyph as spaces" do
+      # Columns 1 and 2 are the right half of Ａ and the left half of Ｂ, so a
+      # width-2 slice over them must be two spaces, not the over-included "ＡＢ".
+      result = described_class.slice("ＡＢＣ", 1, 2)
+
+      expect(result).to eq("  ")
+      expect(Charming::UI::Width.measure(result)).to eq(2)
+    end
+
+    it "blanks only the cut half of a wide glyph and keeps in-range neighbours" do
+      result = described_class.slice("Ａbc", 1, 3)
+
+      expect(result).to eq(" bc")
+      expect(Charming::UI::Width.measure(result)).to eq(3)
+    end
+
+    it "keeps a multi-codepoint emoji grapheme together as one unit" do
+      # "🧙‍♂️" is a four-codepoint ZWJ sequence rendered as one double-width glyph.
+      expect(described_class.slice("🧙‍♂️xy", 0, 2)).to eq("🧙‍♂️")
+      expect(described_class.slice("🧙‍♂️xy", 2, 2)).to eq("xy")
+    end
+
+    it "blanks a multi-codepoint emoji grapheme that a boundary cuts through" do
+      result = described_class.slice("🧙‍♂️x", 1, 2)
+
+      expect(result).to eq(" x")
+      expect(Charming::UI::Width.measure(result)).to eq(2)
+    end
+
     it "returns just an empty string when the start column is past the end of the line" do
       expect(described_class.slice("hello", 10, 3)).to eq("")
     end

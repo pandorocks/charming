@@ -6,6 +6,10 @@ module Charming
     # escape sequences, preserving the styling that is active at the start of
     # the slice and emitting a trailing reset if any styled content was copied.
     class ANSISlicer
+      # One ANSI escape sequence or one grapheme cluster (`\X`). The ANSI branch
+      # comes first so a valid escape is consumed whole rather than as graphemes.
+      TOKEN_PATTERN = /#{Width::ANSI_PATTERN}|\X/
+
       def self.slice(line, start_column, width)
         return "" unless width.positive?
 
@@ -27,16 +31,12 @@ module Charming
       end
 
       def self.each_ansi_or_char(line)
-        index = 0
-        while index < line.length
-          match = line.match(Width::ANSI_PATTERN, index)
-          if match&.begin(0) == index
-            yield match[0], true
-            index = match.end(0)
-          else
-            yield line[index], false
-            index += 1
-          end
+        # Iterate one ANSI escape or one *grapheme cluster* (`\X`) at a time. A
+        # single emoji may be several codepoints (ZWJ sequences, skin-tone and
+        # variation selectors, e.g. "🧙‍♂️"); treating it as one unit keeps its full
+        # display width together so a slice never splits it mid-glyph.
+        line.scan(TOKEN_PATTERN) do |token|
+          yield token, token.start_with?("\e")
         end
       end
 
@@ -57,10 +57,17 @@ module Charming
         char_start = state[:column]
         char_end = char_start + char_width
         state[:column] = char_end
-        return unless char_end > start_column && char_start < end_column
+
+        visible = [char_end, end_column].min - [char_start, start_column].max
+        return unless visible.positive?
 
         start_slice(state)
-        state[:output] << char
+        # A multi-column glyph cut by a slice boundary cannot be partially drawn,
+        # so render the in-range columns as spaces (standard terminal behavior).
+        # This keeps the slice exactly *width* columns wide regardless of where
+        # the boundaries fall relative to wide glyphs.
+        fits = char_start >= start_column && char_end <= end_column
+        state[:output] << (fits ? char : " " * visible)
       end
 
       def self.start_slice(state)
