@@ -13,6 +13,7 @@ module Charming
       BASE_FILE_TEMPLATES = [
         ["Gemfile", "app/Gemfile.template", false],
         ["Rakefile", "app/Rakefile.template", false],
+        [".rspec", "app/dot_rspec.template", false],
         ["README.md", "app/README.md.template", false],
         ["%<name>s.gemspec", "app/gemspec.template", false],
         ["exe/%<name>s", "app/executable.template", true],
@@ -183,10 +184,10 @@ module Charming
 
       # The body of the home controller's private `home` helper, prefixed by a blank line.
       def controller_helpers
-        "\n\n    private\n" \
+        "\n\n    private\n\n" \
           "    def home\n" \
           "      state(:home, HomeState)\n" \
-          "    end"
+          "    end\n"
       end
 
       # The `require_relative "../config/database"` line when the app is database-configured.

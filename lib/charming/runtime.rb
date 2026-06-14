@@ -19,6 +19,8 @@ module Charming
       @route = @application.routes.resolve("/")
       @screen = backend_screen
       @timers = build_timers
+      @pending_event = nil
+      @coalesce_input = @application.respond_to?(:coalesce_input?) && @application.coalesce_input?
     end
 
     # Runs the event loop: enters alt-screen, dispatches incoming events
@@ -33,7 +35,7 @@ module Charming
         loop do
           break if @interrupted
 
-          event = next_task_event || next_timer_event || @backend.read_event(timeout: read_timeout)
+          event = next_task_event || next_timer_event || next_input_event
           unless event
             break if backend_exhausted?
             next
@@ -253,6 +255,38 @@ module Charming
       @task_queue.pop(true)
     rescue ThreadError
       nil
+    end
+
+    # Reads the next input event, consuming a stashed event first, then collapsing any
+    # auto-repeat burst behind it.
+    def next_input_event
+      event = @pending_event
+      @pending_event = nil
+      event ||= @backend.read_event(timeout: read_timeout)
+      return event unless event && @coalesce_input
+
+      coalesce(event)
+    end
+
+    # Collapses a run of identical key events — the flood the terminal emits while a key is
+    # held down — into a single dispatched event, so holding a key can't queue a backlog that
+    # keeps acting after release. The first non-matching event encountered is stashed for the
+    # next loop iteration, so distinct keys and non-key events (resize/paste/mouse) are never
+    # lost. Only KeyEvents are coalesced; everything else passes straight through.
+    def coalesce(event)
+      return event unless event.is_a?(Events::KeyEvent)
+
+      # Only read while input is *immediately* available, so the drain never blocks on an
+      # empty buffer (read_event itself can wait up to ~0.1s; input_pending? is a true 0s check).
+      while @backend.input_pending?
+        nxt = @backend.read_event(timeout: 0)
+        break unless nxt
+        next if nxt == event # identical auto-repeat — discard the older one, keep draining
+
+        @pending_event = nxt
+        break
+      end
+      event
     end
 
     # Returns timer values due at or before `now`, sorted by next fire time.

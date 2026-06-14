@@ -10,6 +10,7 @@ module Charming
   class Application
     LOGGER_READER = Object.new.freeze
     THEME_READER = Object.new.freeze
+    COALESCE_READER = Object.new.freeze
 
     class << self
       # Registers or returns the app's Router. Accepts an optional block to define
@@ -108,6 +109,17 @@ module Charming
         nil
       end
 
+      # When true, the runtime collapses bursts of identical key events — the flood a terminal
+      # emits while a key is held (OS auto-repeat) — into a single dispatch, so holding a key
+      # can't queue a backlog that keeps acting after release. Off by default: it also merges
+      # intentional fast repeats of the same key (e.g. tab tab), so enable it only for
+      # movement-style apps. Pass a boolean to set; call without args to read (inherited).
+      def coalesce_input(value = COALESCE_READER)
+        return configured_coalesce_input if value == COALESCE_READER
+
+        @coalesce_input = value
+      end
+
       private
 
       def configured_logger
@@ -115,6 +127,13 @@ module Charming
         return superclass.logger if superclass.respond_to?(:logger)
 
         @logger = Logger.new(File::NULL)
+      end
+
+      def configured_coalesce_input
+        return @coalesce_input if instance_variable_defined?(:@coalesce_input)
+        return superclass.coalesce_input if superclass.respond_to?(:coalesce_input)
+
+        false
       end
 
       # Expands a relative theme path against the app root (or the current working directory
@@ -161,6 +180,12 @@ module Charming
     def use_theme(name)
       self.class.theme_for(name)
       session[:theme] = name.to_sym
+    end
+
+    # Whether the runtime should coalesce held-key auto-repeat for this app (see the class-level
+    # `coalesce_input` DSL). Read by the Runtime at startup.
+    def coalesce_input?
+      self.class.coalesce_input == true
     end
 
     private

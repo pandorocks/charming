@@ -24,6 +24,12 @@ RSpec.describe Charming::CLI do
       expect(File.read(File.join(app_root, "weather_tui.gemspec"))).to include(
         'spec.metadata["rubygems_mfa_required"] = "true"'
       )
+      gemfile = File.read(File.join(app_root, "Gemfile"))
+      expect(gemfile).to include('gem "rspec", "~> 3.13"')
+      expect(gemfile).to include('gem "rake", "~> 13.0"')
+      expect(gemfile).to include('gem "irb"')
+      expect(File.read(File.join(app_root, ".rspec"))).to include("--require spec_helper")
+      expect(File.read(File.join(app_root, "app/controllers/home_controller.rb"))).not_to include("end  end")
       root_file = File.read(File.join(app_root, "lib/weather_tui.rb"))
       expect(root_file).to include("loader = Zeitwerk::Loader.new")
       expect(root_file).to include('loader.inflector.inflect("version" => "VERSION")')

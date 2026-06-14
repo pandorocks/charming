@@ -26,6 +26,14 @@ module Charming
           raise NotImplementedError, "#{self.class} must implement #read_event"
         end
 
+        # True when at least one input event is immediately available to read without blocking.
+        # The runtime uses this to drain held-key auto-repeat without stalling on the final,
+        # empty read. Defaults to false so a backend that can't answer simply opts out of
+        # coalescing (the runtime then dispatches each event individually).
+        def input_pending?
+          false
+        end
+
         # Returns the current terminal dimensions as [width, height] in cells.
         def size
           raise NotImplementedError, "#{self.class} must implement #size"
