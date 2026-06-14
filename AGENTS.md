@@ -142,6 +142,29 @@ Components expose `handle_key(event)` for interactive widgets. Return convention
 
 Components currently inherit from `View` and use `render` to produce the displayed string.
 
+### Audio playback
+
+`Charming::Audio::Player` plays a sound file by shelling out to a system audio binary
+(no new gem dependency). Backends are resolved in priority order: `ffplay` (from ffmpeg)
+on any platform, then OS-native players — `afplay` on macOS; `paplay`, `mpg123`, `aplay`
+on Linux — raising `Charming::Audio::Player::Unavailable` when none are installed. The
+player is **not** a view object: it holds a live child process, so keep it in `session`
+(e.g. `session[:audio] ||= Charming::Audio::Player.new`) rather than rebuilding it per
+render. For non-blocking playback plus clean teardown on quit, drive it from a `run_task`:
+
+```ruby
+run_task(:audio) do
+  player.play(sound_path)
+  player.wait
+ensure
+  player.stop   # no-op on normal finish; reaps the child if shutdown interrupts the task
+end
+```
+
+`Charming::Components::Audio` is the optional one-line status view (`▶`/`■` + label) that
+reads `player.playing?`. The `System` adapter (`Charming::Audio::System`) is injectable so
+specs never shell out.
+
 ---
 
 ## Code Style (Standard Ruby)
