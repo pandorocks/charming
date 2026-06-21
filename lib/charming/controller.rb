@@ -17,6 +17,7 @@ module Charming
     include CommandPalette
     include ComponentDispatching
     include Dispatching
+    include Terminal
 
     attr_reader :application, :event, :params, :screen, :route
 
@@ -126,7 +127,9 @@ module Charming
       dispatch_component_mouse
     end
 
-    # Renders a body or template wrapped in the controller's layout.
+    # Renders a body or template wrapped in the controller's layout. Out-of-band escape sequences
+    # registered while rendering (e.g. image transmissions) are collected by the Runtime around the
+    # whole dispatch and attached to the response.
     def render(body = "", **assigns)
       body = view_body(default_template_name(body), **assigns) if body.is_a?(Symbol)
       @response = Response.render(render_with_layout(body))

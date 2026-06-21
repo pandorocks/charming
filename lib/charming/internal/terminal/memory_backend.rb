@@ -16,6 +16,9 @@ module Charming
         # The array of recorded operation tuples: [:method_name, *args].
         attr_reader :operations
 
+        # The array of out-of-band escape sequences written via `write_escape`.
+        attr_reader :escapes
+
         # *events* is the queue of pre-seeded events to return from `read_event`.
         # *width*/*height* set the initial terminal dimensions reported by `size`.
         def initialize(events: [], width: 80, height: 24)
@@ -24,6 +27,7 @@ module Charming
           @height = height
           @frames = []
           @operations = []
+          @escapes = []
           @mouse_enabled = false
         end
 
@@ -59,6 +63,13 @@ module Charming
           @current_frame = frame || apply_line_changes(line_changes)
           @frames << @current_frame
           @operations << [:write_lines, line_changes]
+        end
+
+        # Records an out-of-band escape sequence, appending it to `escapes` and recording the
+        # operation (so specs can assert both its content and its ordering relative to frames).
+        def write_escape(sequence)
+          @escapes << sequence
+          @operations << [:write_escape, sequence]
         end
 
         # Records an enter-alt-screen operation.

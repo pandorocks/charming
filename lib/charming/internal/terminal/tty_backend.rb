@@ -194,6 +194,12 @@ module Charming
           end
         end
 
+        # Writes an out-of-band escape *sequence* (image transmission, clipboard, notification, title)
+        # raw — no cursor positioning, line-clearing, or auto-wrap handling that would corrupt it.
+        def write_escape(sequence)
+          write_control(sequence.payload)
+        end
+
         # Enters the alternate screen buffer.
         def enter_alt_screen
           write_control(ALT_SCREEN_ON)

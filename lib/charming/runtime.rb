@@ -54,9 +54,12 @@ module Charming
 
     attr_reader :screen
 
-    # The first frame's response — the root route's action, with errors caught.
+    # The first frame's response — the root route's action, with errors caught. Out-of-band escape
+    # sequences registered while rendering are collected and attached to the response.
     def initial_response
-      resolve_response(dispatch(@route.action))
+      response = nil
+      escapes = Escape.collecting { response = resolve_response(dispatch(@route.action)) }
+      attach_escapes(response, escapes)
     rescue => e
       error_response(e)
     end
@@ -68,14 +71,15 @@ module Charming
       return process_error_event(event) if @error
       return :quit if unbound_interrupt?(event)
 
-      response = dispatch_event(event)
+      response = nil
+      escapes = Escape.collecting do
+        response = dispatch_event(event)
+        response = resolve_response(response) if response
+      end
       return unless response
       return :quit if response.quit?
 
-      response = resolve_response(response)
-      return :quit if response.quit?
-
-      render(response)
+      render(attach_escapes(response, escapes))
       nil
     rescue => e
       render(error_response(e))
@@ -225,9 +229,27 @@ module Charming
       Screen.new(width: width, height: height)
     end
 
-    # Renders the body portion of a response through the renderer.
+    # Renders a response: first flushes any out-of-band escape sequences (image transmissions,
+    # clipboard writes, notifications, title changes) straight to the backend — ahead of the frame so
+    # image data is registered before its placeholder cells reference it — then renders the body.
     def render(response)
+      flush_escapes(response)
       @renderer.render(response.body)
+    end
+
+    # Writes a response's out-of-band escape sequences to the backend, ahead of the frame. No-op for
+    # backends that don't support them or responses that carry none.
+    def flush_escapes(response)
+      return unless @backend.respond_to?(:write_escape)
+
+      response.escapes&.each { |sequence| @backend.write_escape(sequence) }
+    end
+
+    # Returns *response* with *escapes* appended, or unchanged when none were collected.
+    def attach_escapes(response, escapes)
+      return response if escapes.nil? || escapes.empty?
+
+      response.with(escapes: response.escapes + escapes)
     end
 
     # Builds the initial set of timer states from controller bindings and the current clock time.

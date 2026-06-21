@@ -167,6 +167,79 @@ specs never shell out.
 
 ---
 
+### Image display
+
+`Charming::Image::Source` displays an image inline using the **Kitty graphics protocol**
+with Unicode placeholders (supported terminals so far: **Ghostty** and **Kitty**; others
+fall back gracefully). Unlike audio, images go *into* the terminal display, so they can't
+just be a string the renderer measures and diffs. Instead the source transmits the image
+bytes **once, out of band**, then the view places it by printing ordinary width-1
+placeholder cells that ride the normal frame pipeline.
+
+Keep the source in `session` (like the audio player) so its one-time-transmit state
+survives re-renders, and render it through `Charming::Components::Image`:
+
+```ruby
+def show
+  image = session[:logo] ||= Charming::Image::Source.new(path: "logo.png")
+  render LogoView.new(image: image, screen: screen, controller: self)
+end
+
+# in the view:
+render_component(Charming::Components::Image.new(source: image, rows: 8, cols: 16, fallback: "[logo]"))
+```
+
+How the pieces fit: `Charming::Image::Terminal` (injectable `env:`) detects the protocol;
+`Charming::Image::Protocol::Kitty` builds both the out-of-band transmit (base64-chunked
+APC, `q=2`) and the placeholder block (the image id is carried as an **exact** truecolor
+foreground — never route it through `UI` styling, whose color downconversion would corrupt
+it). The transmit rides the shared out-of-band channel (see below) and the component renders
+the `fallback` string on terminals without graphics support.
+
+---
+
+### Out-of-band terminal effects
+
+`Charming::Escape` is the shared channel for escape sequences that must reach the terminal
+**before** the next frame, bypassing the line-based renderer (which measures width and would
+shred raw control sequences). Anything responding to `#payload` rides it: image transmissions
+(`Charming::Image::Transmit`) plus the `Charming::Escape` builders for clipboard (OSC 52),
+notifications (OSC 9/777), bell, and window title (OSC 0) — all of which sanitize interpolated
+text so it can't break out of the sequence.
+
+Sequences are gathered during a dispatch via a thread-local collector (`Escape.collecting` /
+`Escape.register`); the **Runtime** opens the collection around the whole event→response region
+(so timer/mouse/paste-driven effects are caught too), attaches the collected list to
+`Response#escapes`, and flushes it via `backend.write_escape` ahead of the frame.
+`MemoryBackend#escapes` captures it in specs.
+
+Controllers get imperative helpers (`Charming::Controller::Terminal`): `copy(text)`,
+`notify(body, title:)`, `bell`, `set_title(text)` — call them in an action alongside a normal
+`render`:
+
+```ruby
+def copy_url
+  copy(state.url)
+  notify("Copied!", title: "MyApp")
+  render :show
+end
+```
+
+---
+
+### Data visualization
+
+Pure-text, works on every terminal (no graphics protocol):
+
+- `Charming::UI::BrailleCanvas` — a subpixel drawing surface backed by braille glyphs (U+2800–U+28FF),
+  2×4 dots per cell. `new(width_px, height_px)`, `set(x, y)` / `unset` / `line(x0,y0,x1,y1)` (Bresenham),
+  `to_s` → braille rows. Composes via `row`/`column`/`Canvas`.
+- `Charming::Components::Sparkline` — a series → one-line `▁▂▃▄▅▆▇█` bar graph, one cell per value.
+- `Charming::Components::Chart` — `kind: :line` (default) plots a connected line on a `BrailleCanvas`;
+  `kind: :bar` draws vertical eighth-block bars. Sized in cells (`width:`/`height:`), optional `style:`.
+
+---
+
 ## Code Style (Standard Ruby)
 
 - **Ruby 4.0+** target

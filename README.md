@@ -2,7 +2,7 @@
 
 A Rails-inspired terminal user interface framework for **Ruby 4+**.
 
-Charming gives terminal apps familiar application structure: routes, controllers, state objects, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, cross-platform audio playback, and testable terminal backends.
+Charming gives terminal apps familiar application structure: routes, controllers, state objects, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, cross-platform audio playback, inline image display (Kitty graphics protocol), system clipboard / desktop notifications / window title, braille charts and sparklines, and testable terminal backends.
 
 ## Project Status
 

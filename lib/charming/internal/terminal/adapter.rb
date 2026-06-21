@@ -80,6 +80,12 @@ module Charming
         def write_lines(line_changes, frame: nil)
           raise NotImplementedError, "#{self.class} must implement #write_lines"
         end
+
+        # Writes an out-of-band escape sequence (image transmission, clipboard write, notification,
+        # window title) straight to the terminal, bypassing the line-based frame pipeline. *sequence*
+        # responds to `payload` (the escape-sequence string). Defaults to a no-op so backends opt in.
+        def write_escape(sequence)
+        end
       end
     end
   end

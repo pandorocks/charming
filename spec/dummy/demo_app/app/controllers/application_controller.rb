@@ -18,6 +18,14 @@ module DemoApp
       navigate_to "/lg"
     end
 
+    command "Image" do
+      navigate_to "/image"
+    end
+
+    command "Charts" do
+      navigate_to "/charts"
+    end
+
     command "Close palette", :close_command_palette
     command "Quit app", :quit
   end
