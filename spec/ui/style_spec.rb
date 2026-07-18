@@ -89,6 +89,46 @@ RSpec.describe Charming::UI::Style do
     expect(output).to eq("╭──╮\n│Hi│\n╰──╯")
   end
 
+  it "renders a square box-drawing border" do
+    output = described_class.new.border(:square).render("Hi")
+
+    expect(output).to eq("┌──┐\n│Hi│\n└──┘")
+  end
+
+  it "renders a hidden border that preserves the box footprint" do
+    output = described_class.new.border(:hidden).render("Hi")
+
+    expect(output).to eq("    \n Hi \n    ")
+  end
+
+  it "renders a block border" do
+    output = described_class.new.border(:block).render("Hi")
+
+    expect(output).to eq("████\n█Hi█\n████")
+  end
+
+  it "accepts a custom Border instance" do
+    border = Charming::UI::Border.new(corners: %w[1 2 3 4], edges: %w[= !])
+    output = described_class.new.border(border).render("Hi")
+
+    expect(output).to eq("1==2\n!Hi!\n3==4")
+  end
+
+  it "colors the border background independently of the box" do
+    output = described_class.new.border(:normal, foreground: :red, background: :blue).render("Hi")
+
+    expect(output).to eq("\e[31;44m+--+\e[0m\n\e[31;44m|\e[0mHi\e[31;44m|\e[0m\n\e[31;44m+--+\e[0m")
+  end
+
+  it "colors border sides individually" do
+    output = described_class.new.border(
+      :normal,
+      foreground: {top: :red, bottom: :blue, left: :green, right: :yellow}
+    ).render("Hi")
+
+    expect(output).to eq("\e[31m+--+\e[0m\n\e[32m|\e[0mHi\e[33m|\e[0m\n\e[34m+--+\e[0m")
+  end
+
   it "aligns content using Unicode display width" do
     output = described_class.new.width(6).align(:center).render("界")
 

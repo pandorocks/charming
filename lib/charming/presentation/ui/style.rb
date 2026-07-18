@@ -69,10 +69,12 @@ module Charming
       end
 
       # Returns a new Style with the border set. *style* is a border name (e.g., :normal,
-      # :rounded). *sides* optionally restricts the border to specific sides. *foreground*
-      # sets the border color.
-      def border(style = :normal, sides: nil, foreground: nil)
-        with(border: style, border_sides: sides, border_foreground: foreground)
+      # :rounded, :square, :hidden, :block) or a custom Border instance. *sides* optionally
+      # restricts the border to specific sides. *foreground* colors the border — a single
+      # color, or a per-side hash like `{top: :red, left: :green}`. *background* colors the
+      # border independently of the box background.
+      def border(style = :normal, sides: nil, foreground: nil, background: nil)
+        with(border: style, border_sides: sides, border_foreground: foreground, border_background: background)
       end
 
       # Returns a new Style that fixes the rendered width to *value* (in display columns).
@@ -249,7 +251,8 @@ module Charming
           border: Border.fetch(border_name),
           sides: @options[:border_sides],
           foreground: @options[:border_foreground],
-          background: @options[:background]
+          background: @options[:border_background] || @options[:background],
+          background_explicit: !@options[:border_background].nil?
         )
       end
 

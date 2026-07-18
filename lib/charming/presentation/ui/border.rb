@@ -10,7 +10,11 @@ module Charming
         @horizontal, @vertical = edges
       end
 
+      # Resolves *name* to a Border: a Border instance passes through (custom
+      # borders), anything else is looked up in the built-in STYLES.
       def self.fetch(name)
+        return name if name.is_a?(Border)
+
         STYLES.fetch(name.to_sym)
       end
     end
@@ -27,7 +31,16 @@ module Charming
       ),
       double: Border.new(
         corners: ["╔", "╗", "╚", "╝"], edges: ["═", "║"]
+      ),
+      square: Border.new(
+        corners: ["┌", "┐", "└", "┘"], edges: ["─", "│"]
+      ),
+      hidden: Border.new(
+        corners: [" ", " ", " ", " "], edges: [" ", " "]
+      ),
+      block: Border.new(
+        corners: ["█", "█", "█", "█"], edges: ["█", "█"]
       )
-    }.freeze
+    }.tap { |styles| styles[:ascii] = styles[:normal] }.freeze
   end
 end
