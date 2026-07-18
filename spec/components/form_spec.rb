@@ -59,6 +59,59 @@ RSpec.describe Charming::Components::Form do
     expect(plain(described_class.new(fields: [described_class::Select.new(:plan, options: %w[Free Pro Team])], state: state).render)).to include("Plan: Pro")
   end
 
+  it "toggles multiselect checkboxes with space and stores the checked set" do
+    state = {}
+    form = described_class.new(
+      fields: [described_class::Multiselect.new(:tags, options: %w[ruby go rust])],
+      state: state
+    )
+
+    expect(form.handle_key(key(:space, char: " "))).to eq(:handled)
+    expect(form.handle_key(key(:down))).to eq(:handled)
+    expect(form.handle_key(key(:space, char: " "))).to eq(:handled)
+
+    expect(state[:values]).to eq(tags: %w[ruby go])
+    expect(state[:fields]).to eq(tags: {selected_indices: [0, 1], cursor: 1})
+    rerendered = described_class.new(
+      fields: [described_class::Multiselect.new(:tags, options: %w[ruby go rust])],
+      state: state
+    )
+    expect(plain(rerendered.render)).to include("Tags: ruby, go")
+  end
+
+  it "submits a multiselect field's checked set on enter" do
+    state = {}
+    form = described_class.new(
+      fields: [described_class::Multiselect.new(:tags, options: %w[ruby go])],
+      state: state
+    )
+
+    form.handle_key(key(:space, char: " "))
+
+    expect(form.handle_key(key(:enter))).to eq([:submitted, {tags: %w[ruby]}])
+  end
+
+  it "caps multiselect checks at max_selections" do
+    state = {}
+    form = described_class.new(
+      fields: [described_class::Multiselect.new(:tags, options: %w[a b], max_selections: 1)],
+      state: state
+    )
+
+    form.handle_key(key(:space, char: " "))
+    form.handle_key(key(:down))
+    form.handle_key(key(:space, char: " "))
+
+    expect(state[:values]).to eq(tags: %w[a])
+  end
+
+  it "declares multiselect fields through the builder" do
+    builder = described_class::Builder.new
+    builder.multiselect(:tags, options: %w[a b])
+
+    expect(builder.fields.last).to be_a(described_class::Multiselect)
+  end
+
   it "stores textarea value, cursor, and offset in primitive state" do
     state = {}
     form = described_class.new(fields: [described_class::Textarea.new(:bio, height: 2)], state: state)

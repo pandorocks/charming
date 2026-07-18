@@ -32,6 +32,11 @@ module Charming
           fields << Select.new(name, **field_options(options))
         end
 
+        # Appends a Multiselect field with the given *options* array.
+        def multiselect(name, **options)
+          fields << Multiselect.new(name, **field_options(options))
+        end
+
         # Appends a Confirm (boolean) field.
         def confirm(name, **options)
           fields << Confirm.new(name, **field_options(options))
