@@ -28,12 +28,13 @@ module Charming
     # actions render an ErrorScreen instead of crashing the terminal.
     def run
       setup_terminal
-      install_interrupt_handler
+      install_signal_handlers
+      install_exit_hook
       with_raw_input do
         render(initial_response)
         @event_loop.run { |event| process(event) }
       ensure
-        restore_interrupt_handler
+        restore_signal_handlers
         @task_executor&.shutdown(timeout: 2.0)
         @application.save_session if @application.respond_to?(:save_session)
         restore_terminal
@@ -110,20 +111,66 @@ module Charming
       @route.controller_class.key_bindings[:"ctrl+c"].nil?
     end
 
-    # Traps SIGINT so Ctrl+C (when delivered as a signal rather than a key) exits the
-    # loop cleanly through the ensure block instead of crashing mid-frame.
-    def install_interrupt_handler
+    # Signals that should exit the loop cleanly through the ensure block (restoring
+    # the terminal) instead of killing the process mid-frame.
+    QUIT_SIGNALS = %w[INT TERM HUP].freeze
+
+    # Traps quit signals to set the interrupt flag the event loop checks, and —
+    # when the backend supports it — SIGTSTP/SIGCONT for shell suspend/resume.
+    def install_signal_handlers
       @interrupted = false
-      @previous_int_handler = Signal.trap("INT") { @interrupted = true }
-    rescue ArgumentError
-      @previous_int_handler = nil
+      @previous_handlers = {}
+      QUIT_SIGNALS.each { |signal| trap_signal(signal) { @interrupted = true } }
+      install_suspend_handlers if @backend.respond_to?(:suspend)
     end
 
-    # Restores the previous SIGINT handler installed before the runtime started.
-    def restore_interrupt_handler
-      Signal.trap("INT", @previous_int_handler || "DEFAULT")
+    # Ctrl+Z: return the terminal to its normal state, stop the process, and on
+    # SIGCONT re-enter the TUI and force a repaint via the backend's resize path.
+    def install_suspend_handlers
+      trap_signal("TSTP") { suspend }
+      trap_signal("CONT") { resume }
+    end
+
+    # Traps *signal*, remembering the previous handler for teardown. Platforms
+    # without the signal (or restricted environments) are silently skipped.
+    def trap_signal(signal, &block)
+      @previous_handlers[signal] = Signal.trap(signal, &block)
     rescue ArgumentError
-      nil
+      @previous_handlers.delete(signal)
+    end
+
+    # Restores every signal handler that was replaced when the runtime started.
+    def restore_signal_handlers
+      (@previous_handlers || {}).each do |signal, previous|
+        Signal.trap(signal, previous || "DEFAULT")
+      rescue ArgumentError
+        nil
+      end
+    end
+
+    # Restores the terminal for the shell and stops the process (the untrappable
+    # SIGSTOP), so Ctrl+Z behaves like it does in any well-behaved TUI.
+    def suspend
+      @backend.suspend
+      Process.kill("STOP", Process.pid)
+    end
+
+    # Re-enters the TUI after a foreground `fg`: raw mode and alt screen come back,
+    # the renderer cache is dropped, and the backend's resize path triggers a repaint.
+    def resume
+      @backend.resume
+      @renderer.invalidate if @renderer.respond_to?(:invalidate)
+      @backend.notify_resize if @backend.respond_to?(:notify_resize)
+    end
+
+    # Registers a process-exit fallback so an unexpected death (an exception that
+    # skips run's ensure, or an exit from within a handler) still restores the
+    # terminal. restore_terminal is idempotent, so the normal path stays cheap.
+    def install_exit_hook
+      return if @exit_hook_installed
+
+      @exit_hook_installed = true
+      at_exit { restore_terminal }
     end
 
     # Records *error*, logs its backtrace, and builds a centered ErrorScreen response.
@@ -299,8 +346,12 @@ module Charming
     end
 
     # Restores terminal state: reinstalls any previous resize handler, shows
-    # the cursor, and leaves the alternative screen buffer.
+    # the cursor, and leaves the alternative screen buffer. Idempotent — runs
+    # once whether reached from run's ensure or the at_exit fallback.
     def restore_terminal
+      return if @restored
+
+      @restored = true
       @backend.restore_resize_handler if @backend.respond_to?(:restore_resize_handler)
       @backend.disable_focus_reporting if @backend.respond_to?(:disable_focus_reporting)
       @backend.disable_bracketed_paste if @backend.respond_to?(:disable_bracketed_paste)

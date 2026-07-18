@@ -266,6 +266,26 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     expect(output.string).to include("\e[?1003l")
   end
 
+  describe "#suspend and #resume" do
+    it "returns the terminal to normal state on suspend and re-enters the TUI on resume" do
+      output = StringIO.new
+      backend = described_class.new(input: StringIO.new, output: output)
+      backend.enter_alt_screen
+      backend.hide_cursor
+      backend.enable_mouse_tracking
+      backend.enable_bracketed_paste
+      backend.enable_focus_reporting
+
+      backend.suspend
+      suspended = output.string.dup
+      backend.resume
+
+      expect(suspended).to include("\e[?1049l", "\e[?1000l", "\e[?2004l", "\e[?1004l")
+      resumed = output.string.delete_prefix(suspended)
+      expect(resumed).to include("\e[?1049h", "\e[?1000h", "\e[?2004h", "\e[?1004h")
+    end
+  end
+
   describe "#query_background_color" do
     let(:replying_input) do
       Class.new(StringIO) do

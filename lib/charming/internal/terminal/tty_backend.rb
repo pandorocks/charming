@@ -107,6 +107,32 @@ module Charming
           @bracketed_paste = false
         end
 
+        # Returns the terminal to its normal state for a shell suspend (Ctrl+Z):
+        # reporting modes off, cursor visible, primary screen, cooked input.
+        def suspend
+          @mouse_was_enabled = @mouse_enabled
+          disable_mouse_tracking
+          disable_bracketed_paste
+          disable_focus_reporting
+          show_cursor
+          leave_alt_screen
+          @input.cooked! if @input.respond_to?(:cooked!)
+        end
+
+        # Re-enters the TUI after a resume (SIGCONT): raw/no-echo input, alt
+        # screen, hidden cursor, and the reporting modes that were active before
+        # the suspend. The caller is responsible for triggering a repaint.
+        def resume
+          @input.raw! if @input.respond_to?(:raw!)
+          @input.echo = false if @input.respond_to?(:echo=)
+          enter_alt_screen
+          hide_cursor
+          enable_mouse_tracking(motion: @mouse_motion || :drag) if @mouse_was_enabled
+          enable_bracketed_paste
+          enable_focus_reporting
+          clear
+        end
+
         # The OSC 11 background-color query and the terminators a reply may end with.
         BACKGROUND_QUERY = "\e]11;?\e\\"
         OSC_TERMINATORS = ["\a", "\e\\"].freeze

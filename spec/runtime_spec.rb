@@ -700,6 +700,89 @@ RSpec.describe Charming::Runtime do
     expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
   end
 
+  it "quits cleanly on SIGTERM so the terminal is restored" do
+    handlers = {}
+    allow(Signal).to receive(:trap) do |signal, *args, &block|
+      previous = handlers[signal.to_s]
+      handlers[signal.to_s] = block || args.first
+      previous || "DEFAULT"
+    end
+    interrupting_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      attr_accessor :on_read
+
+      def read_event(timeout: nil)
+        @reads = @reads.to_i + 1
+        raise "loop did not exit after SIGTERM" if @reads > 100
+
+        on_read&.call
+        nil
+      end
+
+      def exhausted?
+        false
+      end
+    end
+    backend = interrupting_backend.new
+    backend.on_read = -> { handlers["TERM"]&.call }
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
+  end
+
+  it "suspends and resumes around SIGTSTP/SIGCONT, repainting on return" do
+    handlers = {}
+    allow(Signal).to receive(:trap) do |signal, *args, &block|
+      previous = handlers[signal.to_s]
+      handlers[signal.to_s] = block || args.first
+      previous || "DEFAULT"
+    end
+    allow(Process).to receive(:kill).with("STOP", Process.pid)
+
+    suspendable_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      attr_accessor :on_read
+
+      def suspend
+        @operations << :suspend
+      end
+
+      def resume
+        @operations << :resume
+      end
+
+      def notify_resize
+        @resize_pending = true
+      end
+
+      def read_event(timeout: nil)
+        if @resize_pending
+          @resize_pending = false
+          return Charming::Events::ResizeEvent.new(width: 80, height: 24)
+        end
+        if on_read
+          hook = on_read
+          self.on_read = nil
+          hook.call
+          return nil
+        end
+        super
+      end
+    end
+    backend = suspendable_backend.new(events: [Charming::Events::KeyEvent.new(key: :q)])
+    backend.on_read = -> {
+      handlers["TSTP"]&.call
+      handlers["CONT"]&.call
+    }
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.operations).to include(:suspend, :resume)
+    expect(backend.operations.index(:suspend)).to be < backend.operations.index(:resume)
+    expect(Process).to have_received(:kill).with("STOP", Process.pid)
+    # The resume-triggered resize repaints the screen after returning to the foreground.
+    expect(backend.frames).to eq(["Count: 0", "Count: 0"])
+  end
+
   describe "input coalescing (held-key auto-repeat)" do
     let(:counter_controller) do
       Class.new(Charming::Controller) do
