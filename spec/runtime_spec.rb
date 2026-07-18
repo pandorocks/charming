@@ -610,6 +610,81 @@ RSpec.describe Charming::Runtime do
     expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
   end
 
+  it "quits on ctrl+c when the controller has no ctrl+c binding" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :c, ctrl: true),
+        Charming::Events::KeyEvent.new(key: :up)
+      ]
+    )
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    # The loop quits at ctrl+c, so the queued :up never increments.
+    expect(backend.frames).to eq(["Count: 0"])
+  end
+
+  it "lets a controller take over ctrl+c with its own binding" do
+    bound_controller = Class.new(Charming::Controller) do
+      key "ctrl+c", :copied
+      key "q", :quit
+
+      def show
+        render "Ready"
+      end
+
+      def copied
+        render "Copied"
+      end
+    end
+    stub_const("CtrlCRuntimeSpecController", bound_controller)
+    bound_app = Class.new(Charming::Application) do
+      routes do
+        root "ctrl_c_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :c, ctrl: true),
+        Charming::Events::KeyEvent.new(key: :q)
+      ]
+    )
+
+    described_class.new(bound_app.new, backend: backend).run
+
+    expect(backend.frames).to eq(%w[Ready Copied])
+  end
+
+  it "exits the loop when SIGINT arrives as a signal rather than a key" do
+    handlers = {}
+    allow(Signal).to receive(:trap) do |signal, *args, &block|
+      previous = handlers[signal.to_s]
+      handlers[signal.to_s] = block || args.first
+      previous || "DEFAULT"
+    end
+    interrupting_backend = Class.new(Charming::Internal::Terminal::MemoryBackend) do
+      attr_accessor :on_read
+
+      def read_event(timeout: nil)
+        @reads = @reads.to_i + 1
+        raise "loop did not exit after interrupt" if @reads > 100
+
+        on_read&.call
+        nil
+      end
+
+      def exhausted?
+        false
+      end
+    end
+    backend = interrupting_backend.new
+    backend.on_read = -> { handlers["INT"]&.call } # simulate asynchronous SIGINT delivery
+
+    described_class.new(RuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.operations).to include(:show_cursor, :leave_alt_screen)
+  end
+
   describe "input coalescing (held-key auto-repeat)" do
     let(:counter_controller) do
       Class.new(Charming::Controller) do
