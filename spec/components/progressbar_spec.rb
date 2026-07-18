@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe Charming::Components::Progressbar do
+  it "colors the filled region with a gradient sweep across the bar" do
+    bar = described_class.new(total: 3, gradient: ["#000000", "#ffffff"])
+    bar.update(2)
+
+    expect(bar.render).to eq("[\e[38;2;0;0;0m=\e[0m\e[38;2;128;128;128m=\e[0m ]")
+  end
+
+  it "reports completion as a percentage" do
+    bar = described_class.new(total: 4)
+    bar.update(1)
+
+    expect(bar.percent).to eq(25)
+  end
   describe "#initialize" do
     it "defaults current to 0" do
       pb = described_class.new(total: 10)

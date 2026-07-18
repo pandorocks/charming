@@ -9,13 +9,32 @@ module Charming
       # The default frame set: a 4-frame ASCII spinner.
       DEFAULT_FRAMES = ["-", "\\", "|", "/"].freeze
 
+      # Named frame presets, mirroring the roster popularized by charm.sh's bubbles.
+      STYLES = {
+        line: DEFAULT_FRAMES,
+        dots: %w[⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏].freeze,
+        mini_dot: %w[⠁ ⠂ ⠄ ⡀ ⢀ ⠠ ⠐ ⠈].freeze,
+        jump: %w[⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠].freeze,
+        pulse: %w[█ ▓ ▒ ░].freeze,
+        points: ["∙∙∙", "●∙∙", "∙●∙", "∙∙●"].freeze,
+        globe: %w[🌍 🌎 🌏].freeze,
+        moon: %w[🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘].freeze,
+        meter: %w[▱▱▱ ▰▱▱ ▰▰▱ ▰▰▰ ▰▰▱ ▰▱▱].freeze,
+        hamburger: %w[☱ ☲ ☴ ☲].freeze,
+        ellipsis: ["   ", ".  ", ".. ", "..."].freeze
+      }.freeze
+
       # The current frame list, frame index, and optional label string.
       attr_reader :frames, :index, :label
 
-      # *frames* defaults to DEFAULT_FRAMES but may be replaced with any array of frame strings.
-      # *index* is the starting frame index. *label* is an optional suffix shown after the frame.
-      def initialize(frames: DEFAULT_FRAMES, index: 0, label: nil)
+      # *style* picks a named preset from STYLES (default :line). *frames* overrides the
+      # preset with any array of frame strings. *index* is the starting frame index.
+      # *label* is an optional suffix shown after the frame.
+      def initialize(style: :line, frames: nil, index: 0, label: nil)
         super()
+        frames ||= STYLES.fetch(style.to_sym) do
+          raise ArgumentError, "unknown spinner style: #{style.inspect} (available: #{STYLES.keys.join(", ")})"
+        end
         raise ArgumentError, "frames cannot be empty" if frames.empty?
 
         @frames = frames
