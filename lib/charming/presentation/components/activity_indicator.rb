@@ -162,24 +162,7 @@ module Charming
       def color_at(position)
         return gradient.first unless indicator_width > 1
 
-        blend(gradient.first, gradient.last, position / (indicator_width - 1).to_f)
-      end
-
-      # Blends two hex colors by interpolating their red/green/blue components at fractional +amount+.
-      # Accepts strings like "#ff0000" and produces a new "#rrggbb" string.
-      def blend(start_hex, end_hex, amount)
-        start_rgb = rgb(start_hex)
-        end_rgb = rgb(end_hex)
-        mixed = start_rgb.zip(end_rgb).map { |from, to| (from + ((to - from) * amount)).round }
-        "#%02x%02x%02x" % mixed
-      end
-
-      # Decomposes a hex color string ("#rrggbb") into an array of three integers [r, g, b].
-      def rgb(hex)
-        value = hex.to_s.delete_prefix("#")
-        raise ArgumentError, "gradient colors must be #rrggbb" unless value.match?(/\A[0-9a-fA-F]{6}\z/)
-
-        [value[0..1], value[2..3], value[4..5]].map { |part| part.to_i(16) }
+        UI::Gradient.blend(gradient.first, gradient.last, position / (indicator_width - 1).to_f)
       end
 
       # Advances the animation frame counter, wrapping around after +FRAME_COUNT+ (10) steps.
