@@ -16,7 +16,8 @@ RSpec.describe Charming::Components::EmptyState do
   it "renders an error with optional help" do
     state = described_class.new(error: "Network failed", help: "Press r to retry.")
 
-    expect(state.render).to eq("\e[38;2;255;179;71;48;2;17;26;44mNetwork failed\e[0m\n\e[38;2;127;185;140;48;2;17;26;44mPress r to retry.\e[0m")
+    # The shorter error line pads to the width of the help line below it.
+    expect(state.render).to eq("\e[38;2;255;179;71;48;2;17;26;44mNetwork failed\e[0m   \n\e[38;2;127;185;140;48;2;17;26;44mPress r to retry.\e[0m")
   end
 
   it "uses an explicit error message when provided" do

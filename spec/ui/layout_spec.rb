@@ -12,6 +12,35 @@ RSpec.describe Charming::UI do
     expect(described_class.join_vertical("A", "B", gap: 1)).to eq("A\n\nB")
   end
 
+  it "centers shorter blocks along the cross axis when joining horizontally" do
+    expect(described_class.join_horizontal("A\nB\nC", "1", align: :center)).to eq("A \nB1\nC ")
+  end
+
+  it "bottom-aligns shorter blocks when joining horizontally" do
+    expect(described_class.join_horizontal("A\nB\nC", "1", align: :bottom)).to eq("A \nB \nC1")
+  end
+
+  it "accepts fractional cross-axis positions when joining horizontally" do
+    expect(described_class.join_horizontal("A\nB\nC", "1", align: 1.0)).to eq("A \nB \nC1")
+  end
+
+  it "pads narrower blocks to the widest block when joining vertically" do
+    expect(described_class.join_vertical("AAA", "B")).to eq("AAA\nB  ")
+  end
+
+  it "centers narrower blocks along the cross axis when joining vertically" do
+    expect(described_class.join_vertical("AAA", "B", align: :center)).to eq("AAA\n B ")
+  end
+
+  it "right-aligns narrower blocks when joining vertically" do
+    expect(described_class.join_vertical("AAA", "B", align: :right)).to eq("AAA\n  B")
+  end
+
+  it "places content at fractional positions" do
+    expect(described_class.place("X", width: 5, height: 1, left: 1.0)).to eq("    X")
+    expect(described_class.place("X", width: 5, height: 3, top: 0.5, left: 0.5)).to eq("     \n  X  \n     ")
+  end
+
   it "builds styles from the module helper" do
     expect(described_class.style.underline.render("Hi")).to eq("\e[4mHi\e[0m")
   end

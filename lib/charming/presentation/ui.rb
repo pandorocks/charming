@@ -15,20 +15,30 @@ module Charming
 
     # Horizontally concatenates *blocks* into a single multi-line string, padding each block's
     # rows to match the widest row. A *gap* argument (in spaces) can separate adjacent columns.
-    def join_horizontal(*blocks, gap: 0)
+    # *align* positions shorter blocks along the cross axis: `:top` (default), `:center`,
+    # `:bottom`, or a fraction between 0.0 and 1.0.
+    def join_horizontal(*blocks, gap: 0, align: :top)
       normalized = normalize_blocks(blocks)
+      height = block_height(normalized)
+      aligned = normalized.map { |lines| offset_rows(lines, height, align) }
       widths = block_widths(normalized)
       separator = " " * gap
 
-      Array.new(block_height(normalized)) do |index|
-        horizontal_line(normalized, widths, index).join(separator)
+      Array.new(height) do |index|
+        horizontal_line(aligned, widths, index).join(separator)
       end.join("\n")
     end
 
-    # Stacks *blocks* vertically separated by one or more blank lines. A *gap* of N inserts N
-    # extra newline characters between blocks (1 gap = 1 blank line, 2 gaps = 2 blank lines, etc.).
-    def join_vertical(*blocks, gap: 0)
-      blocks.join("\n" * (gap + 1))
+    # Stacks *blocks* vertically separated by one or more blank lines, padding narrower
+    # blocks' lines to the widest block. A *gap* of N inserts N extra newline characters
+    # between blocks. *align* positions narrower lines along the cross axis: `:left`
+    # (default), `:center`, `:right`, or a fraction between 0.0 and 1.0.
+    def join_vertical(*blocks, gap: 0, align: :left)
+      normalized = normalize_blocks(blocks)
+      width = block_widths(normalized).max || 0
+
+      normalized.map { |lines| lines.map { |line| align_to(line, width, align) }.join("\n") }
+        .join("\n" * (gap + 1))
     end
 
     # Places *block* onto a blank canvas of *width* × *height* at an offset determined by *top* (row)
@@ -83,6 +93,32 @@ module Charming
       blocks.each_with_index.map do |lines, block_index|
         Width.pad_to(lines[index] || "", widths[block_index])
       end
+    end
+
+    # Prepends blank rows to *lines* so the block sits at the cross-axis position
+    # given by *align* within *height* total rows.
+    def offset_rows(lines, height, align)
+      Array.new(cross_offset(align, height - lines.length), "") + lines
+    end
+
+    # Pads *line* to *width*, splitting the slack per the cross-axis *align* position.
+    def align_to(line, width, align)
+      slack = width - Width.measure(line)
+      return line if slack <= 0
+
+      leading = cross_offset(align, slack)
+      (" " * leading) + line + (" " * (slack - leading))
+    end
+
+    # Resolves an alignment (`:top`/`:left` → 0.0, `:center` → 0.5, `:bottom`/`:right` → 1.0,
+    # or a fraction) into a whole-cell offset within *slack* spare cells.
+    CROSS_POSITIONS = {top: 0.0, left: 0.0, center: 0.5, middle: 0.5, bottom: 1.0, right: 1.0}.freeze
+
+    def cross_offset(align, slack)
+      return 0 if slack <= 0
+
+      position = CROSS_POSITIONS.fetch(align, align)
+      (slack * position.to_f).round.clamp(0, slack)
     end
   end
 end

@@ -57,14 +57,16 @@ module Charming
       apply_style(content, style)
     end
 
-    # Joins items horizontally (side-by-side) using the UI rendering engine. Supports a `gap:` parameter.
-    def row(*items, gap: 0)
-      UI.join_horizontal(*items, gap: gap)
+    # Joins items horizontally (side-by-side) using the UI rendering engine. Supports `gap:`
+    # spacing and cross-axis `align:` (`:top`/`:center`/`:bottom` or a 0.0–1.0 fraction).
+    def row(*items, gap: 0, align: :top)
+      UI.join_horizontal(*items, gap: gap, align: align)
     end
 
-    # Stacks items vertically using the UI rendering engine. Supports a `gap:` parameter for spacing.
-    def column(*items, gap: 0)
-      UI.join_vertical(*items, gap: gap)
+    # Stacks items vertically using the UI rendering engine. Supports `gap:` spacing and
+    # cross-axis `align:` (`:left`/`:center`/`:right` or a 0.0–1.0 fraction).
+    def column(*items, gap: 0, align: :left)
+      UI.join_vertical(*items, gap: gap, align: align)
     end
 
     # Renders a component (e.g., a ProgressBar, Spinner, Modal) and returns its string output.

@@ -44,6 +44,7 @@ module Charming
 
       def self.offset(value, available, size)
         return [(available - size) / 2, 0].max if value == :center
+        return [((available - size) * value).round, 0].max if value.is_a?(Float)
 
         value
       end

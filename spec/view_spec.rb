@@ -61,7 +61,8 @@ RSpec.describe Charming::View do
       end
     end
 
-    expect(view.new.render).to eq("A B\n\nC")
+    # Columns pad narrower lines to the widest block, keeping the result rectangular.
+    expect(view.new.render).to eq("A B\n\nC  ")
   end
 
   it "renders components" do
