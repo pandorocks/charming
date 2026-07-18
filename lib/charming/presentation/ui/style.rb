@@ -18,6 +18,7 @@ module Charming
         @options = {
           attributes: [],
           padding: [0, 0, 0, 0],
+          margin: [0, 0, 0, 0],
           align: :left
         }.merge(options)
       end
@@ -47,6 +48,24 @@ module Charming
       # shorthand: 1 → all sides, 2 → [vertical, horizontal], 4 → [top, right, bottom, left].
       def padding(*values)
         with(padding: expand_box_values(values))
+      end
+
+      # Returns a new Style with the margin set — blank space applied outside the border and
+      # untouched by the style's colors. Accepts the same CSS-style shorthand as `padding`.
+      def margin(*values)
+        with(margin: expand_box_values(values))
+      end
+
+      # Per-side setters: padding_top/right/bottom/left and margin_top/right/bottom/left,
+      # each returning a new Style with just that side changed.
+      %i[padding margin].each do |box|
+        %i[top right bottom left].each_with_index do |side, index|
+          define_method(:"#{box}_#{side}") do |value|
+            values = @options.fetch(box).dup
+            values[index] = value
+            with(box => values)
+          end
+        end
       end
 
       # Returns a new Style with the border set. *style* is a border name (e.g., :normal,
@@ -95,14 +114,21 @@ module Charming
         with(align: value)
       end
 
+      # Returns a new Style with vertical alignment within a fixed height set
+      # (`:top`, `:middle`, or `:bottom`).
+      def align_vertical(value)
+        with(align_vertical: value)
+      end
+
       # Applies the configured style to *value* and returns the styled string. Steps:
-      # 1. wrap to `:width`, 2. align horizontally, 3. expand to `:height`, 4. apply padding,
-      # 5. paint border, 6. emit ANSI attribute/foreground/background escapes.
+      # 1. wrap to `:width`, 2. align horizontally and vertically, 3. expand to `:height`,
+      # 4. apply padding, 5. paint border, 6. emit ANSI attribute/foreground/background
+      # escapes, 7. surround with unstyled margin space.
       def render(value)
         lines = apply_dimensions(value.to_s.lines(chomp: true))
         lines = apply_padding(lines)
         lines = apply_border(lines)
-        apply_ansi(lines.join("\n"))
+        apply_margin(apply_ansi(lines.join("\n")))
       end
 
       private
@@ -147,13 +173,42 @@ module Charming
         UI.visible_slice(line, 0, width)
       end
 
-      # Truncates or pads the lines array to *height* rows, filling with blank rows.
+      # Truncates or pads the lines array to *height* rows, distributing blank fill
+      # rows according to :align_vertical (:top, :middle, or :bottom).
       def apply_height(lines, width)
         height = @options[:height]
         return lines unless height
 
         visible = lines.first(height)
-        visible + Array.new([height - visible.length, 0].max) { " " * width }
+        distribute_rows(visible, height - visible.length, width)
+      end
+
+      # Places *missing* blank rows around *visible* per the vertical alignment.
+      def distribute_rows(visible, missing, width)
+        blank = ->(count) { Array.new([count, 0].max) { " " * width } }
+        case @options.fetch(:align_vertical, :top)
+        when :bottom
+          blank.call(missing) + visible
+        when :middle
+          top = missing / 2
+          blank.call(top) + visible + blank.call(missing - top)
+        else
+          visible + blank.call(missing)
+        end
+      end
+
+      # Surrounds the styled block with unstyled margin space: blank rows above and
+      # below, plain-space columns left and right. Applied after ANSI styling so the
+      # margin never carries the style's colors.
+      def apply_margin(styled)
+        top, right, bottom, left = @options.fetch(:margin)
+        return styled if [top, right, bottom, left].all?(&:zero?)
+
+        lines = styled.lines(chomp: true)
+        width = Width.widest(lines)
+        body = lines.map { |line| (" " * left) + Width.pad_to(line, width) + (" " * right) }
+        blank = " " * (left + width + right)
+        (Array.new(top, blank) + body + Array.new(bottom, blank)).join("\n")
       end
 
       # Caps the lines array to :max_height rows without filling missing rows.

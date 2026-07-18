@@ -21,6 +21,48 @@ RSpec.describe Charming::UI::Style do
     expect(output).to eq("      \n  Hi  \n      ")
   end
 
+  it "pads individual sides" do
+    output = described_class.new.padding_left(2).padding_top(1).render("Hi")
+
+    expect(output).to eq("    \n  Hi")
+  end
+
+  it "applies margin as unstyled space outside border and colors" do
+    output = described_class.new.foreground(:red).border(:normal).margin(1, 2).render("Hi")
+
+    expect(output).to eq(
+      "        \n" \
+      "  \e[31m+--+\e[0m  \n" \
+      "  \e[31m|Hi|\e[0m  \n" \
+      "  \e[31m+--+\e[0m  \n" \
+      "        "
+    )
+  end
+
+  it "applies margin to individual sides" do
+    output = described_class.new.margin_left(3).render("Hi")
+
+    expect(output).to eq("   Hi")
+  end
+
+  it "vertically centers content within a fixed height" do
+    output = described_class.new.width(3).height(3).align_vertical(:middle).render("Hi")
+
+    expect(output).to eq("   \nHi \n   ")
+  end
+
+  it "bottom-aligns content within a fixed height" do
+    output = described_class.new.width(3).height(3).align_vertical(:bottom).render("Hi")
+
+    expect(output).to eq("   \n   \nHi ")
+  end
+
+  it "top-aligns content within a fixed height by default" do
+    output = described_class.new.width(3).height(3).render("Hi")
+
+    expect(output).to eq("Hi \n   \n   ")
+  end
+
   it "renders borders" do
     output = described_class.new.border(:rounded).render("Hi")
 
