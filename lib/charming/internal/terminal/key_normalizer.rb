@@ -17,8 +17,16 @@ module Charming
         end
 
         # Converts a raw *keypress* string into a KeyEvent. Returns nil when *keypress* is nil.
+        # Modified CSI sequences (shift/alt/ctrl arrows, function keys) and ESC-prefixed alt
+        # chords are decoded first; everything else goes through tty-reader's key table.
         def normalize(keypress)
           return nil unless keypress
+
+          modified = ModifiedKeyParser.parse(keypress)
+          return modified if modified
+
+          alt = alt_prefixed_event(keypress)
+          return alt if alt
 
           key_name = @reader.console.keys[keypress]
           return character_event(keypress) unless key_name
@@ -27,6 +35,18 @@ module Charming
         end
 
         private
+
+        # Decodes "\e<key>" (Alt held while pressing <key>) by normalizing the inner
+        # key and flagging alt. Bare escapes and CSI/SS3 sequences are left alone.
+        def alt_prefixed_event(keypress)
+          return nil unless keypress.start_with?("\e") && keypress.length >= 2
+          return nil if ["[", "O", "\e"].include?(keypress[1])
+
+          inner = normalize(keypress[1..])
+          return nil unless inner
+
+          Events::KeyEvent.new(key: inner.key, char: inner.char, ctrl: inner.ctrl, alt: true, shift: inner.shift)
+        end
 
         # Builds a KeyEvent for a raw character keypress (no semantic name was matched).
         def character_event(keypress)

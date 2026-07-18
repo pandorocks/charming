@@ -72,4 +72,74 @@ RSpec.describe Charming::Internal::Terminal::KeyNormalizer do
 
     expect(normalizer.normalize("x")).to eq(Charming::Events::KeyEvent.new(key: :x, char: "x"))
   end
+
+  describe "CSI modifier sequences" do
+    it "decodes shift-modified arrows" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[1;2A")).to eq(Charming::Events::KeyEvent.new(key: :up, shift: true))
+    end
+
+    it "decodes ctrl-modified arrows" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[1;5C")).to eq(Charming::Events::KeyEvent.new(key: :right, ctrl: true))
+    end
+
+    it "decodes alt-modified home" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[1;3H")).to eq(Charming::Events::KeyEvent.new(key: :home, alt: true))
+    end
+
+    it "decodes combined ctrl+shift" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[1;6D")).to eq(
+        Charming::Events::KeyEvent.new(key: :left, ctrl: true, shift: true)
+      )
+    end
+
+    it "decodes tilde-form sequences (delete, page keys, function keys)" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[3;2~")).to eq(Charming::Events::KeyEvent.new(key: :delete, shift: true))
+      expect(normalizer.normalize("\e[6;5~")).to eq(Charming::Events::KeyEvent.new(key: :page_down, ctrl: true))
+      expect(normalizer.normalize("\e[15;5~")).to eq(Charming::Events::KeyEvent.new(key: :f5, ctrl: true))
+    end
+
+    it "decodes modified F1-F4 (SS3-style finals)" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\e[1;2P")).to eq(Charming::Events::KeyEvent.new(key: :f1, shift: true))
+    end
+  end
+
+  describe "alt (ESC-prefixed) keys" do
+    it "decodes alt+letter" do
+      normalizer = build(keys: {})
+
+      expect(normalizer.normalize("\eb")).to eq(Charming::Events::KeyEvent.new(key: :b, char: "b", alt: true))
+    end
+
+    it "decodes alt over named keys" do
+      normalizer = build(keys: {"\r" => :return})
+
+      expect(normalizer.normalize("\e\r")).to eq(
+        Charming::Events::KeyEvent.new(key: :enter, char: "\n", alt: true)
+      )
+    end
+
+    it "leaves a bare escape key alone" do
+      normalizer = build(keys: {"\e" => :escape})
+
+      expect(normalizer.normalize("\e")).to eq(Charming::Events::KeyEvent.new(key: :escape))
+    end
+
+    it "leaves unmodified CSI sequences to the tty-reader table" do
+      normalizer = build(keys: {"\e[A" => :up})
+
+      expect(normalizer.normalize("\e[A")).to eq(Charming::Events::KeyEvent.new(key: :up))
+    end
+  end
 end
