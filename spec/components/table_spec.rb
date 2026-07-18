@@ -394,4 +394,52 @@ RSpec.describe Charming::Components::Table do
       expect(table.selected_index).to eq(0)
     end
   end
+
+  describe "sorting" do
+    let(:table) do
+      described_class.new(
+        header: %w[Name Stars],
+        rows: [["bubbletea", "27000"], ["charming", "120"], ["lipgloss", "8000"]]
+      )
+    end
+
+    it "sorts rows by a named column ascending" do
+      table.sort_by!("Name")
+
+      expect(table.rows.map(&:first)).to eq(%w[bubbletea charming lipgloss])
+    end
+
+    it "sorts descending when asked" do
+      table.sort_by!("Name", direction: :desc)
+
+      expect(table.rows.map(&:first)).to eq(%w[lipgloss charming bubbletea])
+    end
+
+    it "sorts numeric columns numerically, by index" do
+      table.sort_by!(1)
+
+      expect(table.rows.map(&:last)).to eq(%w[120 8000 27000])
+    end
+
+    it "toggles direction when re-sorting the same column" do
+      table.toggle_sort("Stars")
+      table.toggle_sort("Stars")
+
+      expect(table.rows.map(&:last)).to eq(%w[27000 8000 120])
+    end
+
+    it "marks the sorted column in the rendered header" do
+      table.sort_by!("Stars")
+
+      expect(table.render).to include("Stars ▲")
+
+      table.sort_by!("Stars", direction: :desc)
+
+      expect(table.render).to include("Stars ▼")
+    end
+
+    it "rejects unknown columns" do
+      expect { table.sort_by!("Forks") }.to raise_error(ArgumentError, /unknown column/)
+    end
+  end
 end

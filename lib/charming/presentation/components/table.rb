@@ -72,12 +72,30 @@ module Charming
         rows[selected_index]
       end
 
+      # Sorts the body rows by *column* (a header label or 0-based index).
+      # Numeric-looking cells compare numerically; everything else as strings.
+      # The sorted column is marked ▲/▼ in the rendered header. Returns self.
+      def sort_by!(column, direction: :asc)
+        @sort_column = column_index(column)
+        @sort_direction = direction
+        sorted = @rows.sort_by { |row| sort_key(row) }
+        @rows = (direction == :desc) ? sorted.reverse : sorted
+        self
+      end
+
+      # Sorts by *column*, flipping the direction on repeated calls for the same
+      # column (ascending first). Returns self.
+      def toggle_sort(column)
+        flipping = @sort_column == column_index(column) && @sort_direction == :asc
+        sort_by!(column, direction: flipping ? :desc : :asc)
+      end
+
       # Renders the table to a string. Returns a placeholder when both header and rows are empty.
       def render
         return "(empty table)" if header.empty? && rows.empty?
 
         normalized = rows.map { |row| normalize_row(row) }
-        lines = TTY::Table.new(header: header, rows: normalized)
+        lines = TTY::Table.new(header: sort_marked_header, rows: normalized)
           .render(:unicode)
           .lines(chomp: true)
 
@@ -159,6 +177,29 @@ module Charming
       # Moves the selection to the last row.
       def move_end
         @selected_index = rows.length - 1
+      end
+
+      # Resolves *column* (label or 0-based index) to a column index.
+      def column_index(column)
+        return column if column.is_a?(Integer) && column.between?(0, header.length - 1)
+
+        header.index(column.to_s) ||
+          raise(ArgumentError, "unknown column: #{column.inspect} (columns: #{header.join(", ")})")
+      end
+
+      # The comparable key for *row* at the active sort column: [0, number] for
+      # numeric-looking cells, [1, string] otherwise, so mixed columns still sort.
+      def sort_key(row)
+        cell = normalize_row(row)[@sort_column].to_s
+        cell.match?(/\A-?\d+(\.\d+)?\z/) ? [0, cell.to_f] : [1, cell]
+      end
+
+      # The header with the sorted column marked ▲ (ascending) or ▼ (descending).
+      def sort_marked_header
+        return header unless @sort_column
+
+        marker = (@sort_direction == :desc) ? "▼" : "▲"
+        header.each_with_index.map { |label, index| (index == @sort_column) ? "#{label} #{marker}" : label }
       end
 
       # Clamps *value* to the valid row range, defaulting to 0 when the table is empty.
