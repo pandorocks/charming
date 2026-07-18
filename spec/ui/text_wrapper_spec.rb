@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Charming::Markdown::TextWrapper do
+RSpec.describe Charming::UI::TextWrapper do
   it "returns text unchanged without a width" do
     wrapper = described_class.new(width: nil)
 

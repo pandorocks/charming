@@ -39,6 +39,42 @@ RSpec.describe Charming::UI::Style do
     expect(output).to eq("ABC")
   end
 
+  it "truncates with an ellipsis in truncate mode" do
+    output = described_class.new.width(4).truncate.render("ABCDE")
+
+    expect(output).to eq("ABC…")
+  end
+
+  it "word-wraps at a fixed width in wrap mode" do
+    output = described_class.new.width(7).wrap.render("Hello wide world")
+
+    expect(output).to eq("Hello  \nwide   \nworld  ")
+  end
+
+  it "caps width with max_width without padding shorter lines beyond their block" do
+    output = described_class.new.max_width(3).render("ABCDE\nZ")
+
+    expect(output).to eq("ABC\nZ  ")
+  end
+
+  it "leaves content narrower than max_width untouched" do
+    output = described_class.new.max_width(10).render("Hi")
+
+    expect(output).to eq("Hi")
+  end
+
+  it "caps rows with max_height without filling missing rows" do
+    output = described_class.new.max_height(2).render("A\nB\nC")
+
+    expect(output).to eq("A\nB")
+  end
+
+  it "leaves content shorter than max_height untouched" do
+    output = described_class.new.max_height(5).render("A\nB")
+
+    expect(output).to eq("A\nB")
+  end
+
   it "pads content to a fixed height" do
     output = described_class.new.width(2).height(3).render("A")
 

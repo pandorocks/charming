@@ -40,7 +40,7 @@ module Charming
 
       # The exception message, wrapped to the panel's inner width.
       def wrapped_message
-        Charming::Markdown::TextWrapper.new(width: inner_width).wrap(error.message.to_s)
+        Charming::UI::TextWrapper.new(width: inner_width).wrap(error.message.to_s)
       end
 
       # The first few backtrace lines with the app root stripped, styled muted.

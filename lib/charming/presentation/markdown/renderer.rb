@@ -45,7 +45,7 @@ module Charming
       end
 
       def wrap(value, width:)
-        TextWrapper.new(width: width).wrap(value)
+        UI::TextWrapper.new(width: width).wrap(value)
       end
 
       def style_for(name, fallback:)

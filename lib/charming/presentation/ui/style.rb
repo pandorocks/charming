@@ -66,6 +66,30 @@ module Charming
         with(height: value)
       end
 
+      # Returns a new Style that caps the rendered width to *value* display columns.
+      # Unlike `width`, content narrower than the cap is not padded out to it.
+      def max_width(value)
+        with(max_width: value)
+      end
+
+      # Returns a new Style that caps the rendered height to *value* rows. Unlike
+      # `height`, content shorter than the cap is not filled with blank rows.
+      def max_height(value)
+        with(max_height: value)
+      end
+
+      # Returns a new Style that word-wraps overflowing lines at the fixed width
+      # instead of clipping them.
+      def wrap
+        with(fit: :wrap)
+      end
+
+      # Returns a new Style that marks lines clipped at the fixed width with a
+      # trailing *ellipsis* instead of cutting them silently.
+      def truncate(ellipsis: Truncate::ELLIPSIS)
+        with(fit: :truncate, ellipsis: ellipsis)
+      end
+
       # Returns a new Style with horizontal alignment set (`:left`, `:right`, or `:center`).
       def align(value)
         with(align: value)
@@ -91,21 +115,34 @@ module Charming
       # Wraps each line to the target width and applies horizontal alignment, then expands
       # to the target height.
       def apply_dimensions(lines)
+        lines = wrap_lines(lines)
         content_width = target_content_width(lines)
         dimensioned = lines.map { |line| align_line(fit_line(line, content_width), content_width) }
-        apply_height(dimensioned, content_width)
+        apply_max_height(apply_height(dimensioned, content_width))
+      end
+
+      # Word-wraps lines at the fixed width when the style is in wrap mode.
+      def wrap_lines(lines)
+        wrap_width = @options[:width]
+        return lines unless wrap_width && @options[:fit] == :wrap
+
+        wrapper = TextWrapper.new(width: wrap_width)
+        lines.flat_map { |line| wrapper.wrap(line).lines(chomp: true) }
       end
 
       # Returns the target content width: the explicit :width if set, otherwise the natural
-      # max display width of the lines.
+      # max display width of the lines, capped to :max_width when configured.
       def target_content_width(lines)
-        explicit_width = @options[:width]
-        explicit_width || Width.widest(lines)
+        width = @options[:width] || Width.widest(lines)
+        max = @options[:max_width]
+        max ? [width, max].min : width
       end
 
-      # Clips *line* to *width* display columns, preserving ANSI styling where possible.
+      # Fits *line* into *width* display columns: clipped by default, or marked with an
+      # ellipsis in truncate mode. Preserves ANSI styling active at the cut.
       def fit_line(line, width)
         return line if Width.measure(line) <= width
+        return Truncate.tail(line, width, ellipsis: @options.fetch(:ellipsis, Truncate::ELLIPSIS)) if @options[:fit] == :truncate
 
         UI.visible_slice(line, 0, width)
       end
@@ -117,6 +154,12 @@ module Charming
 
         visible = lines.first(height)
         visible + Array.new([height - visible.length, 0].max) { " " * width }
+      end
+
+      # Caps the lines array to :max_height rows without filling missing rows.
+      def apply_max_height(lines)
+        max = @options[:max_height]
+        max ? lines.first(max) : lines
       end
 
       # Applies padding by prepending/appending blank rows (vertical) and indenting each
