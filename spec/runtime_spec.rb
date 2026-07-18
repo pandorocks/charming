@@ -87,8 +87,23 @@ RSpec.describe Charming::Runtime do
 
     described_class.new(RuntimeSpecApp.new, backend: backend).run
 
-    expect(backend.operations).to include(:enable_mouse_tracking, :disable_mouse_tracking)
+    expect(backend.operations).to include([:enable_mouse_tracking, :drag], :disable_mouse_tracking)
     expect(backend.mouse_enabled?).to be(false)
+  end
+
+  it "passes the app's mouse_motion setting to the backend" do
+    hover_app = Class.new(Charming::Application) do
+      mouse_motion :all
+      routes { root "runtime_spec#show" }
+    end
+    stub_const("HoverRuntimeSpecApp", hover_app)
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [Charming::Events::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(HoverRuntimeSpecApp.new, backend: backend).run
+
+    expect(backend.operations).to include([:enable_mouse_tracking, :all])
   end
 
   it "passes backend screen dimensions to controllers" do

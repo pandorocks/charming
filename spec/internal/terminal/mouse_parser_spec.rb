@@ -38,6 +38,59 @@ RSpec.describe Charming::Internal::Terminal::MouseParser do
       expect(event.y).to eq(4)
     end
 
+    it "decodes shift, alt, and ctrl from the SGR button-code bits" do
+      shift_click = described_class.parse("\e[<4;10;5M")
+      alt_click = described_class.parse("\e[<8;10;5M")
+      ctrl_click = described_class.parse("\e[<16;10;5M")
+      all_click = described_class.parse("\e[<28;10;5M")
+
+      expect(shift_click).to have_attributes(button_name: :left, shift: true, alt: false, ctrl: false)
+      expect(alt_click).to have_attributes(button_name: :left, shift: false, alt: true, ctrl: false)
+      expect(ctrl_click).to have_attributes(button_name: :left, shift: false, alt: false, ctrl: true)
+      expect(all_click).to have_attributes(button_name: :left, shift: true, alt: true, ctrl: true)
+    end
+
+    it "decodes modified scroll events to their base wheel direction" do
+      event = described_class.parse("\e[<68;10;5M")
+
+      expect(event.button_name).to eq(:scroll_up)
+      expect(event.shift).to be(true)
+      expect(event.scroll?).to be(true)
+    end
+
+    it "marks SGR release sequences (final m) as releases, not clicks" do
+      event = described_class.parse("\e[<0;10;5m")
+
+      expect(event.release?).to be(true)
+      expect(event.click?).to be(false)
+      expect(event.button_name).to eq(:left)
+    end
+
+    it "decodes drag motion from the SGR motion bit" do
+      event = described_class.parse("\e[<32;10;5M")
+
+      expect(event.motion?).to be(true)
+      expect(event.drag?).to be(true)
+      expect(event.button_name).to eq(:left)
+      expect(event.click?).to be(false)
+    end
+
+    it "decodes buttonless hover motion" do
+      event = described_class.parse("\e[<35;10;5M")
+
+      expect(event.motion?).to be(true)
+      expect(event.drag?).to be(false)
+      expect(event.click?).to be(false)
+    end
+
+    it "decodes modifiers on legacy sequences" do
+      # Legacy byte: 32 + button 0 + shift bit 4 = 36 → "$"
+      event = described_class.parse("\e[M\x24\x29\x25")
+
+      expect(event.button_name).to eq(:left)
+      expect(event.shift).to be(true)
+    end
+
     it "parses an SGR release (button 3)" do
       event = described_class.parse("\e[<3;10;5M")
 

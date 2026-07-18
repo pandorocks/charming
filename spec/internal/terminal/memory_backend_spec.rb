@@ -43,7 +43,7 @@ RSpec.describe Charming::Internal::Terminal::MemoryBackend do
     backend.enable_mouse_tracking
     backend.disable_mouse_tracking
 
-    expect(backend.operations).to include(:enable_mouse_tracking)
+    expect(backend.operations).to include([:enable_mouse_tracking, :drag])
     expect(backend.operations).to include(:disable_mouse_tracking)
     expect(backend.mouse_enabled?).to be false
   end

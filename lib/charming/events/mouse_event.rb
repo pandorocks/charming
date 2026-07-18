@@ -10,11 +10,12 @@ module Charming
     }.freeze
     private_constant :MOUSE_BUTTON_MAP
 
-    # MouseEvent represents a mouse input event. *button* encodes which button or action was triggered (left,
-    # right, scroll), while *x* and *y* provide the cursor position. Modifier booleans (*ctrl*, *alt*, *shift*)
-    # capture key state at the time of the event.
-    MouseEvent = Data.define(:button, :x, :y, :ctrl, :alt, :shift) do
-      def initialize(button:, x:, y:, ctrl: false, alt: false, shift: false)
+    # MouseEvent represents a mouse input event. *button* encodes which button or action was
+    # triggered (left, right, scroll), while *x* and *y* provide the cursor position. Modifier
+    # booleans (*ctrl*, *alt*, *shift*) capture key state at the time of the event. *motion*
+    # marks drag/hover movement and *release* marks an SGR button release.
+    MouseEvent = Data.define(:button, :x, :y, :ctrl, :alt, :shift, :motion, :release) do
+      def initialize(button:, x:, y:, ctrl: false, alt: false, shift: false, motion: false, release: false)
         super
       end
 
@@ -23,9 +24,9 @@ module Charming
         MOUSE_BUTTON_MAP.fetch(button, :unknown)
       end
 
-      # Returns `true` when the current event is a click (left, middle, or right button).
+      # Returns `true` for a button press (left, middle, or right) — not a release, drag, or hover.
       def click?
-        %i[left middle right].include?(button_name)
+        !motion && !release? && %i[left middle right].include?(button_name)
       end
 
       # Returns `true` when the button name maps to either direction of scroll.
@@ -33,9 +34,21 @@ module Charming
         %i[scroll_up scroll_down].include?(button_name)
       end
 
-      # Returns `true` when the current event is a mouse release action.
+      # Returns `true` for a button release: the SGR release marker, or the legacy
+      # button-3 release code on a non-motion event. (During motion, button 3
+      # means "no button held", not a release.)
       def release?
-        button_name == :release
+        release || (!motion && button_name == :release)
+      end
+
+      # Returns `true` for any mouse movement report (drag or hover).
+      def motion?
+        motion
+      end
+
+      # Returns `true` when the mouse moved with a button held down.
+      def drag?
+        motion && %i[left middle right].include?(button_name)
       end
     end
   end

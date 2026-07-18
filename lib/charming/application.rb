@@ -120,6 +120,16 @@ module Charming
         @coalesce_input = value
       end
 
+      # The mouse motion reporting mode: :drag (default) reports movement only while
+      # a button is held; :all also reports buttonless hover movement. Pass a symbol
+      # to set; call without args to read (inherited).
+      def mouse_motion(value = COALESCE_READER)
+        return configured_mouse_motion if value == COALESCE_READER
+        raise ArgumentError, "mouse_motion must be :drag or :all" unless %i[drag all].include?(value)
+
+        @mouse_motion = value
+      end
+
       private
 
       def configured_logger
@@ -134,6 +144,13 @@ module Charming
         return superclass.coalesce_input if superclass.respond_to?(:coalesce_input)
 
         false
+      end
+
+      def configured_mouse_motion
+        return @mouse_motion if instance_variable_defined?(:@mouse_motion)
+        return superclass.mouse_motion if superclass.respond_to?(:mouse_motion)
+
+        :drag
       end
 
       # Expands a relative theme path against the app root (or the current working directory
@@ -186,6 +203,12 @@ module Charming
     # `coalesce_input` DSL). Read by the Runtime at startup.
     def coalesce_input?
       self.class.coalesce_input == true
+    end
+
+    # The mouse motion reporting mode for this app (see the class-level `mouse_motion`
+    # DSL). Read by the Runtime at startup.
+    def mouse_motion
+      self.class.mouse_motion
     end
 
     private

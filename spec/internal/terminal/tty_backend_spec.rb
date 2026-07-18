@@ -244,6 +244,28 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
     expect(output.string.scan("\e[?1000h").length).to eq(1)
   end
 
+  it "does not enable all-motion tracking by default" do
+    output = StringIO.new
+    backend = described_class.new(input: StringIO.new, output: output)
+
+    backend.enable_mouse_tracking
+    backend.disable_mouse_tracking
+
+    expect(output.string).not_to include("\e[?1003h")
+    expect(output.string).not_to include("\e[?1003l")
+  end
+
+  it "enables and disables all-motion (hover) tracking when requested" do
+    output = StringIO.new
+    backend = described_class.new(input: StringIO.new, output: output)
+
+    backend.enable_mouse_tracking(motion: :all)
+    backend.disable_mouse_tracking
+
+    expect(output.string).to include("\e[?1003h")
+    expect(output.string).to include("\e[?1003l")
+  end
+
   describe "#query_background_color" do
     let(:replying_input) do
       Class.new(StringIO) do

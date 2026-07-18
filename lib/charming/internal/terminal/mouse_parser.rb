@@ -5,21 +5,23 @@ module Charming
     module Terminal
       # MouseParser parses raw terminal escape sequences into MouseEvent objects.
       # Supports both modern SGR sequences (the most common, used by current terminals)
-      # and the older 3-byte legacy sequences. The public API is class methods; no
-      # instance state is required.
+      # and the older 3-byte legacy sequences. Both encodings pack modifiers and motion
+      # into the button code: bit 2 shift, bit 3 alt/meta, bit 4 ctrl, bit 5 motion.
+      # SGR signals release with a final "m" instead of "M". The public API is class
+      # methods; no instance state is required.
       class MouseParser
-        # Matches an SGR-encoded mouse sequence: "\e[<button;col;row[mode]M"
-        SGR_PATTERN = /\e\[<(\d+);(\d+);(\d+)([HmMhCc]?)(M|m)/
+        # Matches an SGR-encoded mouse sequence: "\e[<button;col;row" + "M" (press) or "m" (release).
+        SGR_PATTERN = /\e\[<(\d+);(\d+);(\d+)(M|m)/
 
         # Matches the legacy 3-byte mouse sequence: "\e[M" followed by 3 bytes.
         LEGACY_PATTERN = /\e\[M(.{3})/
 
-        # Maps raw button codes to semantic symbols used by MouseEvent#button_name.
-        BUTTON_MAP = {
-          0 => :left, 1 => :middle, 2 => :right, 3 => :release,
-          64 => :scroll_up, 65 => :scroll_down,
-          66 => :scroll_up, 67 => :scroll_down
-        }.freeze
+        # Button-code bits for modifier keys and motion (shared by SGR and legacy).
+        SHIFT_BIT = 4
+        ALT_BIT = 8
+        CTRL_BIT = 16
+        MOTION_BIT = 32
+        FLAG_BITS = SHIFT_BIT | ALT_BIT | CTRL_BIT | MOTION_BIT
 
         # Returns true when *raw* looks like a recognizable mouse sequence (SGR or legacy).
         # Lets the TTYBackend short-circuit and dispatch to MouseParser without allocation.
@@ -41,23 +43,13 @@ module Charming
           nil
         end
 
-        # Parses an SGR-format mouse sequence. Decodes button code, 1-based (col, row),
-        # the modifier "C" (ctrl) and "M" (shift) suffix, and the highlight alt (256-color)
-        # sequence as a heuristic for the alt modifier.
+        # Parses an SGR-format mouse sequence: button code with flag bits, 1-based
+        # (col, row), and the press/release final byte.
         def self.parse_sgr(raw)
           match = raw.match(SGR_PATTERN)
           return nil unless match
 
-          button_code = match[1].to_i
-          col = match[2].to_i - 1
-          row = match[3].to_i - 1
-          mode = match[4]
-
-          ctrl = mode == "C"
-          alt = raw.include?("\e[38;5;")
-          shift = mode == "M"
-
-          Events::MouseEvent.new(button: button_code, x: col, y: row, ctrl: ctrl, alt: alt, shift: shift)
+          build_event(match[1].to_i, match[2].to_i - 1, match[3].to_i - 1, release: match[4] == "m")
         end
 
         # Parses a legacy 3-byte mouse sequence. Each of the 3 bytes has 32 subtracted
@@ -69,12 +61,25 @@ module Charming
           bytes = match[1].bytes
           return nil unless bytes.length == 3
 
-          button_code = bytes[0] - 32
-          col = bytes[1] - 32
-          row = bytes[2] - 32
-
-          Events::MouseEvent.new(button: button_code, x: col, y: row)
+          build_event(bytes[0] - 32, bytes[1] - 32, bytes[2] - 32, release: false)
         end
+
+        # Builds a MouseEvent from a raw button *code*, splitting out the modifier
+        # and motion flag bits so `button` carries only the button/wheel identity.
+        def self.build_event(code, x, y, release:)
+          Events::MouseEvent.new(
+            button: code & ~FLAG_BITS,
+            x: x,
+            y: y,
+            shift: code.anybits?(SHIFT_BIT),
+            alt: code.anybits?(ALT_BIT),
+            ctrl: code.anybits?(CTRL_BIT),
+            motion: code.anybits?(MOTION_BIT),
+            release: release
+          )
+        end
+
+        private_class_method :build_event
       end
     end
   end

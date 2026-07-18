@@ -270,10 +270,15 @@ module Charming
       detect_background
       @backend.enter_alt_screen
       @backend.hide_cursor
-      @backend.enable_mouse_tracking if @backend.respond_to?(:enable_mouse_tracking)
+      @backend.enable_mouse_tracking(motion: mouse_motion) if @backend.respond_to?(:enable_mouse_tracking)
       @backend.enable_bracketed_paste if @backend.respond_to?(:enable_bracketed_paste)
       @backend.enable_focus_reporting if @backend.respond_to?(:enable_focus_reporting)
       @backend.install_resize_handler if @backend.respond_to?(:install_resize_handler)
+    end
+
+    # The app's configured mouse motion mode (:drag unless the app opts into :all hover).
+    def mouse_motion
+      @application.respond_to?(:mouse_motion) ? @application.mouse_motion : :drag
     end
 
     # Feeds the terminal's OSC 11 background reply (when the backend can obtain

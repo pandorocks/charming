@@ -107,10 +107,11 @@ module Charming
           [@width, @height]
         end
 
-        # Marks the backend as having mouse tracking enabled and records the operation.
-        def enable_mouse_tracking
+        # Marks the backend as having mouse tracking enabled and records the operation
+        # with the requested motion mode (:drag or :all).
+        def enable_mouse_tracking(motion: :drag)
           @mouse_enabled = true
-          @operations << :enable_mouse_tracking
+          @operations << [:enable_mouse_tracking, motion]
         end
 
         # Marks the backend as having mouse tracking disabled and records the operation.

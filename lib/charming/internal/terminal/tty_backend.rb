@@ -165,13 +165,15 @@ module Charming
 
         # Emits the ANSI sequences that enable terminal mouse reporting (press, motion, SGR).
         # Idempotent: skipped when mouse tracking is already enabled.
-        def enable_mouse_tracking
+        def enable_mouse_tracking(motion: :drag)
           return if @mouse_enabled
 
           write_control("\e[?1000h")
           write_control("\e[?1002h")
+          write_control("\e[?1003h") if motion == :all
           write_control("\e[?1006h")
           @mouse_enabled = true
+          @mouse_motion = motion
         end
 
         # Emits the ANSI sequences that disable terminal mouse reporting. Idempotent.
@@ -180,7 +182,7 @@ module Charming
 
           write_control("\e[?1000l")
           write_control("\e[?1002l")
-          write_control("\e[?1003l")
+          write_control("\e[?1003l") if @mouse_motion == :all
           write_control("\e[?1006l")
           @mouse_enabled = false
         end
