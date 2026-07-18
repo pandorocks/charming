@@ -24,10 +24,12 @@ module Charming
         @pending_event = nil
       end
 
-      # Pumps events, yielding each to the caller. Stops when the block returns
-      # :quit, when the interrupt check returns true, or when a test backend is
-      # exhausted. Closes the task queue on the way out so producer threads
-      # can't block on a loop that is no longer draining them.
+      # Pumps events, yielding each to the caller together with a flag saying
+      # whether another event is already due (letting the caller coalesce a
+      # burst into one repaint). Stops when the block returns :quit, when the
+      # interrupt check returns true, or when a test backend is exhausted.
+      # Closes the task queue on the way out so producer threads can't block on
+      # a loop that is no longer draining them.
       def run
         loop do
           break if @interrupted.call
@@ -37,7 +39,7 @@ module Charming
             break if backend_exhausted?
             next
           end
-          break if yield(event) == :quit
+          break if yield(event, more_ready?) == :quit
         end
       ensure
         @task_queue.close
@@ -54,6 +56,13 @@ module Charming
       # The next due event in priority order: task results, then timers, then input.
       def next_event
         next_task_event || next_timer_event || next_input_event
+      end
+
+      # True when another task result is already queued. Only the task queue is
+      # considered: timer ticks drive animations and must each paint, and key
+      # floods are handled separately by input coalescing.
+      def more_ready?
+        !@task_queue.empty?
       end
 
       # Pops a task event from the thread-safe queue if one is available.

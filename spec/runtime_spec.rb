@@ -406,6 +406,44 @@ RSpec.describe Charming::Runtime do
     expect(backend.operations).to include([:read_event, described_class::DEFAULT_READ_TIMEOUT])
   end
 
+  it "coalesces a burst of ready task events into a single repaint" do
+    task_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      on_task :first, action: :landed
+      on_task :second, action: :landed
+      on_task :third, action: :landed
+
+      def show
+        unless session[:started]
+          session[:started] = true
+          run_task(:first) { 1 }
+          run_task(:second) { 2 }
+          run_task(:third) { 3 }
+        end
+        render "Loading"
+      end
+
+      def landed
+        session[:landed] = session[:landed].to_i + 1
+        render "Landed: #{session[:landed]}"
+      end
+    end
+    stub_const("BurstTaskRuntimeSpecController", task_controller)
+    task_app = Class.new(Charming::Application) do
+      routes do
+        root "burst_task_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [nil, Charming::Events::KeyEvent.new(key: :q)]
+    )
+
+    described_class.new(task_app.new, backend: backend, task_executor: Charming::Tasks::InlineExecutor).run
+
+    # All three queued task results dispatch, but only the final state paints.
+    expect(backend.frames).to eq(["Loading", "Landed: 3"])
+  end
+
   it "dispatches inline task results before backend input" do
     task_controller = Class.new(Charming::Controller) do
       key "q", :quit

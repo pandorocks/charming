@@ -32,7 +32,7 @@ module Charming
       install_exit_hook
       with_raw_input do
         render(initial_response)
-        @event_loop.run { |event| process(event) }
+        @event_loop.run { |event, more_ready| process(event, flush: !more_ready) }
       ensure
         restore_signal_handlers
         @task_executor&.shutdown(timeout: 2.0)
@@ -70,8 +70,11 @@ module Charming
 
     # Handles a single event. Returns :quit to stop the loop, nil otherwise.
     # While an error screen is showing, only key events are honored: q quits,
-    # any other key dismisses and re-renders the current route.
-    def process(event)
+    # any other key dismisses and re-renders the current route. When *flush* is
+    # false (more events are already due), the response is held so a burst of
+    # task/timer events paints once with the final state; held escapes are
+    # carried forward in order so none are lost.
+    def process(event, flush: true)
       return process_error_event(event) if @error
       return :quit if unbound_interrupt?(event)
 
@@ -80,13 +83,29 @@ module Charming
         response = dispatch_event(event)
         response = resolve_response(response) if response
       end
-      return unless response
+      return flush_pending if response.nil?
       return :quit if response.quit?
 
-      render(attach_escapes(response, escapes))
-      nil
+      hold_response(response, escapes)
+      flush ? flush_pending : nil
     rescue => e
+      @pending_response = nil
       render(error_response(e))
+      nil
+    end
+
+    # Replaces the held response with *response*, prepending any escapes held
+    # from earlier events in the burst so they still flush in order.
+    def hold_response(response, escapes)
+      held = @pending_response&.escapes || []
+      @pending_response = response.with(escapes: held + response.escapes + escapes)
+    end
+
+    # Renders the held response, if any. Always returns nil (the loop's "keep going").
+    def flush_pending
+      response = @pending_response
+      @pending_response = nil
+      render(response) if response
       nil
     end
 
