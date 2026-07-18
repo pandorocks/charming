@@ -59,7 +59,7 @@ module Charming
         end
 
         def pad_line(line, target_width)
-          line + (" " * [target_width - UI::Width.measure(line), 0].max)
+          UI::Width.pad_to(line, target_width)
         end
 
         def ansi?(token)

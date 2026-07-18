@@ -259,8 +259,7 @@ module Charming
       def render_line(line)
         return line unless width
 
-        clipped = UI.visible_slice(line, 0, width)
-        clipped + (" " * [width - UI::Width.measure(clipped), 0].max)
+        UI::Width.pad_to(UI.visible_slice(line, 0, width), width)
       end
 
       # Adjusts the top-visible offset so the cursor row is in view. Scrolling is performed

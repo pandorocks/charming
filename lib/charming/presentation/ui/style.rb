@@ -100,8 +100,7 @@ module Charming
       # max display width of the lines.
       def target_content_width(lines)
         explicit_width = @options[:width]
-        natural_width = lines.map { |line| Width.measure(line) }.max || 0
-        explicit_width || natural_width
+        explicit_width || Width.widest(lines)
       end
 
       # Clips *line* to *width* display columns, preserving ANSI styling where possible.
@@ -124,7 +123,7 @@ module Charming
       # line (horizontal).
       def apply_padding(lines)
         top, right, bottom, left = @options.fetch(:padding)
-        inner_width = lines.map { |line| Width.measure(line) }.max || 0
+        inner_width = Width.widest(lines)
         empty = " " * (left + inner_width + right)
         padded = lines.map do |line|
           pad_line(line, inner_width, left, right)
@@ -143,7 +142,7 @@ module Charming
 
       # Pads a single line to *inner_width*, with *left* and *right* padding spaces.
       def pad_line(line, inner_width, left, right)
-        (" " * left) + line + (" " * (inner_width - Width.measure(line) + right))
+        (" " * left) + Width.pad_to(line, inner_width) + (" " * right)
       end
 
       # Builds a BorderPainter configured for the current border options.
@@ -158,7 +157,7 @@ module Charming
 
       # Returns the natural display width of the longest line in *lines*.
       def content_width(lines)
-        lines.map { |line| Width.measure(line) }.max || 0
+        Width.widest(lines)
       end
 
       # Applies the active ANSI attribute/foreground/background codes to *value*.

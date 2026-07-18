@@ -154,7 +154,7 @@ module Charming
       end
 
       def widest_ellipsis_width
-        @widest_ellipsis_width ||= ELLIPSIS_FRAMES.map { |frame| UI::Width.measure(frame) }.max
+        @widest_ellipsis_width ||= UI::Width.widest(ELLIPSIS_FRAMES)
       end
 
       # Interpolates between gradient[0] and gradient[1] at the fractional +position+ (0.0 to 1.0).

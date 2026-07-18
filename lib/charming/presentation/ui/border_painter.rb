@@ -25,7 +25,7 @@ module Charming
         left = @sides.include?(:left) ? render_border(@border.vertical) : ""
         right = @sides.include?(:right) ? render_border(@border.vertical) : ""
 
-        "#{left}#{line}#{" " * (width - Width.measure(line))}#{right}"
+        "#{left}#{Width.pad_to(line, width)}#{right}"
       end
 
       def top_border(horizontal)

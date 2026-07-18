@@ -30,8 +30,7 @@ module Charming
       end
 
       def table_cell(row, width, index)
-        value = row[index].to_s
-        " #{value}#{" " * [width - UI::Width.measure(value), 0].max} "
+        " #{UI::Width.pad_to(row[index].to_s, width)} "
       end
 
       def table_separator
@@ -40,7 +39,7 @@ module Charming
 
       def widths
         @widths ||= Array.new(column_count) do |index|
-          rows.map { |row| UI::Width.measure(row[index].to_s) }.max || 0
+          UI::Width.widest(rows.map { |row| row[index].to_s })
         end
       end
 

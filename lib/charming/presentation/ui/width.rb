@@ -44,6 +44,17 @@ module Charming
       def strip_ansi(value)
         value.to_s.gsub(ANSI_PATTERN, "")
       end
+
+      # Pads *line* with trailing spaces to *width* display columns. Lines already at
+      # or beyond the target are returned unchanged.
+      def pad_to(line, width)
+        line + (" " * [width - measure(line), 0].max)
+      end
+
+      # The maximum display width across *lines*; 0 when there are none.
+      def widest(lines)
+        lines.map { |line| measure(line) }.max || 0
+      end
     end
   end
 end

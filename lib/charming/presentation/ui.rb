@@ -63,13 +63,13 @@ module Charming
 
     # Measures the displayed (visual) width of each normalised block, returning an array of integer widths.
     def block_widths(blocks)
-      blocks.map { |lines| lines.map { |line| Width.measure(line) }.max || 0 }
+      blocks.map { |lines| Width.widest(lines) }
     end
 
     # Returns the maximum visual character width across all *lines*, accounting for multi-column characters
     # (e.g., full-width CJK glyphs) and invisible ANSI escape sequences.
     def block_width(lines)
-      lines.map { |line| Width.measure(line) }.max || 0
+      Width.widest(lines)
     end
 
     # Returns the height in rows of each normalised block, taking the maximum across all blocks.
@@ -81,8 +81,7 @@ module Charming
     # every segment to its corresponding *width* in spaces. Returns the assembled array of padded segments.
     def horizontal_line(blocks, widths, index)
       blocks.each_with_index.map do |lines, block_index|
-        line = lines[index] || ""
-        line + (" " * (widths[block_index] - Width.measure(line)))
+        Width.pad_to(lines[index] || "", widths[block_index])
       end
     end
   end

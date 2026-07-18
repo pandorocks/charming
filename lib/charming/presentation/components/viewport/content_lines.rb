@@ -18,7 +18,7 @@ module Charming
         end
 
         def display_width
-          lines.map { |line| UI::Width.measure(line) }.max || 0
+          UI::Width.widest(lines)
         end
 
         private
