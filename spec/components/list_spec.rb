@@ -127,4 +127,51 @@ RSpec.describe Charming::Components::List do
     mouse = Charming::Events::MouseEvent.new(button: 0, x: 0, y: 1)
     expect(list.handle_mouse(mouse)).to be_nil
   end
+
+  describe "filtering" do
+    it "narrows items with fuzzy matching, best match first" do
+      list = described_class.new(items: ["Open palette", "Close panel", "Save file"], filter: "pal")
+
+      expect(list.items).to eq(["Open palette", "Close panel"])
+      expect(list.selected_item).to eq("Open palette")
+    end
+
+    it "navigates and selects within the filtered view" do
+      list = described_class.new(items: ["Open palette", "Close panel", "Save file"], filter: "pal")
+
+      list.handle_key(Charming::Events::KeyEvent.new(key: :down))
+
+      expect(list.selected_item).to eq("Close panel")
+    end
+
+    it "updates the filter after construction, reclamping the selection" do
+      list = described_class.new(items: %w[Alpha Beta Gamma], selected_index: 2)
+
+      list.filter = "beta"
+
+      expect(list.items).to eq(%w[Beta])
+      expect(list.selected_item).to eq("Beta")
+    end
+
+    it "clears the filter with nil" do
+      list = described_class.new(items: %w[Alpha Beta], filter: "beta")
+
+      list.filter = nil
+
+      expect(list.items).to eq(%w[Alpha Beta])
+    end
+
+    it "matches against the custom label" do
+      item = Struct.new(:name)
+      list = described_class.new(items: [item.new("Ruby"), item.new("Go")], filter: "go", label: :name.to_proc)
+
+      expect(list.items.map(&:name)).to eq(%w[Go])
+    end
+
+    it "renders only the filtered items" do
+      list = described_class.new(items: %w[Alpha Beta], filter: "beta")
+
+      expect(list.render).not_to include("Alpha")
+    end
+  end
 end

@@ -19,20 +19,38 @@ module Charming
         end: :move_end
       }.freeze
 
-      # The item array and the currently selected index within it.
-      attr_reader :items, :selected_index
+      # The currently selected index (within the filtered view) and active filter query.
+      attr_reader :selected_index, :filter
 
       # *items* is the array of selectable objects. *selected_index* defaults to 0.
       # *height* optionally constrains the visible window; *label* is a callable that
       # extracts the display string from an item (defaults to `to_s`).
       # *keymap* selects the keybinding style (`:vim` enables h/j/k/l → left/down/up/right).
-      def initialize(items:, selected_index: 0, height: nil, label: nil, theme: nil, keymap: :vim)
+      # *filter* optionally narrows items by fuzzy-matching the label (see FuzzyMatcher);
+      # navigation, rendering, and selection all operate on the filtered view.
+      def initialize(items:, selected_index: 0, height: nil, label: nil, theme: nil, keymap: :vim, filter: nil)
         super(theme: theme)
-        @items = items
+        @source_items = items
         @selected_index = selected_index
         @height = height
         @label = label || :to_s.to_proc
         @keymap = keymap
+        @filter = filter
+        clamp_position
+      end
+
+      # The visible items: the source list narrowed by the active filter (best
+      # fuzzy match first), or the full source list when no filter is set.
+      def items
+        return @source_items if filter.nil? || filter.to_s.empty?
+
+        FuzzyMatcher.filter(filter, @source_items, &@label)
+      end
+
+      # Replaces the filter query (nil clears it) and reclamps the selection to
+      # the narrowed view.
+      def filter=(query)
+        @filter = query
         clamp_position
       end
 
