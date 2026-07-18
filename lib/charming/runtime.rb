@@ -264,14 +264,26 @@ module Charming
     end
 
     # Enters an alternative screen buffer, hides the cursor, and installs
-    # a terminal resize signal handler if supported by the backend.
+    # a terminal resize signal handler if supported by the backend. Also asks
+    # the terminal for its background color so adaptive colors resolve correctly.
     def setup_terminal
+      detect_background
       @backend.enter_alt_screen
       @backend.hide_cursor
       @backend.enable_mouse_tracking if @backend.respond_to?(:enable_mouse_tracking)
       @backend.enable_bracketed_paste if @backend.respond_to?(:enable_bracketed_paste)
       @backend.enable_focus_reporting if @backend.respond_to?(:enable_focus_reporting)
       @backend.install_resize_handler if @backend.respond_to?(:install_resize_handler)
+    end
+
+    # Feeds the terminal's OSC 11 background reply (when the backend can obtain
+    # one) into UI::Background so adaptive colors resolve against reality rather
+    # than the dark-background default.
+    def detect_background
+      return unless @backend.respond_to?(:query_background_color)
+
+      background = @backend.query_background_color
+      UI::Background.assume = background if background
     end
 
     # Keeps input raw/no-echo across rendering and dispatch, not just during reads.

@@ -15,6 +15,26 @@ RSpec.describe Charming::UI::Style do
     expect(truecolor).to eq("\e[48;2;17;34;51mHi\e[0m")
   end
 
+  it "expands #rgb short hex colors" do
+    output = described_class.new.foreground("#a1c").render("Hi")
+
+    expect(output).to eq("\e[38;2;170;17;204mHi\e[0m")
+  end
+
+  it "resolves adaptive colors against the terminal background" do
+    color = Charming::UI.adaptive(light: :black, dark: :white)
+
+    Charming::UI::Background.assume = :dark
+    on_dark = described_class.new.foreground(color).render("Hi")
+    Charming::UI::Background.assume = :light
+    on_light = described_class.new.foreground(color).render("Hi")
+
+    expect(on_dark).to eq("\e[37mHi\e[0m")
+    expect(on_light).to eq("\e[30mHi\e[0m")
+  ensure
+    Charming::UI::Background.assume = nil
+  end
+
   it "pads content" do
     output = described_class.new.padding(1, 2).render("Hi")
 

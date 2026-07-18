@@ -9,6 +9,19 @@ RSpec.describe Charming::Markdown::Renderer do
     Charming::UI::Width.strip_ansi(value)
   end
 
+  it "picks the dark or light style for :auto based on the terminal background" do
+    Charming::UI::Background.assume = :dark
+    dark_auto = Charming::Markdown::StyleConfig.from(:auto)
+    Charming::UI::Background.assume = :light
+    light_auto = Charming::Markdown::StyleConfig.from(:auto)
+
+    expect(dark_auto[:document].color).to eq(Charming::Markdown::StyleConfig.from(:dark)[:document].color)
+    expect(light_auto[:document].color).to eq(Charming::Markdown::StyleConfig.from(:light)[:document].color)
+    expect(dark_auto[:document].color).not_to eq(light_auto[:document].color)
+  ensure
+    Charming::UI::Background.assume = nil
+  end
+
   it "renders CommonMark blocks with the Glamour-inspired dark style" do
     output = render_markdown(<<~MARKDOWN, width: 40, syntax_highlighting: false)
       # Title

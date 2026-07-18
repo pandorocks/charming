@@ -107,6 +107,22 @@ module Charming
           @bracketed_paste = false
         end
 
+        # The OSC 11 background-color query and the terminators a reply may end with.
+        BACKGROUND_QUERY = "\e]11;?\e\\"
+        OSC_TERMINATORS = ["\a", "\e\\"].freeze
+
+        # Queries the terminal's background color via OSC 11 and classifies the
+        # reply as :dark or :light. Returns nil when the input cannot be polled,
+        # the terminal stays silent past *timeout*, or the reply is unparseable.
+        # Call before the event loop starts — a reply arriving later would be
+        # read as keyboard input.
+        def query_background_color(timeout: 0.15)
+          return nil unless @input.respond_to?(:wait_readable)
+
+          write_control(BACKGROUND_QUERY)
+          UI::Background.parse_osc11(read_reply(timeout))
+        end
+
         # Keeps terminal input in raw/no-echo mode for the duration of a TUI run. Reading a
         # single keypress in raw mode is not enough: keys pressed while rendering or dispatching
         # events can otherwise be echoed into the alternate screen before the next read.
@@ -234,6 +250,26 @@ module Charming
         def size = [TTY::Screen.width, TTY::Screen.height]
 
         private
+
+        # Accumulates an OSC reply from the input until a terminator arrives or
+        # *timeout* elapses. Returns whatever was read (possibly "").
+        def read_reply(timeout)
+          reply = +""
+          deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + timeout
+          while (remaining = deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)) > 0
+            break unless @input.wait_readable(remaining)
+            break if append_reply_chunk(reply).nil?
+            break if OSC_TERMINATORS.any? { |terminator| reply.include?(terminator) }
+          end
+          reply
+        end
+
+        # Reads one available chunk into *reply*; nil at EOF or read error.
+        def append_reply_chunk(reply)
+          reply << @input.readpartial(64)
+        rescue IOError, SystemCallError
+          nil
+        end
 
         # True when the SIGWINCH flag has been set since the last read_event.
         def resized?

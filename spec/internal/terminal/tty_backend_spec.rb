@@ -243,4 +243,36 @@ RSpec.describe Charming::Internal::Terminal::TTYBackend do
 
     expect(output.string.scan("\e[?1000h").length).to eq(1)
   end
+
+  describe "#query_background_color" do
+    let(:replying_input) do
+      Class.new(StringIO) do
+        def wait_readable(_timeout = nil)
+          !eof?
+        end
+      end
+    end
+
+    it "sends an OSC 11 query and classifies the terminal's reply" do
+      input = replying_input.new("\e]11;rgb:1c1c/1c1c/2c2c\e\\")
+      output = StringIO.new
+      backend = described_class.new(input: input, output: output)
+
+      expect(backend.query_background_color).to eq(:dark)
+      expect(output.string).to include("\e]11;?\e\\")
+    end
+
+    it "returns nil when the terminal does not reply" do
+      input = replying_input.new("")
+      backend = described_class.new(input: input, output: StringIO.new)
+
+      expect(backend.query_background_color(timeout: 0.01)).to be_nil
+    end
+
+    it "returns nil when the input cannot be polled" do
+      backend = described_class.new(input: StringIO.new, output: StringIO.new)
+
+      expect(backend.query_background_color).to be_nil
+    end
+  end
 end

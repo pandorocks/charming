@@ -57,8 +57,10 @@ module Charming
       end
 
       # Resolves *color* to SGR codes, downconverting to the terminal's capability
-      # (see UI::ColorSupport): truecolor → 256 → 16 → none.
+      # (see UI::ColorSupport): truecolor → 256 → 16 → none. Adaptive colors
+      # resolve against the terminal background first.
       def color_codes(color, foreground:)
+        color = color.resolve if color.respond_to?(:resolve)
         return [] unless color
         return [] if ColorSupport.level == :none
         return indexed_color_code(color, foreground: foreground) if color.is_a?(Integer)
@@ -82,7 +84,8 @@ module Charming
 
       def truecolor_codes(color, foreground:)
         hex = color.to_s.delete_prefix("#")
-        raise ArgumentError, "truecolor must be #rrggbb" unless hex.match?(/\A[0-9a-fA-F]{6}\z/)
+        hex = hex.chars.map { |digit| digit * 2 }.join if hex.match?(/\A[0-9a-fA-F]{3}\z/)
+        raise ArgumentError, "truecolor must be #rgb or #rrggbb" unless hex.match?(/\A[0-9a-fA-F]{6}\z/)
         return [foreground ? 38 : 48, 5, ColorSupport.hex_to_256(hex)] if ColorSupport.level == :color256
         return basic_color_code(ColorSupport.hex_to_16(hex), foreground: foreground) if ColorSupport.level == :color16
 

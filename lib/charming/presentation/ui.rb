@@ -13,6 +13,12 @@ module Charming
       Style.new
     end
 
+    # Builds a color that resolves to *light* or *dark* at render time based on
+    # the terminal background. Usable anywhere a color is accepted.
+    def adaptive(light:, dark:)
+      AdaptiveColor.new(light: light, dark: dark)
+    end
+
     # Horizontally concatenates *blocks* into a single multi-line string, padding each block's
     # rows to match the widest row. A *gap* argument (in spaces) can separate adjacent columns.
     # *align* positions shorter blocks along the cross axis: `:top` (default), `:center`,

@@ -185,6 +185,7 @@ module Charming
 
       def self.builtin(name)
         key = name.to_s.tr("-", "_").to_sym
+        key = UI::Background.dark? ? :dark : :light if key == :auto
         raise ArgumentError, "unknown markdown style: #{name.inspect}" unless BUILT_INS.key?(key)
 
         from_hash(BUILT_INS.fetch(key))
