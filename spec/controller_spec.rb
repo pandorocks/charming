@@ -414,6 +414,54 @@ RSpec.describe Charming::Controller do
     expect(response).to be_nil
   end
 
+  it "runs action hooks around timer actions" do
+    controller = Class.new(described_class) do
+      timer :refresh, every: 0.5, action: :refresh
+      before_action :prepare
+
+      def refresh
+        render "prepared: #{@prepared}"
+      end
+
+      private
+
+      def prepare
+        @prepared = true
+      end
+    end
+
+    response = controller.new(
+      application: application,
+      event: Charming::Events::TimerEvent.new(name: :refresh, now: 1.5)
+    ).dispatch_timer
+
+    expect(response.body).to eq("prepared: true")
+  end
+
+  it "routes timer action errors through rescue_from" do
+    controller = Class.new(described_class) do
+      timer :refresh, every: 0.5, action: :refresh
+      rescue_from RuntimeError, with: :report_error
+
+      def refresh
+        raise "boom"
+      end
+
+      private
+
+      def report_error(error)
+        render "rescued: #{error.message}"
+      end
+    end
+
+    response = controller.new(
+      application: application,
+      event: Charming::Events::TimerEvent.new(name: :refresh, now: 1.5)
+    ).dispatch_timer
+
+    expect(response.body).to eq("rescued: boom")
+  end
+
   describe "on_task" do
     it "registers task bindings keyed by symbol" do
       controller = Class.new(described_class) do

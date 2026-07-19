@@ -79,12 +79,15 @@ module Charming
       nil
     end
 
-    # Timer event dispatcher: looks up the named action in timer bindings.
+    # Timer event dispatcher: looks up the named action in timer bindings and runs it
+    # with the full hook chain. Unlike #dispatch there is no render("") fallback — a
+    # timer action that renders nothing yields a nil response, so silent ticks skip
+    # the repaint instead of blanking the screen.
     def dispatch_timer
       b = self.class.timer_bindings[event.name.to_sym]
       return nil unless b
 
-      public_send(b.action)
+      run_action_with_hooks(b.action)
       response
     end
 
