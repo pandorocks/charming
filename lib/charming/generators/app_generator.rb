@@ -101,8 +101,18 @@ module Charming
           database_require: database_require,
           model_loader: model_loader,
           env_setup: env_setup,
-          database_spec_setup: database_spec_setup
+          database_spec_setup: database_spec_setup,
+          database_setup: database_setup
         }
+      end
+
+      # README instructions for preparing the database before first run. Empty for
+      # non-database apps.
+      def database_setup
+        return "" unless database?
+
+        "Set up the database (create + load schema + seed):\n\n" \
+          "```sh\nbundle exec charming db:setup\n```\n\n"
       end
 
       # Pins CHARMING_ENV to "test" before the app (and its database config) loads, so

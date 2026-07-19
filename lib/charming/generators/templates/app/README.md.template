@@ -2,7 +2,7 @@
 
 A Charming terminal user interface.
 
-Run it with:
+__DATABASE_SETUP__Run it with:
 
 ```sh
 bundle exec __APP_SNAKE__

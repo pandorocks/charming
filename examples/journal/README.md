@@ -6,8 +6,8 @@ browse and reread them, track your streak, and export everything to a Markdown f
 
 ```sh
 bundle install
-bundle exec ruby -I../../lib ../../exe/charming db:setup   # create + migrate + seed
-bundle exec exe/journal
+bundle exec charming db:setup   # create + load schema + seed
+bundle exec journal
 ```
 
 ## Keys
