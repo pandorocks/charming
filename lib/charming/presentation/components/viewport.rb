@@ -25,7 +25,10 @@ module Charming
       # *content* may be a string, an array of lines, or any object responding to `render`.
       # *width* and *height* constrain the visible window; *offset* is the top-visible row
       # and *column* is the left-visible column. *wrap* enables soft-wrapping of long lines.
-      def initialize(content:, width: nil, height: nil, offset: 0, column: 0, wrap: false, keymap: :vim)
+      # *follow* pins the viewport to the bottom of the content regardless of *offset*, so
+      # callers that rebuild each event stick to new content; pair with `at_bottom?` to
+      # decide whether to keep following after the user scrolls.
+      def initialize(content:, width: nil, height: nil, offset: 0, column: 0, wrap: false, keymap: :vim, follow: false)
         super()
         @content = content
         @width = width
@@ -34,6 +37,7 @@ module Charming
         @wrap = wrap
         @keymap = keymap
         position.clamp(bounds)
+        position.move_to(max_offset, bounds) if follow
       end
 
       # Renders the visible window of content as a multi-line string.
@@ -49,6 +53,12 @@ module Charming
       # The current left-visible column.
       def column
         @position.column
+      end
+
+      # True when the last content row is visible. Callers persisting follow mode
+      # store this after key dispatch to decide whether the next build follows.
+      def at_bottom?
+        offset >= max_offset
       end
 
       # Handles mouse events: scroll wheel adjusts the row offset, click moves the top

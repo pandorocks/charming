@@ -167,6 +167,50 @@ RSpec.describe Charming::Components::Viewport do
     expect(viewport.handle_key(key(:enter))).to be_nil
   end
 
+  it "pins the offset to the bottom when following" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2, offset: 0, follow: true)
+
+    expect(viewport.render).to eq("Three\nFour")
+    expect(viewport).to be_at_bottom
+  end
+
+  it "keeps a stale offset pinned to grown content when following" do
+    lines = (1..10).map { |n| "Line #{n}" }.join("\n")
+    viewport = described_class.new(content: lines, height: 3, offset: 2, follow: true)
+
+    expect(viewport.offset).to eq(7)
+  end
+
+  it "leaves the offset alone when not following" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2, offset: 1)
+
+    expect(viewport.offset).to eq(1)
+    expect(viewport).not_to be_at_bottom
+  end
+
+  it "reports leaving the bottom after scrolling up" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2, follow: true)
+
+    viewport.handle_key(key(:up))
+
+    expect(viewport).not_to be_at_bottom
+    expect(viewport.offset).to eq(1)
+  end
+
+  it "reports reaching the bottom after scrolling back down" do
+    viewport = described_class.new(content: "One\nTwo\nThree\nFour", height: 2, offset: 0)
+
+    viewport.handle_key(key(:page_down))
+
+    expect(viewport).to be_at_bottom
+  end
+
+  it "is at the bottom when content fits the viewport" do
+    viewport = described_class.new(content: "One", height: 3)
+
+    expect(viewport).to be_at_bottom
+  end
+
   it "scrolls vertically with mouse wheel events" do
     viewport = described_class.new(content: "One\nTwo\nThree", height: 2)
 
