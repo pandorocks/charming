@@ -40,43 +40,10 @@ module Charming
       response || render("")
     end
 
-    # Key event dispatch, in priority order:
-    # 1. Command palette (when open) consumes everything.
-    # 2. A focused text-capturing component (TextInput, TextArea, Form, …) gets
-    #    printable characters BEFORE key bindings — typing "q" into a field must
-    #    insert a q, not quit the app.
-    # 3. Global key bindings.
-    # 4. An overlay focus scope (a pushed modal) captures all remaining keys.
-    # 5. Sidebar keys (when focused), content bindings, then the focused component —
-    #    which sees Tab before ring traversal so forms can do field navigation.
+    # Key event dispatch. The precedence ladder (palette → focused text capture →
+    # global bindings → overlay → sidebar/content/component) lives in KeyDispatch.
     def dispatch_key
-      return dispatch_command_palette_key if command_palette_open?
-
-      if printable_text_event? && focused_component_captures_text?
-        return response if dispatch_to_focused_component == :handled
-      end
-
-      return dispatch(global_key_action) if global_key_action
-
-      if focus.overlay?
-        dispatch_to_focused_component
-        return response
-      end
-
-      return dispatch_sidebar_key if sidebar_focused?
-      return dispatch(content_key_action) if content_key_action
-
-      # Text-capturing components (forms, editors) own their remaining keys — Tab
-      # included, so forms do field navigation. Everything else keeps ring traversal
-      # ahead of the component.
-      if focused_component_captures_text?
-        return response if dispatch_to_focused_component == :handled
-        return response if dispatch_tab_traversal == :handled
-      else
-        return response if dispatch_tab_traversal == :handled
-        return response if dispatch_to_focused_component == :handled
-      end
-      nil
+      KeyDispatch.new(self).call
     end
 
     # Timer event dispatcher: looks up the named action in timer bindings and runs it
