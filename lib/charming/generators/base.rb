@@ -22,6 +22,11 @@ module Charming
       # Status output stream and destination directory accessor (subclasses use these).
       attr_reader :out, :destination
 
+      # True when overwriting existing files was requested (`--force`).
+      def force?
+        @force
+      end
+
       # Writes *content* to *path* (relative to the destination), creating intermediate
       # directories as needed. Raises Generators::Error when the file already exists and
       # *force* is false. Marks the file as executable when *executable:* is true.

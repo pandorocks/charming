@@ -1,5 +1,7 @@
 # Charming
 
+[![CI](https://github.com/pandorocks/charming/actions/workflows/main.yml/badge.svg)](https://github.com/pandorocks/charming/actions/workflows/main.yml)
+
 A Rails-inspired terminal user interface framework for **Ruby 4+**.
 
 Charming gives terminal apps familiar application structure: routes, controllers, state objects, templates, layouts, reusable components, themes, keyboard bindings, command palettes, timers, background tasks, cross-platform audio playback, inline image display (Kitty graphics protocol), system clipboard / desktop notifications / window title, braille charts and sparklines, and testable terminal backends.
@@ -39,7 +41,7 @@ The generator produces a Bundler gem with a Rails-like structure:
 app/controllers/                         # controller actions and input bindings
 app/state/                               # session-backed TUI state
 app/models/                              # optional Active Record models
-app/views/home/show_view.rb              # screen view classes
+app/views/                               # screen view classes
 app/views/layouts/application_layout.rb  # layout view class
 app/components/                          # reusable components
 config/routes.rb                         # route definitions
@@ -47,7 +49,17 @@ lib/my_app.rb                            # namespace loader (Zeitwerk)
 exe/my_app                               # executable entry point
 ```
 
-Generated apps include a sidebar/content layout, command palette, focus management, theme switching, and default key bindings for commands (`ctrl+p`) and quit (`q`).
+Generated apps start minimal. Until the app defines a route, it boots to a built-in welcome screen served from the gem itself (like Rails' welcome page) — generate your first screen and it disappears, with nothing to delete:
+
+```bash
+bundle exec charming generate screen home
+```
+
+Restore the full app chrome — sidebar/content layout, command palette (`ctrl+p`), focus management, and theme switching — with one command:
+
+```bash
+bundle exec charming generate layout --style sidebar
+```
 
 ## Development
 
@@ -65,4 +77,5 @@ bin/rspec             # run specs only
 bin/format            # auto-format with Standard Ruby
 bin/lint              # style checks with Standard Ruby
 bin/check             # run everything
+bin/ci                # what CI runs: specs, lint, eager-load check, gem build
 ```

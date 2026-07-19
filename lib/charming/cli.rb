@@ -5,6 +5,7 @@ module Charming
   # or database commands. Subcommands:
   # - `charming new NAME [--database sqlite3] [--force]` — scaffolds a new app
   # - `charming generate TYPE NAME [args]` — runs a sub-generator (controller, model, screen, view, component)
+  # - `charming generate layout [--style sidebar]` — restores the sidebar/theme/palette app chrome
   # - `charming db:COMMAND` — runs a database command (db:create, db:migrate, db:rollback, db:drop, db:seed, db:install)
   #
   # Generator errors are caught and printed to stderr; the process exits with status 1.
@@ -58,14 +59,24 @@ module Charming
       0
     end
 
+    # Generator types that take no positional NAME argument.
+    NAMELESS_GENERATORS = %w[layout].freeze
+
     # Builds the generator instance for the given *type*, popping the name from *args*.
     def generator(type, args, force)
-      name = args.shift || raise(Generators::Error, "Usage: charming generate #{type} NAME")
-      generator_class(type).new(name, args, out: out, destination: pwd, force: force)
+      generator_class(type).new(generator_name(type, args), args, out: out, destination: pwd, force: force)
+    end
+
+    # Pops the NAME argument for a generator *type*, or supplies a fixed name for
+    # nameless generators (e.g., layout targets the application layout).
+    def generator_name(type, args)
+      return "application" if NAMELESS_GENERATORS.include?(type)
+
+      args.shift || raise(Generators::Error, "Usage: charming generate #{type} NAME")
     end
 
     # Returns the generator class for a *type* string (controller, model, screen, view,
-    # component, migration).
+    # component, migration, layout).
     def generator_class(type)
       {
         "controller" => Generators::ControllerGenerator,
@@ -73,7 +84,8 @@ module Charming
         "screen" => Generators::ScreenGenerator,
         "view" => Generators::ViewGenerator,
         "component" => Generators::ComponentGenerator,
-        "migration" => Generators::MigrationGenerator
+        "migration" => Generators::MigrationGenerator,
+        "layout" => Generators::LayoutGenerator
       }.fetch(type) { raise Generators::Error, "Unknown generator: #{type}" }
     end
 

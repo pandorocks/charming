@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bundle install           # after checkout or gemspec changes
 bin/check                # full check: RSpec + Standard Ruby (default rake task)
+bin/ci                   # what CI runs: specs + lint + Zeitwerk eager-load check + gem build
 bin/rspec                # tests only (wraps `bundle exec rspec`)
 bin/lint                 # Standard Ruby style check
 bin/format               # Standard Ruby auto-format
@@ -46,7 +47,7 @@ The framework source under `lib/charming/` is organized as:
 - `internal/renderer/` — `full_repaint.rb` and friends.
 - `tasks/` — background work: `task.rb`, `inline_executor.rb`, `threaded_executor.rb`. Tasks emit `TaskEvent`s into the runtime loop.
 - `focus.rb` — focus traversal across components.
-- `generators/` — `charming new` + `charming generate {controller,screen,component,model,view}` scaffolds.
+- `generators/` — `charming new` + `charming generate {controller,screen,component,model,view,layout}` scaffolds (`layout` restores the opt-in sidebar/theme/palette chrome).
 - `cli.rb`, `database_commands.rb`, `database_installer.rb` — `exe/charming` CLI, including optional SQLite/ActiveRecord install for generated apps.
 
 ## Critical invariants

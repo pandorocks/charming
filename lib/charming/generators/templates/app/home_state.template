@@ -1,7 +1,0 @@
-# frozen_string_literal: true
-
-module __APP_CLASS__
-  class HomeState < ApplicationState
-    attribute :title, :string, default: "__APP_NAME__"
-  end
-end

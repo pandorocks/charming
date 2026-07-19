@@ -16,7 +16,7 @@ module Charming
       @task_queue = Thread::Queue.new
       @task_executor = build_task_executor(task_executor)
       @application.task_executor = @task_executor
-      @route = @application.routes.resolve("/")
+      @route = resolve_route("/")
       @screen = backend_screen
       @coalesce_input = @application.respond_to?(:coalesce_input?) && @application.coalesce_input?
       @event_loop = build_event_loop
@@ -281,9 +281,20 @@ module Charming
     def resolve_response(response)
       return response unless response.navigate?
 
-      @route = @application.routes.resolve(response.path)
+      @route = resolve_route(response.path)
       @event_loop.reset_timers(@route.controller_class.timer_bindings.values)
       dispatch(@route.action)
+    end
+
+    # Resolves *path* from the app's router. An unrouted "/" falls back to the app's
+    # first route, or to the built-in welcome screen when no routes are defined yet
+    # (like Rails' welcome page); other unrouted paths still raise.
+    def resolve_route(path)
+      @application.routes.resolve(path)
+    rescue KeyError
+      raise unless path == "/"
+
+      @application.routes.all.first || Welcome.route
     end
 
     # Derives Screen dimensions (width, height) from the terminal backend.

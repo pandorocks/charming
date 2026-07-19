@@ -22,16 +22,10 @@ module Charming
         ["lib/%<name>s/version.rb", "app/version.template", false],
         ["config/routes.rb", "app/routes.template", false],
         ["app/state/application_state.rb", "app/application_state.template", false],
-        ["app/state/home_state.rb", "app/home_state.template", false],
         ["app/controllers/application_controller.rb", "app/application_controller.template", false],
-        ["app/controllers/home_controller.rb", "app/home_controller.template", false],
         ["app/views/layouts/application_layout.rb", "app/layout.template", false],
-        ["app/views/home/show_view.rb", "app/view.template", false],
         ["app/components/.keep", "app/keep.template", false],
-        ["spec/spec_helper.rb", "app/spec_helper.template", false],
-        ["spec/state/home_state_spec.rb", "app/spec_state.template", false],
-        ["spec/controllers/home_controller_spec.rb", "app/spec_controller.template", false],
-        ["spec/views/home/show_view_spec.rb", "app/spec_view.template", false]
+        ["spec/spec_helper.rb", "app/spec_helper.template", false]
       ].freeze
 
       # The list of [relative-path, template-path, executable-flag] triples to render in
@@ -96,8 +90,6 @@ module Charming
           app_class: name.class_name,
           gemspec_attributes: gemspec_attributes,
           gemspec_dependencies: gemspec_dependencies,
-          controller_actions: controller_actions,
-          controller_helpers: controller_helpers,
           database_require: database_require,
           model_loader: model_loader,
           env_setup: env_setup,
@@ -183,21 +175,6 @@ module Charming
 
         "\n  spec.add_dependency \"activerecord\", \"~> 8.1\"\n" \
           "  spec.add_dependency \"sqlite3\", \"~> 2.0\""
-      end
-
-      # The body of the home controller's `show` action.
-      def controller_actions
-        "\n    def show\n" \
-          "      render :show, home: home, palette: command_palette\n" \
-          "    end"
-      end
-
-      # The body of the home controller's private `home` helper, prefixed by a blank line.
-      def controller_helpers
-        "\n\n    private\n\n" \
-          "    def home\n" \
-          "      state(:home, HomeState)\n" \
-          "    end\n"
       end
 
       # The `require_relative "../config/database"` line when the app is database-configured.

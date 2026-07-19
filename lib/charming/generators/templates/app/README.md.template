@@ -7,3 +7,17 @@ __DATABASE_SETUP__Run it with:
 ```sh
 bundle exec __APP_SNAKE__
 ```
+
+Until a route is defined the app boots to Charming's built-in welcome screen. Generate
+your first screen (and make it home with `root` in `config/routes.rb`):
+
+```sh
+bundle exec charming generate screen home
+```
+
+Add the sidebar layout, command palette (`ctrl+p`), and theme switching (screens generated
+with `charming generate screen` are reached through the command palette):
+
+```sh
+bundle exec charming generate layout --style sidebar
+```

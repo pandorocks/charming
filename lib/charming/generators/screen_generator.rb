@@ -152,35 +152,6 @@ module Charming
     end)
         insert_before_end(application_controller_path, command, "command", "  end")
       end
-
-      # Inserts *content* into *path* just before the line matching *end_line*. No-ops when
-      # the content is already present. Raises Error when the file or end-line is missing.
-      def insert_before_end(path, content, label, end_line)
-        raise Error, "Missing file: #{relative_path(path)}" unless File.exist?(path)
-
-        current = File.read(path)
-        return if current.include?(content)
-
-        lines = current.lines
-        index = insertion_index(lines, path, end_line)
-        lines.insert(index, "#{content}\n")
-        File.write(path, lines.join)
-        out.puts "insert #{label} #{relative_path(path)}"
-      end
-
-      # Returns the index of the last line in *lines* that matches *end_line* (the line
-      # just before which new content will be inserted). Raises Error when not found.
-      def insertion_index(lines, path, end_line)
-        index = lines.rindex { |line| line.chomp == end_line }
-        raise Error, "Could not update #{relative_path(path)}" unless index
-
-        index
-      end
-
-      # Strips the destination prefix from *path* for human-friendly status output.
-      def relative_path(path)
-        path.delete_prefix("#{destination}/")
-      end
     end
   end
 end

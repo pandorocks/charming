@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+step() {
+  echo
+  echo "== $1 =="
+}
+
+step "RSpec"
+bin/rspec
+
+step "Standard Ruby"
+bin/lint
+
+step "Zeitwerk eager load"
+bundle exec ruby -e 'require "charming"; Zeitwerk::Loader.eager_load_all; puts "All constants eager loaded."'
+
+step "Gem build"
+mkdir -p tmp
+gem build charming.gemspec -o tmp/charming-ci.gem
+rm -f tmp/charming-ci.gem
+
+step "Done"
+echo "All CI checks passed."
