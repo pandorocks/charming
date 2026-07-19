@@ -308,6 +308,46 @@ RSpec.describe "demo app example" do
     expect(after_tab.frames.last).to include("  ● Home")
   end
 
+  it "registers the physics demo route" do
+    route = DemoApp::Application.routes.resolve("/physics")
+
+    expect(route.controller_class).to eq(DemoApp::PhysicsController)
+    expect(route.action).to eq(:show)
+    expect(route.title).to eq("Physics")
+  end
+
+  it "springs the physics ball to its target and stops the animation timer" do
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :tab),
+        Charming::Events::KeyEvent.new(key: :b, char: "b"),
+        *Array.new(200, nil),
+        Charming::Events::KeyEvent.new(key: :q, char: "q")
+      ],
+      width: 90,
+      height: 24
+    )
+    t = 0.0
+    clock = -> { t += 1.0 / 120 }
+    app = DemoApp::Application.new
+
+    Charming::Runtime.new(app, backend: backend, clock: clock).tap do |runtime|
+      runtime.instance_variable_set(:@route, app.routes.resolve("/physics"))
+      runtime.run
+    end
+
+    frames = backend.frames.map { |frame| Charming::UI::Width.strip_ansi(frame) }
+    expect(frames.first).to include("x: 2.0")
+    expect(frames.first).to include("spring settled")
+    expect(frames).to be_any { |frame| frame.include?("spring running") }
+    # The under-damped spring renders many intermediate positions on its way across.
+    expect(frames.length).to be > 10
+    # Once settled the action stops its own timer; the trailing nil reads with an
+    # ever-advancing clock produce no further ticks.
+    expect(frames.last).to include("x: 40.0")
+    expect(frames.last).to include("spring settled")
+  end
+
   it "selects a command from the palette with enter" do
     backend = Charming::Internal::Terminal::MemoryBackend.new(
       events: [

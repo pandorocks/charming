@@ -347,6 +347,100 @@ RSpec.describe Charming::Runtime do
     expect(backend.frames).to eq(["Ticks: 0", "Ticks: 1"])
   end
 
+  it "runs an animation timer only between start_timer and stop_timer" do
+    anim_controller = Class.new(Charming::Controller) do
+      key "s", :begin_slide
+      key "q", :quit
+      animate :slide, fps: 10, action: :step
+
+      def show
+        session[:steps] ||= 0
+        render "Steps: #{session[:steps]}"
+      end
+
+      def begin_slide
+        start_timer(:slide)
+        render "Sliding"
+      end
+
+      def step
+        session[:steps] += 1
+        stop_timer(:slide) if session[:steps] >= 2
+        render "Steps: #{session[:steps]}"
+      end
+    end
+    stub_const("AnimRuntimeSpecController", anim_controller)
+    anim_app = Class.new(Charming::Application) do
+      routes do
+        root "anim_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        nil,
+        Charming::Events::KeyEvent.new(key: :s),
+        nil, nil, nil,
+        Charming::Events::KeyEvent.new(key: :q)
+      ]
+    )
+    t = 0.0
+    clock = -> { t += 0.05 }
+
+    described_class.new(anim_app.new, backend: backend, clock: clock).run
+
+    # No steps before `s` (autostart: false), two steps while running, none after
+    # the action stops the timer — even though the clock keeps advancing.
+    expect(backend.frames).to eq(["Steps: 0", "Sliding", "Steps: 1", "Steps: 2"])
+  end
+
+  it "does not schedule animation timers when navigating to their controller" do
+    pulse_controller = Class.new(Charming::Controller) do
+      key "q", :quit
+      animate :pulse, fps: 10, action: :pulse
+
+      def show
+        render "Pulse screen"
+      end
+
+      def pulse
+        render "Pulsing"
+      end
+    end
+    home_controller = Class.new(Charming::Controller) do
+      key "n", :go
+      key "q", :quit
+
+      def show
+        render "Home"
+      end
+
+      def go
+        navigate_to "/pulse"
+      end
+    end
+    stub_const("PulseRuntimeSpecController", pulse_controller)
+    stub_const("HomeRuntimeSpecController", home_controller)
+    nav_app = Class.new(Charming::Application) do
+      routes do
+        root "home_runtime_spec#show"
+        screen "/pulse", to: "pulse_runtime_spec#show"
+      end
+    end
+    backend = Charming::Internal::Terminal::MemoryBackend.new(
+      events: [
+        Charming::Events::KeyEvent.new(key: :n),
+        nil, nil,
+        Charming::Events::KeyEvent.new(key: :q)
+      ]
+    )
+    t = 0.0
+    clock = -> { t += 0.05 }
+
+    described_class.new(nav_app.new, backend: backend, clock: clock).run
+
+    expect(backend.frames).to eq(["Home", "Pulse screen"])
+  end
+
   it "does not repaint unchanged timer frames" do
     timer_controller = Class.new(Charming::Controller) do
       key "q", :quit

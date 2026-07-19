@@ -51,6 +51,24 @@ module Charming
         @timers = build_timers(timer_bindings)
       end
 
+      # Schedules *binding* one interval from now. Idempotent: starting a timer
+      # that is already running keeps its current deadline (no phase reset).
+      def start_timer(binding)
+        return if timer_running?(binding.name)
+
+        @timers << {binding: binding, next_at: clock_now + binding.interval}
+      end
+
+      # Removes the named timer from the schedule. Idempotent for unknown names.
+      def stop_timer(name)
+        @timers.reject! { |timer| timer.fetch(:binding).name == name }
+      end
+
+      # True while the named timer is scheduled.
+      def timer_running?(name)
+        @timers.any? { |timer| timer.fetch(:binding).name == name }
+      end
+
       private
 
       # The next due event in priority order: task results, then timers, then input.
@@ -74,13 +92,18 @@ module Charming
       end
 
       # Returns a TimerEvent for the first due timer and advances its next fire
-      # time. Returns nil if no timers are ready or registered.
+      # time. Returns nil if no timers are ready or registered. Rescheduling is
+      # accumulator-based so fire times stay on the interval grid (no drift);
+      # after a stall the deadline snaps forward, skipping missed ticks instead
+      # of firing a catch-up burst.
       def next_timer_event
         timer = due_timer
         return unless timer
 
         now = clock_now
-        timer[:next_at] = now + timer.fetch(:binding).interval
+        interval = timer.fetch(:binding).interval
+        timer[:next_at] += interval
+        timer[:next_at] = now + interval if timer[:next_at] <= now
         Events::TimerEvent.new(name: timer.fetch(:binding).name, now: now)
       end
 

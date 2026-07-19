@@ -20,6 +20,10 @@ module Charming
       @screen = backend_screen
       @coalesce_input = @application.respond_to?(:coalesce_input?) && @application.coalesce_input?
       @event_loop = build_event_loop
+      @application.timer_control = Internal::TimerControl.new(
+        event_loop: @event_loop,
+        bindings: -> { @route.controller_class.timer_bindings }
+      )
     end
 
     # Runs the event loop: enters alt-screen, dispatches incoming events
@@ -52,10 +56,16 @@ module Charming
         backend: @backend,
         clock: @clock,
         task_queue: @task_queue,
-        timer_bindings: @route.controller_class.timer_bindings.values,
+        timer_bindings: autostart_timer_bindings,
         coalesce_input: @coalesce_input,
         interrupted: -> { @interrupted }
       )
+    end
+
+    # The current route's timers that run from boot. Timers declared with
+    # `autostart: false` (including `animate` ticks) wait for `start_timer`.
+    def autostart_timer_bindings
+      @route.controller_class.timer_bindings.values.select(&:autostart)
     end
 
     # The first frame's response — the root route's action, with errors caught. Out-of-band escape
@@ -282,7 +292,7 @@ module Charming
       return response unless response.navigate?
 
       @route = resolve_route(response.path)
-      @event_loop.reset_timers(@route.controller_class.timer_bindings.values)
+      @event_loop.reset_timers(autostart_timer_bindings)
       dispatch(@route.action)
     end
 

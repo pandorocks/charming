@@ -163,6 +163,13 @@ module Charming
     end
 
     attr_accessor :logger, :task_executor
+    attr_writer :timer_control
+
+    # The runtime-injected timer control used by `Controller#start_timer` and
+    # friends. Defaults to a null object so controllers work outside a Runtime.
+    def timer_control
+      @timer_control ||= Internal::TimerControl::Null.new
+    end
     attr_reader :session
 
     # Initializes the session hash for per-request state storage, restoring a

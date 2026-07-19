@@ -33,6 +33,8 @@ lib/charming/             # framework source
   router.rb               # route drawing
   runtime.rb              # main event loop (TTY or MemoryBackend)
   screen.rb               # terminal dimensions (width, height)
+  spring.rb               # damped-spring physics for animation (harmonica port)
+  projectile.rb           # projectile physics + gravity constants (harmonica port)
   response.rb             # RenderResponse / NavigateResponse / QuitResponse
   events.rb               # KeyEvent, ResizeEvent, TimerEvent (Data classes)
   view.rb                 # render helpers: text, box, row, column, style, render_component
@@ -47,6 +49,7 @@ lib/charming/             # framework source
     spinner.rb
   generators/             # `charming new` / `charming generate` scaffold code
   internal/
+    timer_control.rb      # runtime surface for start_timer/stop_timer from controllers
     terminal/
       tty_backend.rb      # real TTY I/O (tty-cursor, tty-reader, tty-screen)
       memory_backend.rb   # in-memory I/O for specs & scripts

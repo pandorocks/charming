@@ -43,6 +43,12 @@ module Charming
     Runtime.new(application, backend: backend).run
   end
 
+  # Returns the seconds-per-frame time delta for a frame rate, for initializing
+  # physics primitives: `Charming::Spring.new(delta_time: Charming.fps(60))`.
+  def self.fps(frames_per_second)
+    1.0 / frames_per_second
+  end
+
   # Returns the normalized key symbol for an event-like object — `event.key` when the object responds
   # to it, otherwise `event.to_sym`. Lets components treat raw strings and KeyEvent objects uniformly.
   def self.key_of(event)

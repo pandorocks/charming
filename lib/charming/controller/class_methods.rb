@@ -24,10 +24,21 @@ module Charming
 
       # Declares a timer that fires every *every* seconds and dispatches *action* on the controller.
       # The runtime builds a TimerEvent and routes it to the active controller's dispatch_timer.
-      def timer(name, every:, action:)
+      # Timers run from boot by default; declare `autostart: false` to schedule one only when an
+      # action calls `start_timer`.
+      def timer(name, every:, action:, autostart: true)
         raise ArgumentError, "timer interval must be positive (got #{every.inspect})" unless every.is_a?(Numeric) && every.positive?
 
-        timer_bindings[name.to_sym] = TimerBinding.new(name: name.to_sym, interval: every, action: action)
+        timer_bindings[name.to_sym] = TimerBinding.new(name: name.to_sym, interval: every, action: action, autostart: autostart)
+      end
+
+      # Declares an animation: a stopped timer ticking *action* at *fps* frames per second.
+      # Begin motion with `start_timer(name)`; the action calls `stop_timer(name)` once the
+      # motion settles, returning the app to zero idle cost.
+      def animate(name, action:, fps: 30)
+        raise ArgumentError, "fps must be positive (got #{fps.inspect})" unless fps.is_a?(Numeric) && fps.positive?
+
+        timer(name, every: 1.0 / fps, action: action, autostart: false)
       end
 
       # Declares a task handler for async work submitted via `run_task(:name)`. When the task emits

@@ -1306,6 +1306,59 @@ RSpec.describe Charming::Controller do
     end
   end
 
+  describe ".timer autostart and .animate" do
+    it "autostarts declared timers by default" do
+      klass = Class.new(described_class) { timer :refresh, every: 1, action: :refresh }
+
+      expect(klass.timer_bindings[:refresh].autostart).to be(true)
+    end
+
+    it "stores timers declared with autostart: false" do
+      klass = Class.new(described_class) { timer :slide, every: 0.1, action: :step, autostart: false }
+
+      expect(klass.timer_bindings[:slide].autostart).to be(false)
+    end
+
+    it "declares an animation as a stopped timer at a frame rate" do
+      klass = Class.new(described_class) { animate :slide, fps: 30, action: :step }
+
+      binding = klass.timer_bindings[:slide]
+      expect(binding.interval).to eq(1.0 / 30)
+      expect(binding.autostart).to be(false)
+      expect(binding.action).to eq(:step)
+    end
+
+    it "rejects a non-positive fps" do
+      expect {
+        Class.new(described_class) { animate :slide, fps: 0, action: :step }
+      }.to raise_error(ArgumentError, /fps must be positive/)
+    end
+  end
+
+  describe "timer control helpers" do
+    it "delegates start, stop, and running checks to the application's timer control" do
+      control = instance_double(Charming::Internal::TimerControl)
+      application.timer_control = control
+      controller = ControllerSpecController.new(application: application)
+
+      expect(control).to receive(:start).with(:slide)
+      expect(control).to receive(:stop).with(:slide)
+      expect(control).to receive(:running?).with(:slide).and_return(true)
+
+      controller.start_timer(:slide)
+      controller.stop_timer(:slide)
+      expect(controller.timer_running?(:slide)).to be(true)
+    end
+
+    it "is safe to call outside a runtime" do
+      controller = ControllerSpecController.new(application: application)
+
+      expect { controller.start_timer(:slide) }.not_to raise_error
+      expect { controller.stop_timer(:slide) }.not_to raise_error
+      expect(controller.timer_running?(:slide)).to be(false)
+    end
+  end
+
   describe ".task_bindings inheritance" do
     it "inherits a copy of parent bindings, not a live reference" do
       parent = Class.new(described_class) { on_task :fetch, action: :loaded }

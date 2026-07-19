@@ -127,6 +127,115 @@ RSpec.describe Charming::Internal::EventLoop do
       expect(backend.operations).to include([:read_event, described_class::DEFAULT_READ_TIMEOUT])
     end
 
+    it "keeps fire times on the interval grid when a tick is delivered late" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [key_event(:q)])
+      # Timer due at 0.1 fires late (0.11); the next fire stays due at 0.2, not 0.21.
+      times = [0.0, 0.11, 0.11, 0.2, 0.2, 0.25]
+      event_loop = build_loop(
+        backend: backend,
+        clock: -> { times.shift || 0.25 },
+        timer_bindings: [binding_class.new(:tick, 0.1)]
+      )
+
+      seen = pump(event_loop, quit_on: ->(event) { event.is_a?(Charming::Events::KeyEvent) })
+
+      timer_events = seen.select { |event| event.is_a?(Charming::Events::TimerEvent) }
+      expect(timer_events.length).to eq(2)
+      expect(timer_events.last.now).to eq(0.2)
+    end
+
+    it "skips missed ticks after a stall instead of firing a burst" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [key_event(:q)])
+      # Timer due at 0.1; the clock jumps to 1.0 — one event fires, the rest are dropped.
+      times = [0.0, 1.0, 1.0, 1.05, 1.05]
+      event_loop = build_loop(
+        backend: backend,
+        clock: -> { times.shift || 1.05 },
+        timer_bindings: [binding_class.new(:tick, 0.1)]
+      )
+
+      seen = pump(event_loop, quit_on: ->(event) { event.is_a?(Charming::Events::KeyEvent) })
+
+      timer_events = seen.select { |event| event.is_a?(Charming::Events::TimerEvent) }
+      expect(timer_events.length).to eq(1)
+    end
+
+    it "schedules a started timer one interval from now" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [key_event(:q)])
+      # Clock samples: loop construction, start_timer, due check, event timestamp.
+      times = [0.0, 0.0, 0.1, 0.1]
+      event_loop = build_loop(backend: backend, clock: -> { times.shift || 0.1 })
+
+      event_loop.start_timer(binding_class.new(:anim, 0.1))
+      seen = pump(event_loop, quit_on: ->(event) { event.is_a?(Charming::Events::KeyEvent) })
+
+      timer_events = seen.select { |event| event.is_a?(Charming::Events::TimerEvent) }
+      expect(timer_events.map(&:name)).to eq(%i[anim])
+    end
+
+    it "does not reset a running timer's phase when started again" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [nil, key_event(:q)])
+      # Started at 0.0 (due 0.1); a redundant restart must keep the 0.1 deadline
+      # (a phase-resetting restart would consume the 0.05 sample and miss it).
+      times = [0.0, 0.0, 0.05, 0.1, 0.1, 0.1]
+      event_loop = build_loop(backend: backend, clock: -> { times.shift || 0.1 })
+
+      event_loop.start_timer(binding_class.new(:anim, 0.1))
+      event_loop.start_timer(binding_class.new(:anim, 0.1))
+      seen = pump(event_loop, quit_on: ->(event) { event.is_a?(Charming::Events::KeyEvent) })
+
+      timer_events = seen.select { |event| event.is_a?(Charming::Events::TimerEvent) }
+      expect(timer_events.length).to eq(1)
+      expect(timer_events.first.now).to eq(0.1)
+    end
+
+    it "stops delivering a stopped timer" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [key_event(:q)])
+      times = [0.0, 0.2, 0.2]
+      event_loop = build_loop(
+        backend: backend,
+        clock: -> { times.shift || 0.2 },
+        timer_bindings: [binding_class.new(:tick, 0.1)]
+      )
+
+      event_loop.stop_timer(:tick)
+      seen = pump(event_loop, quit_on: ->(event) { event.is_a?(Charming::Events::KeyEvent) })
+
+      expect(seen.select { |event| event.is_a?(Charming::Events::TimerEvent) }).to be_empty
+    end
+
+    it "ignores stopping a timer that is not running" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [])
+      event_loop = build_loop(backend: backend)
+
+      expect { event_loop.stop_timer(:missing) }.not_to raise_error
+    end
+
+    it "reports whether a timer is running" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [])
+      event_loop = build_loop(backend: backend)
+      binding = binding_class.new(:anim, 0.1)
+
+      expect(event_loop.timer_running?(:anim)).to be(false)
+      event_loop.start_timer(binding)
+      expect(event_loop.timer_running?(:anim)).to be(true)
+      event_loop.stop_timer(:anim)
+      expect(event_loop.timer_running?(:anim)).to be(false)
+    end
+
+    it "returns input reads to the default timeout once the last timer stops" do
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [key_event(:q)])
+      event_loop = build_loop(
+        backend: backend,
+        timer_bindings: [binding_class.new(:tick, 0.01)]
+      )
+
+      event_loop.stop_timer(:tick)
+      pump(event_loop)
+
+      expect(backend.operations).to include([:read_event, described_class::DEFAULT_READ_TIMEOUT])
+    end
+
     it "replaces scheduled timers on reset_timers" do
       backend = Charming::Internal::Terminal::MemoryBackend.new(events: [nil, key_event(:q)])
       times = [0.0, 0.0, 0.2, 0.3]

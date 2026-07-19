@@ -5,7 +5,11 @@ module Charming
   # It provides the action dispatch pipeline, key/command/timer/task bindings, sidebar navigation,
   # command palette management, and view rendering with layout composition.
   class Controller
-    TimerBinding = Data.define(:name, :interval, :action)
+    TimerBinding = Data.define(:name, :interval, :action, :autostart) do
+      def initialize(name:, interval:, action:, autostart: true)
+        super
+      end
+    end
     TaskBinding = Data.define(:name, :action)
 
     extend ClassMethods
@@ -18,6 +22,7 @@ module Charming
     include ComponentDispatching
     include Dispatching
     include Terminal
+    include Timers
 
     attr_reader :application, :event, :params, :screen, :route
 
