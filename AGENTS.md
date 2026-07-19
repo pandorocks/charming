@@ -75,6 +75,27 @@ Application → Router → Controller → ApplicationState → View → Componen
 - **Application state** is the only place for persistent TUI state; state objects are stored in `session` via `Controller#state(name, klass, **attrs)`.
 - **Components** inherit from `View` to reuse assign readers and helpers (`text`, `box`, `row`, `column`, `render_component`).
 
+### What goes in `session`
+
+Because controllers are ephemeral, `session` is the only home for anything that must
+outlive one event. It holds exactly three kinds of values:
+
+1. **`ApplicationState` objects** via `state(name, klass, **attrs)` — domain state
+   (persisted by `persist_session` only where JSON-safe).
+2. **Primitive widget-state hashes** via `component_state(name, **defaults)` — the
+   blessed idiom for interactive components: store JSON-safe primitives, rebuild the
+   component from the hash each event, write changed values back after `handle_key`.
+   The command palette, forms, focus, and sidebar all work this way, and these hashes
+   survive `persist_session`.
+3. **Runtime engine handles** — objects that wrap a live process or terminal-protocol
+   state, e.g. `session[:audio] ||= Audio::Player.new` or an `Image::Source` (its
+   `transmitted?` flag gates a one-time transmission). These are deliberately built
+   once and are **intentionally dropped** by `save_session`.
+
+Do **not** store live view/component objects (TextInput, List, …) in `session` — they
+are silently dropped on persist and their mutable state belongs in a
+`component_state` hash instead.
+
 ---
 
 ## Key APIs

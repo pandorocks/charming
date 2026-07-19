@@ -30,6 +30,17 @@ module Charming
         session[:states][name.to_sym] ||= state_class.new(**attributes)
       end
 
+      # Returns the named mutable widget-state hash stored under `session[:component_state]`,
+      # seeding it from *defaults* on first access. This is the blessed way to keep an interactive
+      # component's state across ephemeral controller instances: store only JSON-safe primitives,
+      # rebuild the component from the hash each event, and write changed values back after
+      # `handle_key`. (Live component objects don't belong in the session — `save_session` drops
+      # anything that can't survive a JSON round-trip.)
+      def component_state(name, **defaults)
+        session[:component_state] ||= {}
+        session[:component_state][name.to_sym] ||= defaults
+      end
+
       # Builds a Form component scoped to the named form slot in `session[:forms]`. The block is
       # evaluated against a Form::Builder (or invoked with the builder as its argument for arity-1 blocks)
       # and returns a Form component pre-bound to the per-form mutable state hash.

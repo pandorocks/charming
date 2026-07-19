@@ -374,6 +374,33 @@ RSpec.describe Charming::Controller do
     expect(first).not_to equal(second)
   end
 
+  it "persists component state across controller instances" do
+    controller = Class.new(described_class) do
+      define_method(:show) do
+        query = component_state(:query, value: "", cursor: 0)
+        input = Charming::Components::TextInput.new(value: query[:value], cursor: query[:cursor])
+        input.handle_key(event) if event
+        query[:value] = input.value
+        query[:cursor] = input.cursor
+        render "query: #{query[:value]}"
+      end
+    end
+
+    controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :a, char: "a")).dispatch(:show)
+    response = controller.new(application: application, event: Charming::Events::KeyEvent.new(key: :b, char: "b")).dispatch(:show)
+
+    expect(response.body).to eq("query: ab")
+  end
+
+  it "seeds component state from defaults on first access only" do
+    controller = described_class.new(application: application)
+
+    first = controller.component_state(:filter, value: "initial")
+    first[:value] = "changed"
+
+    expect(controller.component_state(:filter, value: "initial")).to eq(value: "changed")
+  end
+
   it "provides default screen dimensions for direct controller use" do
     controller = described_class.new(application: application)
 

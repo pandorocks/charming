@@ -61,6 +61,22 @@ RSpec.describe "Session persistence" do
     end
   end
 
+  it "round-trips component state through quit and boot" do
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "session.json")
+      app_class = app_class_with(path)
+
+      app = app_class.new
+      controller = Charming::Controller.new(application: app)
+      controller.component_state(:query, value: "", cursor: 0)[:value] = "charming"
+      app.save_session
+
+      restored = app_class.new
+      restored_controller = Charming::Controller.new(application: restored)
+      expect(restored_controller.component_state(:query)[:value]).to eq("charming")
+    end
+  end
+
   it "starts with an empty session when the file is corrupt" do
     Dir.mktmpdir do |dir|
       path = File.join(dir, "session.json")
