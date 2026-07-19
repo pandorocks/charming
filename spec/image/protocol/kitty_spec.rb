@@ -74,6 +74,12 @@ RSpec.describe Charming::Image::Protocol::Kitty do
     end
   end
 
+  describe ".delete" do
+    it "builds an APC delete that frees the image's data and placements" do
+      expect(described_class.delete(image_id: 42)).to eq("\e_Ga=d,d=I,i=42,q=2\e\\")
+    end
+  end
+
   describe "DIACRITICS" do
     it "provides the full Kitty row/column table" do
       expect(described_class::DIACRITICS.length).to eq(297)

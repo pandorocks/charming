@@ -53,6 +53,16 @@ module Charming
         protocol.placeholder_block(image_id: image_id, rows: rows, cols: cols)
       end
 
+      # Builds the out-of-band {Transmit} that frees the image from terminal memory, or nil when
+      # graphics are unsupported. Re-arms {transmitted?} so a later render retransmits. Callers
+      # evicting an image register this the same way as {transmit}.
+      def release
+        return unless protocol
+
+        @transmitted = false
+        Transmit.new(image_id: image_id, payload: protocol.delete(image_id: image_id))
+      end
+
       # True once {mark_transmitted} has recorded that the image was sent to the terminal.
       def transmitted?
         @transmitted

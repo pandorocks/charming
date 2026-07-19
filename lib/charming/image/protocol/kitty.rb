@@ -82,6 +82,13 @@ module Charming
           end.join("\n")
         end
 
+        # Builds the `a=d,d=I` escape that deletes *image_id*'s placements AND frees its data from
+        # terminal memory (lowercase `d=i` would keep the data resident). Long-lived apps that cycle
+        # many images must emit this when evicting, or the terminal's image storage grows unbounded.
+        def delete(image_id:)
+          "\e_Ga=d,d=I,i=#{image_id},q=2\e\\"
+        end
+
         # The chunked `a=t` (transmit) escapes carrying the base64 PNG data directly (`f=100,t=d`).
         # Control keys ride only the first chunk; `m=1` flags more-to-come, `m=0` the last.
         def transmit_image(image_id, png_bytes)

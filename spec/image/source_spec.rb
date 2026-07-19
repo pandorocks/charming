@@ -49,6 +49,24 @@ RSpec.describe Charming::Image::Source do
     expect(source.placement(rows: 1, cols: 1)).to eq("")
   end
 
+  it "builds a release Transmit that frees the image and re-arms transmission" do
+    source = described_class.new(data: "x", id: 9, terminal: kitty_terminal)
+    source.mark_transmitted
+
+    release = source.release
+
+    expect(release).to be_a(Charming::Image::Transmit)
+    expect(release.image_id).to eq(9)
+    expect(release.payload).to include("a=d", "d=I", "i=9")
+    expect(source.transmitted?).to be(false)
+  end
+
+  it "does not release on terminals without graphics support" do
+    source = described_class.new(data: "x", terminal: plain_terminal)
+
+    expect(source.release).to be_nil
+  end
+
   it "gates retransmission via transmitted?/mark_transmitted" do
     source = described_class.new(data: "x", terminal: kitty_terminal)
 
