@@ -18,7 +18,7 @@ module Charming
 
       # Counts down by *seconds* (default 1), clamping at zero. Returns self.
       def tick(seconds = 1)
-        @remaining = [@remaining - seconds.to_i, 0].max
+        @remaining = [@remaining - seconds, 0].max
         self
       end
 

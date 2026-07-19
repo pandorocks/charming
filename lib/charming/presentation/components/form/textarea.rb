@@ -29,15 +29,12 @@ module Charming
         # Forwards key events to the underlying TextArea, syncing the value, cursor, offset,
         # and preferred column back into the form state. Returns :handled when consumed.
         def handle_key(event)
-          area = text_area
-          result = area.handle_key(event)
-          return nil unless result == :handled
+          forward_to_text_area(:handle_key, event)
+        end
 
-          state[:values][name] = area.value
-          field_state[:cursor] = area.cursor
-          field_state[:offset] = area.offset
-          field_state[:preferred_column] = area.preferred_column
-          :handled
+        # Forwards pasted text (newlines preserved) to the underlying TextArea the same way.
+        def handle_paste(event)
+          forward_to_text_area(:handle_paste, event)
         end
 
         # Renders the field with its label on the first line, body lines indented, and
@@ -49,6 +46,19 @@ module Charming
         end
 
         private
+
+        # Sends *message* to a freshly-built TextArea and, when the widget consumed the
+        # event, persists the value, cursor, offset, and preferred column into form state.
+        def forward_to_text_area(message, event)
+          area = text_area
+          return nil unless area.public_send(message, event) == :handled
+
+          state[:values][name] = area.value
+          field_state[:cursor] = area.cursor
+          field_state[:offset] = area.offset
+          field_state[:preferred_column] = area.preferred_column
+          :handled
+        end
 
         # The default value for a freshly-bound field is the *value* passed at construction.
         def default_value

@@ -71,7 +71,7 @@ module Charming
     end
 
     # Paste event dispatcher: forwards pasted text to the focused component's
-    # `handle_paste` (TextInput, TextArea, and form fields support it).
+    # `handle_paste` (TextInput, TextArea, Form text fields, and Autocomplete support it).
     def dispatch_paste
       slot = focus.current
       return nil unless slot && respond_to?(slot, true)

@@ -70,6 +70,42 @@ RSpec.describe "Bracketed paste" do
 
       expect(backend.frames.last).to include("query: hello world")
     end
+
+    it "routes paste events into a focused form's text field" do
+      controller_class = Class.new(Charming::Controller) do
+        focus_ring :signup_form
+
+        def show
+          render "name: #{signup_form.values[:name]}"
+        end
+
+        def signup_form
+          @signup_form ||= form(:signup) do |f|
+            f.input :name
+          end
+        end
+
+        private
+
+        def render_default_action
+          show
+        end
+      end
+      stub_const("FormPasteSpecController", controller_class)
+      app_class = Class.new(Charming::Application)
+      stub_const("FormPasteSpecApp", app_class)
+      app_class.routes do
+        root "form_paste_spec#show"
+      end
+
+      backend = Charming::Internal::Terminal::MemoryBackend.new(events: [
+        Charming::Events::PasteEvent.new(text: "Ada Lovelace"),
+        Charming::Events::KeyEvent.new(key: :c, ctrl: true) # unbound ctrl+c quits
+      ])
+      Charming::Runtime.new(FormPasteSpecApp.new, backend: backend).run
+
+      expect(backend.frames.last).to include("name: Ada Lovelace")
+    end
   end
 
   describe "TTYBackend paste parsing" do

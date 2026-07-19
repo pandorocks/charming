@@ -46,4 +46,13 @@ RSpec.describe Charming::Components::Timer do
 
     expect(timer.render).to eq("01:00 remaining")
   end
+
+  it "accumulates fractional ticks" do
+    timer = described_class.new(duration: 5)
+
+    4.times { timer.tick(0.25) }
+
+    expect(timer.remaining).to eq(4.0)
+    expect(timer.render).to eq("00:04")
+  end
 end

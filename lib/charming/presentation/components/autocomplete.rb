@@ -67,6 +67,13 @@ module Charming
         end
       end
 
+      # Forwards pasted text to the inner input and re-filters the suggestions.
+      def handle_paste(event)
+        result = @input.handle_paste(event)
+        clamp_selection if result
+        result
+      end
+
       # Renders the input row followed by the suggestion dropdown.
       def render
         [input_line, *suggestion_lines].join("\n")

@@ -41,6 +41,11 @@ module Charming
           nil
         end
 
+        # Default paste handler returns nil (paste ignored). Text fields override.
+        def handle_paste(_event)
+          nil
+        end
+
         # Renders the field as a control line prefixed with ">" (active) or " " (inactive),
         # optionally followed by the help line and any error lines.
         def render(active: false)

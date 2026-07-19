@@ -10,6 +10,14 @@ RSpec.describe Charming::Components::Modal do
     expect(modal.render).to include("╭")
   end
 
+  it "renders help as a footer line below the body" do
+    modal = described_class.new(content: "Body", title: "Title", help: "Help", width: 20)
+
+    rendered = modal.render
+    expect(rendered.index("Title")).to be < rendered.index("Body")
+    expect(rendered.index("Body")).to be < rendered.index("Help")
+  end
+
   it "styles the default border without coloring body content as border" do
     modal = described_class.new(content: "Body", width: 20)
 

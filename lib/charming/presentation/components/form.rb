@@ -38,6 +38,12 @@ module Charming
         advance_or_submit if key == :enter
       end
 
+      # Forwards pasted text to the currently focused field. Text fields insert it
+      # at their cursor; other fields ignore it.
+      def handle_paste(event)
+        current_field&.handle_paste(event)
+      end
+
       # Forms accept free-typed text (their input/textarea fields do), so printable
       # characters route here before global/content key bindings.
       def captures_text?

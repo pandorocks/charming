@@ -27,16 +27,26 @@ module Charming
         # Forwards key events to the underlying TextInput, syncing the value and cursor
         # back into the form state. Returns :handled when the event was consumed.
         def handle_key(event)
+          forward_to_input(:handle_key, event)
+        end
+
+        # Forwards pasted text to the underlying TextInput the same way.
+        def handle_paste(event)
+          forward_to_input(:handle_paste, event)
+        end
+
+        private
+
+        # Sends *message* to a freshly-built TextInput and, when the widget consumed
+        # the event, persists the resulting value and cursor into the form state.
+        def forward_to_input(message, event)
           text_input = input
-          result = text_input.handle_key(event)
-          return nil unless result == :handled
+          return nil unless text_input.public_send(message, event) == :handled
 
           state[:values][name] = text_input.value
           field_state[:cursor] = text_input.cursor
           :handled
         end
-
-        private
 
         # The default value for a freshly-bound field is the *value* passed at construction.
         def default_value

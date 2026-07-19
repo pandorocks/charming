@@ -52,6 +52,14 @@ RSpec.describe Charming::Components::Autocomplete do
     expect(combo.filtered_suggestions).to eq(%w[rspec python])
   end
 
+  it "inserts pasted text and re-filters suggestions" do
+    combo = described_class.new(suggestions: suggestions, value: "r", selected_index: 2)
+    expect(combo.handle_paste(Charming::Events::PasteEvent.new(text: "spe"))).to eq(:handled)
+    expect(combo.value).to eq("rspe")
+    expect(combo.filtered_suggestions).to eq(%w[rspec])
+    expect(combo.selected_index).to eq(0)
+  end
+
   it "renders the input line and suggestions" do
     combo = described_class.new(suggestions: suggestions, value: "ru")
     plain = Charming::UI::Width.strip_ansi(combo.render)

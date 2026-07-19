@@ -3,9 +3,10 @@
 module Charming
   module Components
     # Toast is a small auto-dismissing notification panel, usually composited as an
-    # overlay anchored to a screen corner. Controllers manage its lifetime with the
-    # `show_toast` / `dismiss_toast` helpers (which pair it with a timer); the component
-    # itself just renders the styled box.
+    # overlay anchored to a screen corner. The component just renders the styled box;
+    # apps manage its lifetime themselves — typically a session-backed hash with an
+    # expiry deadline plus a controller timer that clears it (see the journal example's
+    # ApplicationController#show_toast / #expire_toast).
     #
     #   Toast.new(message: "Saved!", kind: :success)
     #

@@ -25,7 +25,7 @@ module Charming
         delete: :delete_at_cursor
       }.freeze
 
-      # The current input string and the byte offset of the cursor within it.
+      # The current input string and the character offset of the cursor within it.
       attr_reader :value, :cursor
 
       # *value* is the initial text. *placeholder* is shown when the value is empty.
@@ -94,7 +94,7 @@ module Charming
         !char.match?(/[[:cntrl:]]/)
       end
 
-      # Inserts *char* at the cursor and advances the cursor by its byte length.
+      # Inserts *char* at the cursor and advances the cursor by its character length.
       def insert(char)
         @value = value[0...cursor] + char + value[cursor..]
         @cursor += char.length

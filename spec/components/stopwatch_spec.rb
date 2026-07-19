@@ -44,4 +44,14 @@ RSpec.describe Charming::Components::Stopwatch do
 
     expect(stopwatch.render).to eq("00:00 elapsed")
   end
+
+  it "accumulates fractional ticks while running" do
+    stopwatch = described_class.new
+    stopwatch.start
+
+    6.times { stopwatch.tick(0.5) }
+
+    expect(stopwatch.elapsed).to eq(3.0)
+    expect(stopwatch.render).to eq("00:03")
+  end
 end

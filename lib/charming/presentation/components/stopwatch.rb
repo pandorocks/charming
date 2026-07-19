@@ -34,7 +34,7 @@ module Charming
 
       # Adds *seconds* (default 1) when running; a no-op otherwise. Returns self.
       def tick(seconds = 1)
-        @elapsed += seconds.to_i if running?
+        @elapsed += seconds if running?
         self
       end
 

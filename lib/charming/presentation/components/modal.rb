@@ -39,8 +39,8 @@ module Charming
         result
       end
 
-      # Renders the modal as a bordered, padded string with the title and help lines stacked
-      # above the content.
+      # Renders the modal as a bordered, padded string with the title above the content
+      # and the help footer below it.
       def render
         box(column(*lines, gap: 1), style: modal_style)
       end
@@ -49,9 +49,9 @@ module Charming
 
       attr_reader :content, :title, :help, :width
 
-      # Returns the array of non-nil lines: title, help, content.
+      # Returns the array of non-nil lines: title, content, help footer.
       def lines
-        [title_line, help_line, body_content].compact
+        [title_line, body_content, help_line].compact
       end
 
       # The body: windowed through a Viewport when scrollable, otherwise rendered directly.

@@ -8,7 +8,7 @@ module Charming
     # for long buffers. Vertical movement preserves a "preferred column" so left/right
     # navigation feels stable.
     class TextArea < Component
-      # The current text value, cursor byte offset, top-visible row offset, and remembered
+      # The current text value, cursor character offset, top-visible row offset, and remembered
       # column for vertical navigation, respectively.
       attr_reader :value, :cursor, :offset, :preferred_column
 
@@ -212,7 +212,7 @@ module Charming
         [row, column]
       end
 
-      # Returns the byte offset where line *row* begins in the value.
+      # Returns the character offset where line *row* begins in the value.
       def line_start(row)
         lines.first(row).sum(&:length) + row
       end

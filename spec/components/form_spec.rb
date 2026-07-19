@@ -234,4 +234,33 @@ RSpec.describe Charming::Components::Form do
 
     expect(form.handle_key(key(:escape))).to eq(:cancelled)
   end
+
+  it "inserts pasted text into the focused input field and persists it to state" do
+    state = {}
+    form = described_class.new(fields: [described_class::Input.new(:name, value: "ab")], state: state)
+
+    expect(form.handle_paste(Charming::Events::PasteEvent.new(text: "XY"))).to eq(:handled)
+
+    expect(state[:values]).to eq(name: "abXY")
+    expect(state[:fields]).to eq(name: {cursor: 4})
+  end
+
+  it "keeps newlines when pasting into the focused textarea field" do
+    state = {}
+    form = described_class.new(fields: [described_class::Textarea.new(:bio)], state: state)
+
+    expect(form.handle_paste(Charming::Events::PasteEvent.new(text: "line one\r\nline two"))).to eq(:handled)
+
+    expect(state[:values]).to eq(bio: "line one\nline two")
+    expect(state[:fields][:bio]).to include(cursor: 17)
+  end
+
+  it "ignores paste when a non-text field is focused" do
+    state = {}
+    form = described_class.new(fields: [described_class::Select.new(:plan, options: %w[Free Pro])], state: state)
+
+    expect(form.handle_paste(Charming::Events::PasteEvent.new(text: "XY"))).to be_nil
+
+    expect(state[:values]).to eq(plan: "Free")
+  end
 end
